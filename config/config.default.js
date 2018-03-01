@@ -9,5 +9,7 @@ module.exports = appInfo => {
   // add your config here
   config.middleware = [];
 
+  config.mongodb = 'mongodb://127.0.0.1/node_club_test';
+
   return config;
 };

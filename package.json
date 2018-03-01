@@ -5,7 +5,8 @@
   "private": true,
   "dependencies": {
     "egg": "^2.2.1",
-    "egg-scripts": "^2.5.0"
+    "egg-scripts": "^2.5.0",
+    "mongoose": "^5.0.7"
   },
   "devDependencies": {
     "autod": "^3.0.1",
