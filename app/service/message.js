@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 
-const BaseModel = require('./base_model');
+const BaseModel = require('../models/base_model');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
