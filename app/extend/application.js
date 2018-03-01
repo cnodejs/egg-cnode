@@ -3,7 +3,6 @@
 const mongoose = require('mongoose');
 
 const MONGODB = Symbol('Application#mongodb');
-const REDIS = Symbol('Application#redis');
 
 // 扩展一些框架便利的方法
 module.exports = {

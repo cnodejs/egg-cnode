@@ -4,9 +4,11 @@
   "description": "",
   "private": true,
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "egg": "^2.2.1",
     "egg-scripts": "^2.5.0",
-    "mongoose": "^5.0.7"
+    "mongoose": "^5.0.7",
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "autod": "^3.0.1",
