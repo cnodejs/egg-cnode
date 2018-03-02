@@ -13,7 +13,6 @@
 const MarkdownIt = require('markdown-it');
 const validator = require('validator');
 const jsxss = require('xss');
-const _escape = require('lodash.escape');
 
 // Set default options
 const md = new MarkdownIt();
@@ -26,7 +25,7 @@ md.set({
   typographer: true, // Enable smartypants and other sweet transforms
 });
 
-md.renderer.rules.fence = function(tokens, idx) {
+md.renderer.rules.fence = (tokens, idx) => {
   const token = tokens[idx];
   let language = (token.info && 'language-' + token.info) || '';
   language = validator.escape(language);
@@ -42,7 +41,7 @@ md.renderer.rules.fence = function(tokens, idx) {
   );
 };
 
-md.renderer.rules.code_block = function(tokens, idx /* , options */) {
+md.renderer.rules.code_block = (tokens, idx /* , options */) => {
   const token = tokens[idx];
 
   return (
@@ -63,7 +62,7 @@ const myxss = new jsxss.FilterXSS({
   },
 });
 
-exports.markdown = function(text) {
+exports.markdown = text => {
   return (
     '<div class="markdown-text">' +
     myxss.process(md.render(text || '')) +
@@ -71,24 +70,24 @@ exports.markdown = function(text) {
   );
 };
 
-exports.escapeSignature = function(signature) {
+exports.escapeSignature = signature => {
   return signature
     .split('\n')
-    .map(function(p) {
-      return _escape(p);
+    .map(p => {
+      return validator.escape(p);
     })
     .join('<br>');
 };
 
-exports.staticFile = function(filePath) {
+exports.staticFile = function (filePath) {
   if (filePath.indexOf('http') === 0 || filePath.indexOf('//') === 0) {
     return filePath;
   }
   return this.app.config.site_static_host + filePath;
 };
 
-exports.tabName = function(tab) {
-  const pair = this.app.config.tabs.find(function(pair) {
+exports.tabName = function (tab) {
+  const pair = this.app.config.tabs.find(pair => {
     return pair[0] === tab;
   });
   if (pair) {
@@ -96,7 +95,7 @@ exports.tabName = function(tab) {
   }
 };
 
-exports.proxy = function(url) {
+exports.proxy = function (url) {
   return url;
   // 当 google 和 github 封锁严重时，则需要通过服务器代理访问它们的静态资源
   // return '/agent?url=' + encodeURIComponent(url);

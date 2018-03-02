@@ -11,7 +11,6 @@
     "egg-scripts": "^2.5.0",
     "egg-view-ejs": "^2.0.0",
     "loader": "^2.1.1",
-    "lodash.escape": "^4.0.1",
     "markdown-it": "^8.4.1",
     "uuid": "^3.2.1",
     "validator": "^9.4.1"
