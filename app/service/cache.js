@@ -1,42 +1,40 @@
 'use strict';
 
-module.exports = app => {
-  const redis = app.redisClient;
-  const logger = app.logger;
+const Service = require('egg').Service;
 
-  return class extends app.Service {
-    get(key) {
-      return new Promise((resolve, reject) => {
-        const t = Date.now();
-        redis.get(key, (err, data) => {
-          if (err) {
-            return reject(err);
-          }
-          if (!data) {
-            return resolve();
-          }
-          data = JSON.parse(data);
-          const duration = (Date.now() - t);
-          logger.debug('Cache', 'get', key, (duration + 'ms').green);
-          resolve(data);
-        });
-      });
+class CacheService extends Service {
+  async get(key) {
+    const { redis, logger } = this.app;
+
+    try {
+      const t = Date.now();
+      let data = await redis.get(key);
+      if (!data) return;
+
+      data = JSON.parse(data);
+      const duration = (Date.now() - t);
+      logger.debug('Cache', 'get', key, (duration + 'ms').green);
+      return data;
+    } catch (error) {
+      throw error;
     }
+  }
 
-    setex(key, value, time) {
-      return new Promise((resolve, reject) => {
-        const t = Date.now();
-        value = JSON.stringify(value);
+  async setex(key, value, seconds) {
+    const { redis, logger } = this.app;
+    const t = Date.now();
+    value = JSON.stringify(value);
 
-        redis.setex(key, time, value, (err) => {
-          if (err) {
-            return reject(err);
-          }
-          const duration = (Date.now() - t);
-          logger.debug('Cache', 'set', key, (duration + 'ms').green);
-          resolve();
-        });
-      });
+    try {
+      await redis.set(key, value, 'EX', seconds);
+      const duration = (Date.now() - t);
+      logger.debug('Cache', 'set', key, (duration + 'ms').green);
+      return;
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
-  };
-};
+  }
+}
+
+module.exports = CacheService;

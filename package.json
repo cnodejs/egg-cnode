@@ -6,9 +6,9 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "egg": "^2.2.1",
+    "egg-redis": "^2.0.0",
     "egg-scripts": "^2.5.0",
     "egg-view-ejs": "^2.0.0",
-    "ioredis": "^3.2.2",
     "loader": "^2.1.1",
     "markdown-it": "^8.4.1",
     "mongoose": "^5.0.7",
