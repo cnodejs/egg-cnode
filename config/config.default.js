@@ -32,6 +32,16 @@ module.exports = appInfo => {
     [ 'job', '招聘' ],
   ];
 
+  // RSS配置
+  config.rss = {
+    title: 'CNode：Node.js专业中文社区',
+    link: 'http://cnodejs.org',
+    language: 'zh-cn',
+    description: 'CNode：Node.js专业中文社区',
+    // 最多获取的RSS Item数量
+    max_rss_items: 50,
+  };
+
   config.view = {
     root: path.join(appInfo.baseDir, 'app/view'),
     defaultViewEngine: 'ejs',

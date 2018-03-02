@@ -124,6 +124,10 @@ class HomeController extends Controller {
     this.ctx.type = 'xml';
     this.ctx.body = sitemapData;
   }
+
+  async appDownload() {
+    this.ctx.redirect('https://github.com/soliury/noder-react-native/blob/master/README.md');
+  }
 }
 
 module.exports = HomeController;
