@@ -9,7 +9,7 @@ module.exports = (options, app) => {
   if (app.config.debug) {
     return loader.less(path.join(app.baseDir, 'app'));
   }
-  return async function (ctx, next) {
+  return async function(ctx, next) {
     await next();
   };
 };

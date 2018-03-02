@@ -28,7 +28,7 @@ module.exports = app => {
         const t = Date.now();
         value = JSON.stringify(value);
 
-        redis.setex(key, time, value, (err) => {
+        redis.setex(key, time, value, err => {
           if (err) {
             return reject(err);
           }
