@@ -6,7 +6,7 @@
 module.exports = app => {
   const { router, controller, config } = app;
 
-  const { site, sign, user, auth, topic, reply, rss } = controller;
+  const { site, sign, user, auth, topic, reply, rss, search } = controller;
 
   // home page
   router.get('/', site.index);
@@ -99,5 +99,5 @@ module.exports = app => {
   // router.get('/auth/github/new', github.new);
   // router.post('/auth/github/create', limit.peripperday('create_user_per_ip', config.create_user_per_ip, { showJson: false }), github.create);
 
-  // router.get('/search', search.index);
+  router.get('/search', search.index);
 };
