@@ -10,6 +10,7 @@
     "egg-view-ejs": "^2.0.0",
     "ioredis": "^3.2.2",
     "loader": "^2.1.1",
+    "loader-koa": "^2.0.0",
     "markdown-it": "^8.4.1",
     "mongoose": "^5.0.7",
     "uuid": "^3.2.1",
