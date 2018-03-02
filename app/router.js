@@ -11,8 +11,8 @@ module.exports = app => {
   // home pageyarn d
   router.get('/', site.index);
 
-  // // sitemap
-  // router.get('/sitemap.xml', site.sitemap);
+  // sitemap
+  router.get('/sitemap.xml', site.sitemap);
   // // mobile app download
   // router.get('/app/download', site.appDownload);
 

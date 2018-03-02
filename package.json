@@ -14,7 +14,8 @@
     "loader-koa": "^2.0.0",
     "markdown-it": "^8.4.1",
     "uuid": "^3.2.1",
-    "validator": "^9.4.1"
+    "validator": "^9.4.1",
+    "xmlbuilder": "^9.0.7"
   },
   "devDependencies": {
     "autod": "^3.0.1",

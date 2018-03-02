@@ -1,6 +1,7 @@
 'use strict';
 
 const moment = require('moment');
+const xmlbuilder = require('xmlbuilder');
 const Controller = require('egg').Controller;
 
 class HomeController extends Controller {
@@ -101,6 +102,27 @@ class HomeController extends Controller {
       },
       viewOptions
     );
+  }
+
+  async sitemap() {
+    const urlset = xmlbuilder.create('urlset', {
+      version: '1.0', encoding: 'UTF-8',
+    });
+    urlset.att('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+
+    let sitemapData = await this.service.cache.get('sitemap');
+    if (!sitemapData) {
+      const topics = await this.service.topic.getLimit5w();
+      topics.forEach(function(topic) {
+        urlset.ele('url').ele('loc', 'http://cnodejs.org/topic/' + topic._id);
+      });
+      sitemapData = urlset.end();
+      // 缓存一天
+      await this.service.cache.setex('sitemap', sitemapData, 3600 * 24);
+    }
+
+    this.ctx.type = 'xml';
+    this.ctx.body = sitemapData;
   }
 }
 
