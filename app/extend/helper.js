@@ -13,6 +13,7 @@
 const MarkdownIt = require('markdown-it');
 const validator = require('validator');
 const jsxss = require('xss');
+const _escape = require('lodash.escape');
 
 // Set default options
 const md = new MarkdownIt();
@@ -74,7 +75,7 @@ exports.escapeSignature = function(signature) {
   return signature
     .split('\n')
     .map(function(p) {
-      return _.escape(p);
+      return _escape(p);
     })
     .join('<br>');
 };
