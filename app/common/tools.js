@@ -17,7 +17,7 @@ exports.formatDate = function(date, friendly) {
 };
 
 exports.validateId = function(str) {
-  return (/^[a-zA-Z0-9\-_]+$/i).test(str);
+  return /^[a-zA-Z0-9\-_]+$/i.test(str);
 };
 
 exports.bhash = function(str, callback) {

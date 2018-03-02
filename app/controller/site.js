@@ -1,11 +1,9 @@
 'use strict';
 
 const moment = require('moment');
-
 const Controller = require('egg').Controller;
 
 class HomeController extends Controller {
-
   async index() {
     let page = parseInt(this.ctx.query.page, 10) || 1;
     page = page > 0 ? page : 1;
@@ -14,7 +12,12 @@ class HomeController extends Controller {
     // 取主题
     const query = {};
     if (!tab || tab === 'all') {
-      query.tab = { $nin: [ 'job', 'dev' ] };
+      query.tab = {
+        $nin: [
+          'job',
+          'dev',
+        ],
+      };
     } else {
       if (tab === 'good') {
         query.good = true;
@@ -23,7 +26,11 @@ class HomeController extends Controller {
       }
     }
     if (!query.good) {
-      query.create_at = { $gte: moment().subtract(1, 'years').toDate() };
+      query.create_at = {
+        $gte: moment()
+          .subtract(1, 'years')
+          .toDate(),
+      };
     }
 
     const limit = this.config.list_topic_count;
@@ -48,10 +55,22 @@ class HomeController extends Controller {
     let no_reply_topics = await this.service.cache.get('no_reply_topics');
     if (!no_reply_topics) {
       no_reply_topics = await this.service.topic.getTopicsByQuery(
-        { reply_count: 0, tab: { $nin: [ 'job', 'dev' ] } },
+        {
+          reply_count: 0,
+          tab: {
+            $nin: [
+              'job',
+              'dev',
+            ],
+          },
+        },
         { limit: 5, sort: '-create_at' }
       );
-      await this.service.cache.setex('no_reply_topics', no_reply_topics, 60 * 1);
+      await this.service.cache.setex(
+        'no_reply_topics',
+        no_reply_topics,
+        60 * 1
+      );
     }
 
     // 取分页数据
@@ -67,17 +86,21 @@ class HomeController extends Controller {
     const viewOptions = {
       layout: 'layout.html',
     };
-    this.ctx.body = await this.ctx.renderView('index', {
-      topics,
-      current_page: page,
-      list_topic_count: limit,
-      tops,
-      no_reply_topics,
-      pages,
-      tabs: this.config.tabs,
-      tab,
-      pageTitle: tabName && (tabName + '版块'),
-    }, viewOptions);
+    await this.ctx.render(
+      'index',
+      {
+        topics,
+        current_page: page,
+        list_topic_count: limit,
+        tops,
+        no_reply_topics,
+        pages,
+        tabs: this.config.tabs,
+        tab,
+        pageTitle: tabName && tabName + '版块',
+      },
+      viewOptions
+    );
   }
 }
 
