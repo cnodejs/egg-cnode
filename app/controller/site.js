@@ -86,7 +86,7 @@ class HomeController extends Controller {
     const viewOptions = {
       layout: 'layout.html',
     };
-    this.ctx.body = await this.ctx.renderView(
+    await this.ctx.renderView(
       'index',
       {
         topics,
