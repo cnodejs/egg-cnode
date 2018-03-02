@@ -10,12 +10,18 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1519887194138_3450';
 
   // add your config here
-  config.middleware = [ 'locals' ];
+  config.middleware = [
+    'locals',
+    'authUser',
+  ];
+
+  config.authUser = {
+    enable: true,
+    match: '/',
+  };
 
   // cdn host，如 http://cnodejs.qiniudn.com
   config.site_static_host = ''; // 静态文件存储域名
-
-  config.mongodb = 'mongodb://127.0.0.1/node_club_test';
 
   // 版块
   config.tabs = [

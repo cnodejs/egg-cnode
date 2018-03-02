@@ -2,12 +2,12 @@
 
 module.exports = () => {
   // 验证用户是否登录
-  return async function (ctx, next) {
+  return async function(ctx, next) {
     // Ensure current_user always has defined.
     ctx.locals.current_user = null;
     if (ctx.app.config.debug && ctx.cookies.get('mock_user')) {
       const mockUser = JSON.parse(ctx.cookies.get('mock_user'));
-      ctx.session.user = new UserModel(mockUser);
+      ctx.session.user = new ctx.model.User(mockUser);
       if (mockUser.is_admin) {
         ctx.session.user.is_admin = true;
       }
@@ -24,8 +24,8 @@ module.exports = () => {
         return await next();
       }
 
-      var auth = auth_token.split('$$$$');
-      var user_id = auth[0];
+      const auth = auth_token.split('$$$$');
+      const user_id = auth[0];
       user = await ctx.service.user.getUserById(user_id);
     }
 
