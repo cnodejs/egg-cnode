@@ -12,9 +12,6 @@ module.exports = appInfo => {
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1519887194138_3450';
 
-  // cdn host，如 http://cnodejs.qiniudn.com
-  config.site_static_host = ''; // 静态文件存储域名
-
   // add your config here
   config.middleware = [
     'locals',
@@ -25,6 +22,9 @@ module.exports = appInfo => {
     enable: true,
     match: '/',
   };
+
+  // cdn host，如 http://cnodejs.qiniudn.com
+  config.site_static_host = ''; // 静态文件存储域名
 
   // 版块
   config.tabs = [

@@ -7,7 +7,7 @@ module.exports = () => {
     ctx.locals.current_user = null;
     if (ctx.app.config.debug && ctx.cookies.get('mock_user')) {
       const mockUser = JSON.parse(ctx.cookies.get('mock_user'));
-      ctx.session.user = new UserModel(mockUser);
+      ctx.session.user = new ctx.model.User(mockUser);
       if (mockUser.is_admin) {
         ctx.session.user.is_admin = true;
       }
