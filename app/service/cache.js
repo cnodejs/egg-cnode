@@ -16,7 +16,8 @@ class CacheService extends Service {
       logger.debug('Cache', 'get', key, (duration + 'ms').green);
       return data;
     } catch (error) {
-      throw error;
+      logger.error(error);
+      return null;
     }
   }
 
@@ -28,10 +29,9 @@ class CacheService extends Service {
     try {
       await redis.set(key, value, 'EX', seconds);
       const duration = Date.now() - t;
-      logger.debug('Cache', 'set', key, (duration + 'ms').green);
-      return;
+      logger.debug('Cache', 'set', key, (duration + 'ms').green);      
     } catch (error) {
-      throw error;
+      logger.error(error);
     }
   }
 }
