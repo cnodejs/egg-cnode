@@ -3,7 +3,6 @@
 const path = require('path');
 
 module.exports = appInfo => {
-
   const config = {};
 
   // use for cookie sign key, should change to your own and keep security

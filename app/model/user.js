@@ -56,7 +56,11 @@ module.exports = app => {
   UserSchema.index({ accessToken: 1 });
 
   UserSchema.virtual('avatar_url').get(function() {
-    let url = this.avatar || ('https://gravatar.com/avatar/' + utility.md5(this.email.toLowerCase()) + '?size=48');
+    let url =
+      this.avatar ||
+      'https://gravatar.com/avatar/' +
+        utility.md5(this.email.toLowerCase()) +
+        '?size=48';
 
     // www.gravatar.com 被墙
     url = url.replace('www.gravatar.com', 'gravatar.com');

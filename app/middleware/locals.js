@@ -11,7 +11,9 @@ module.exports = (options, app) => {
     try {
       assets = require('./assets.json');
     } catch (e) {
-      logger.error('You must execute `make build` before start app when mini_assets is true.');
+      logger.error(
+        'You must execute `make build` before start app when mini_assets is true.'
+      );
       throw e;
     }
   }
@@ -25,7 +27,6 @@ module.exports = (options, app) => {
     await next();
   };
 };
-
 
 // app.use(errorPageMiddleware.errorPage);
 // _.extend(app.locals, require('./common/render_helper'));

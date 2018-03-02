@@ -12,7 +12,7 @@ class CacheService extends Service {
       if (!data) return;
 
       data = JSON.parse(data);
-      const duration = (Date.now() - t);
+      const duration = Date.now() - t;
       logger.debug('Cache', 'get', key, (duration + 'ms').green);
       return data;
     } catch (error) {
@@ -27,7 +27,7 @@ class CacheService extends Service {
 
     try {
       await redis.set(key, value, 'EX', seconds);
-      const duration = (Date.now() - t);
+      const duration = Date.now() - t;
       logger.debug('Cache', 'set', key, (duration + 'ms').green);
       return;
     } catch (error) {
