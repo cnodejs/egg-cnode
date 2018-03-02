@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "data2xml": "^1.2.5",
     "egg": "^2.2.1",
     "egg-mongoose": "^2.1.1",
     "egg-redis": "^2.0.0",

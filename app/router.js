@@ -6,7 +6,7 @@
 module.exports = app => {
   const { router, controller, config } = app;
 
-  const { site, sign, user, auth, topic, reply } = controller;
+  const { site, sign, user, auth, topic, reply, rss } = controller;
 
   // home page
   router.get('/', site.index);
@@ -88,8 +88,8 @@ module.exports = app => {
   // router.get('/robots.txt', staticController.robots);
   // router.get('/api', staticController.api);
 
-  // // rss
-  // router.get('/rss', rss.index);
+  // rss
+  router.get('/rss', rss.index);
 
   // // github oauth
   // router.get('/auth/github', configMiddleware.github, passport.authenticate('github'));
