@@ -6,7 +6,9 @@
 module.exports = app => {
   const { router, controller, config } = app;
 
-  const { site, sign, user, auth, topic, reply, rss, search } = controller;
+  const {
+    site, sign, user, auth, topic,
+    reply, rss, search, page  } = controller;
 
   // home page
   router.get('/', site.index);
@@ -81,12 +83,12 @@ module.exports = app => {
   // router.post('/reply/:reply_id/up', auth.userRequired, reply.up); // 为评论点赞
   // router.post('/upload', auth.userRequired, topic.upload); // 上传图片
 
-  // // static
-  // router.get('/about', staticController.about);
-  // router.get('/faq', staticController.faq);
-  // router.get('/getstart', staticController.getstart);
-  // router.get('/robots.txt', staticController.robots);
-  // router.get('/api', staticController.api);
+  // static page
+  router.get('/about', page.about);
+  router.get('/faq', page.faq);
+  router.get('/getstart', page.getstart);
+  router.get('/robots.txt', page.robots);
+  router.get('/api', page.api);
 
   // rss
   router.get('/rss', rss.index);
