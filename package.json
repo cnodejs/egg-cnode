@@ -13,7 +13,6 @@
     "loader": "^2.1.1",
     "lodash.escape": "^4.0.1",
     "markdown-it": "^8.4.1",
-    "mongoose": "^5.0.7",
     "uuid": "^3.2.1",
     "validator": "^9.4.1"
   },
