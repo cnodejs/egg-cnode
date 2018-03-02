@@ -11,7 +11,6 @@ const Service = require('egg').Service;
  */
 
 class MessageService extends Service {
-
   /*
    * 根据用户ID，获取未读消息的数量
    * Callback:
@@ -19,12 +18,19 @@ class MessageService extends Service {
    * @return {Promise[messagesCount]} 承载消息列表的 Promise 对象
    */
   getMessagesCount(id) {
-    return this.ctx.model.Message.count({ master_id: id, has_read: false }).exec();
+    return this.ctx.model.Message.count({
+      master_id: id,
+      has_read: false,
+    }).exec();
   }
 
   async getMessageRelations(message) {
-    if (message.type === 'reply' || message.type === 'reply2' || message.type === 'at') {
-      const [author, topic, reply] = await Promise.all([
+    if (
+      message.type === 'reply' ||
+      message.type === 'reply2' ||
+      message.type === 'at'
+    ) {
+      const [ author, topic, reply ] = await Promise.all([
         this.services.user.getUserById(message.author_id),
         this.services.topic.getTopicById(message.topic_id),
         this.services.reply.getReplyById(message.reply_id),
@@ -61,8 +67,10 @@ class MessageService extends Service {
    */
   getReadMessagesByUserId(userId) {
     const query = { master_id: userId, has_read: true };
-    return this.ctx.model.Message.find(query, null,
-      { sort: '-create_at', limit: 20 }).exec();
+    return this.ctx.model.Message.find(query, null, {
+      sort: '-create_at',
+      limit: 20,
+    }).exec();
   }
 
   /*
@@ -72,8 +80,9 @@ class MessageService extends Service {
    */
   getUnreadMessagesByUserId(userId) {
     const query = { master_id: userId, has_read: false };
-    return this.ctx.model.Message.find(query, null,
-      { sort: '-create_at' }).exec();
+    return this.ctx.model.Message.find(query, null, {
+      sort: '-create_at',
+    }).exec();
   }
 
   /*
@@ -85,7 +94,7 @@ class MessageService extends Service {
       return;
     }
 
-    const ids = messages.map(function (m) {
+    const ids = messages.map(function(m) {
       return m.id;
     });
 
@@ -111,4 +120,3 @@ class MessageService extends Service {
 }
 
 module.exports = MessageService;
-

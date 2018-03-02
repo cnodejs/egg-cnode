@@ -99,7 +99,11 @@ class UserService extends Service {
   }
 
   makeGravatar(email) {
-    return 'http://www.gravatar.com/avatar/' + utility.md5(email.toLowerCase()) + '?size=48';
+    return (
+      'http://www.gravatar.com/avatar/' +
+      utility.md5(email.toLowerCase()) +
+      '?size=48'
+    );
   }
 
   getGravatar(user) {

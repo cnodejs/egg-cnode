@@ -27,20 +27,30 @@ md.set({
 
 md.renderer.rules.fence = function(tokens, idx) {
   const token = tokens[idx];
-  let language = token.info && ('language-' + token.info) || '';
+  let language = (token.info && 'language-' + token.info) || '';
   language = validator.escape(language);
 
-  return '<pre class="prettyprint ' + language + '">'
-    + '<code>' + validator.escape(token.content) + '</code>'
-    + '</pre>';
+  return (
+    '<pre class="prettyprint ' +
+    language +
+    '">' +
+    '<code>' +
+    validator.escape(token.content) +
+    '</code>' +
+    '</pre>'
+  );
 };
 
-md.renderer.rules.code_block = function(tokens, idx /* , options*/) {
+md.renderer.rules.code_block = function(tokens, idx /* , options */) {
   const token = tokens[idx];
 
-  return '<pre class="prettyprint">'
-    + '<code>' + validator.escape(token.content) + '</code>'
-    + '</pre>';
+  return (
+    '<pre class="prettyprint">' +
+    '<code>' +
+    validator.escape(token.content) +
+    '</code>' +
+    '</pre>'
+  );
 };
 
 const myxss = new jsxss.FilterXSS({
@@ -53,13 +63,20 @@ const myxss = new jsxss.FilterXSS({
 });
 
 exports.markdown = function(text) {
-  return '<div class="markdown-text">' + myxss.process(md.render(text || '')) + '</div>';
+  return (
+    '<div class="markdown-text">' +
+    myxss.process(md.render(text || '')) +
+    '</div>'
+  );
 };
 
 exports.escapeSignature = function(signature) {
-  return signature.split('\n').map(function(p) {
-    return _.escape(p);
-  }).join('<br>');
+  return signature
+    .split('\n')
+    .map(function(p) {
+      return _.escape(p);
+    })
+    .join('<br>');
 };
 
 exports.staticFile = function(filePath) {

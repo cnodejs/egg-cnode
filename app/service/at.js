@@ -25,7 +25,7 @@ class AtService extends Service {
       text = text.replace(ignore_regex, '');
     });
 
-    const results = text.match(/@[a-z0-9\-_]+\b/igm);
+    const results = text.match(/@[a-z0-9\-_]+\b/gim);
     const names = [];
     if (results) {
       for (let i = 0, l = results.length; i < l; i++) {
@@ -35,7 +35,9 @@ class AtService extends Service {
         names.push(s);
       }
     }
-    return [ ...new Set(names) ];
+    return [
+      ...new Set(names),
+    ];
   }
 
   /*
@@ -52,9 +54,16 @@ class AtService extends Service {
       return !user._id.equals(authorId);
     });
 
-    return Promise.all(users.map(user => {
-      return this.service.message.sendAtMessage(user._id, authorId, topicId, reply_id);
-    }));
+    return Promise.all(
+      users.map(user => {
+        return this.service.message.sendAtMessage(
+          user._id,
+          authorId,
+          topicId,
+          reply_id
+        );
+      })
+    );
   }
 
   /**
@@ -66,7 +75,10 @@ class AtService extends Service {
     const users = AtService.fetchUsers(text);
     for (let i = 0; i < users.length; i++) {
       const name = users[i];
-      text = text.replace(new RegExp('@' + name + '\\b(?!\\])', 'g'), '[@' + name + '](/user/' + name + ')');
+      text = text.replace(
+        new RegExp('@' + name + '\\b(?!\\])', 'g'),
+        '[@' + name + '](/user/' + name + ')'
+      );
     }
     return text;
   }

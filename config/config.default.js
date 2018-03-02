@@ -3,7 +3,6 @@
 const path = require('path');
 
 module.exports = appInfo => {
-
   const config = {};
 
   // debug 为 true 时，用于本地调试

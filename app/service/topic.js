@@ -52,15 +52,17 @@ class TopicService extends Service {
       return [];
     }
 
-    await Promise.all(topics.map(async topic => {
-      const { author, reply } = await Promise.all([
-        this.service.user.getUserById(topic.author_id),
-        // 获取主题的最后回复
-        this.service.reply.getReplyById(topic.last_reply),
-      ]);
-      topic.author = author;
-      topic.reply = reply;
-    }));
+    await Promise.all(
+      topics.map(async topic => {
+        const { author, reply } = await Promise.all([
+          this.service.user.getUserById(topic.author_id),
+          // 获取主题的最后回复
+          this.service.reply.getReplyById(topic.last_reply),
+        ]);
+        topic.author = author;
+        topic.reply = reply;
+      })
+    );
 
     return topics.filter(item => {
       // 删除不合规的 topic
@@ -102,12 +104,7 @@ class TopicService extends Service {
     }
 
     const replies = await this.service.reply.getRepliesByTopicId(topic._id);
-    return [
-      '',
-      topic,
-      author,
-      replies,
-    ];
+    return [ '', topic, author, replies ];
   }
 
   /*
