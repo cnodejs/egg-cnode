@@ -8,13 +8,12 @@ module.exports = app => {
 
   const { site, sign, user, auth, topic, reply } = controller;
 
-  // home pageyarn d
+  // home page
   router.get('/', site.index);
-
   // sitemap
   router.get('/sitemap.xml', site.sitemap);
-  // // mobile app download
-  // router.get('/app/download', site.appDownload);
+  // mobile app download
+  router.get('/app/download', site.appDownload);
 
   // // sign controller
   // if (config.allow_sign_up) {
