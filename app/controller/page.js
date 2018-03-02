@@ -7,7 +7,7 @@ class PageController extends Controller {
     await this.ctx.render(
       'static/about',
       {
-        pageTitle: '关于我们'
+        pageTitle: '关于我们',
       },
       {
         layout: 'layout.html',
@@ -21,15 +21,15 @@ class PageController extends Controller {
       {
         layout: 'layout.html',
       });
-  };
+  }
 
   async getstart() {
     await this.ctx.render('static/getstart', {
-      pageTitle: 'Node.js 新手入门'
-    },{
-        layout: 'layout.html',
-      });
-  };
+      pageTitle: 'Node.js 新手入门',
+    }, {
+      layout: 'layout.html',
+    });
+  }
 
   async robots() {
     this.ctx.type = 'text';

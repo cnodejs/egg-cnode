@@ -8,7 +8,7 @@ module.exports = app => {
 
   const {
     site, sign, user, auth, topic,
-    reply, rss, search, page  } = controller;
+    reply, rss, search, page } = controller;
 
   // home page
   router.get('/', site.index);
