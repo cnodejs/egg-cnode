@@ -5,6 +5,8 @@ const path = require('path');
 module.exports = appInfo => {
   const config = {};
 
+  // debug 为 true 时，用于本地调试
+  config.debug = true;
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1519887194138_3450';
 

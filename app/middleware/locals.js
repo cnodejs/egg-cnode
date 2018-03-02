@@ -27,10 +27,3 @@ module.exports = (options, app) => {
     await next();
   };
 };
-
-// app.use(errorPageMiddleware.errorPage);
-// _.extend(app.locals, require('./common/render_helper'));
-// app.use(function (req, res, next) {
-//   res.locals.csrf = req.csrfToken ? req.csrfToken() : '';
-//   next();
-// });
