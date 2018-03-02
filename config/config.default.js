@@ -8,22 +8,22 @@ module.exports = appInfo => {
 
   // debug 为 true 时，用于本地调试
   config.debug = true;
+
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1519887194138_3450';
 
-  // add your config here
-  config.middleware = [ 'locals' ];
   // cdn host，如 http://cnodejs.qiniudn.com
   config.site_static_host = ''; // 静态文件存储域名
 
-  config.mongodb = 'mongodb://127.0.0.1/node_club_test';
+  // add your config here
+  config.middleware = [
+    'locals',
+    'authUser',
+  ];
 
-  // redis 配置，默认是本地
-  config.redis = {
-    port: 6379,
-    host: '127.0.0.1',
-    db: 0,
-    password: '',
+  config.authUser = {
+    enable: true,
+    match: '/',
   };
 
   // 版块
