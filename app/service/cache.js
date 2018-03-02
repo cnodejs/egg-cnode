@@ -31,7 +31,6 @@ class CacheService extends Service {
       logger.debug('Cache', 'set', key, (duration + 'ms').green);
       return;
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }

@@ -1,0 +1,48 @@
+'use strict';
+
+const BaseModel = require('../common/base_model');
+
+module.exports = app => {
+  const mongoose = app.mongoose;
+  const Schema = mongoose.Schema;
+  const ObjectId = Schema.ObjectId;
+  const config = app.config;
+
+  const TopicSchema = new Schema({
+    title: { type: String },
+    content: { type: String },
+    author_id: { type: ObjectId },
+    top: { type: Boolean, default: false }, // 置顶帖
+    good: { type: Boolean, default: false }, // 精华帖
+    lock: { type: Boolean, default: false }, // 被锁定主题
+    reply_count: { type: Number, default: 0 },
+    visit_count: { type: Number, default: 0 },
+    collect_count: { type: Number, default: 0 },
+    create_at: { type: Date, default: Date.now },
+    update_at: { type: Date, default: Date.now },
+    last_reply: { type: ObjectId },
+    last_reply_at: { type: Date, default: Date.now },
+    content_is_html: { type: Boolean },
+    tab: { type: String },
+    deleted: { type: Boolean, default: false },
+  });
+
+  TopicSchema.plugin(BaseModel);
+  TopicSchema.index({ create_at: -1 });
+  TopicSchema.index({ top: -1, last_reply_at: -1 });
+  TopicSchema.index({ author_id: 1, create_at: -1 });
+
+  TopicSchema.virtual('tabName').get(function() {
+    const tab = this.tab;
+    const pair = config.tabs.find(function(_pair) {
+      return _pair[0] === tab;
+    });
+
+    if (pair) {
+      return pair[1];
+    }
+    return '';
+  });
+
+  return mongoose.model('Topic', TopicSchema);
+};

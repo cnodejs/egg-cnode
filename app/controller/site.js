@@ -1,7 +1,6 @@
 'use strict';
 
 const moment = require('moment');
-
 const Controller = require('egg').Controller;
 
 class HomeController extends Controller {
