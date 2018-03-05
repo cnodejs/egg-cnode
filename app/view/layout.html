@@ -52,9 +52,9 @@
   .done(assets, config.site_static_host, config.mini_assets)
   %>
 
-  <% if (typeof(topic) !== 'undefined') { %>
+  <% if (typeof topic !== 'undefined') { %>
   <title><%= topic.title %> - <%= config.name %></title>
-  <% } else if (typeof(pageTitle) !== 'undefined') { %>
+  <% } else if (typeof pageTitle !== 'undefined') { %>
   <title><%= pageTitle %> - <%= config.name %></title>
   <% } else { %>
   <title><%= config.description %></title>
