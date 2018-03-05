@@ -28,10 +28,18 @@ module.exports = app => {
   //   });
   // }
 
-  // router.post('/signout', sign.signout); // 登出
-  // router.get('/signin', sign.showLogin); // 进入登录页面
-  // router.post('/signin', sign.login); // 登录校验
+  const localStrategy = app.passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/signin',
+  });
+
+  router.get('/signin', sign.showLogin); // 进入登录页面
+  router.post('/passport/local', localStrategy);
+  router.all('/signout', sign.signout); // 登出
   // router.get('/active_account', sign.activeAccount); // 帐号激活
+
+  // github oauth
+  app.passport.mount('github');
 
   // router.get('/search_pass', sign.showSearchPass); // 找回密码页面
   // router.post('/search_pass', sign.updateSearchPass); // 更新密码
@@ -92,14 +100,6 @@ module.exports = app => {
 
   // rss
   router.get('/rss', rss.index);
-
-  // // github oauth
-  // router.get('/auth/github', configMiddleware.github, passport.authenticate('github'));
-  // router.get('/auth/github/callback',
-  //   passport.authenticate('github', { failureRedirect: '/signin' }),
-  //   github.callback);
-  // router.get('/auth/github/new', github.new);
-  // router.post('/auth/github/create', limit.peripperday('create_user_per_ip', config.create_user_per_ip, { showJson: false }), github.create);
 
   router.get('/search', search.index);
 };
