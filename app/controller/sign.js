@@ -9,7 +9,6 @@ class SignController extends Controller {
     const options = {
       layout: 'layout.html',
     };
-    console.log(ctx.session);
     await ctx.render('/sign/signin', data, options);
   }
 
