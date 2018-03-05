@@ -63,12 +63,12 @@ module.exports = app => {
   // // message controler
   // router.get('/my/messages', auth.userRequired, message.index); // 用户个人的所有消息页
 
-  // // topic
+  // topic
 
   // // 新建文章界面
   // router.get('/topic/create', auth.userRequired, topic.create);
 
-  // router.get('/topic/:tid', topic.index); // 显示某个话题
+  router.get('/topic/:tid', topic.index); // 显示某个话题
   // router.post('/topic/:tid/top', auth.adminRequired, topic.top); // 将某话题置顶
   // router.post('/topic/:tid/good', auth.adminRequired, topic.good); // 将某话题加精
   // router.get('/topic/:tid/edit', auth.userRequired, topic.showEdit); // 编辑某话题
