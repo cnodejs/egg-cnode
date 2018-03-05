@@ -65,14 +65,7 @@ module.exports = app => {
 
   app.passport.verify(async (ctx, user) => {
     ctx.logger.debug('passport.verify', user);
-    let handler;
-    switch (user.provider) {
-      case 'github':
-        handler = githubHandler;
-        break;
-      default:
-        handler = localHandler;
-    }
+    const handler = user.provider === 'github' ? githubHandler : localHandler;
     return handler(ctx, user);
   });
 };
