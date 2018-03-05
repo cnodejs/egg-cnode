@@ -15,3 +15,13 @@ exports.mongoose = {
     server: { poolSize: 20 },
   },
 };
+
+exports.passportGithub = {
+  key: process.env.EGG_PASSPORT_GITHUB_CLIENT_ID || 'test',
+  secret: process.env.EGG_PASSPORT_GITHUB_CLIENT_SECRET || 'test',
+};
+
+exports.passportLocal = {
+  usernameField: 'name',
+  passwordField: 'pass',
+};
