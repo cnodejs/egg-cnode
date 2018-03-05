@@ -113,7 +113,7 @@ class HomeController extends Controller {
     let sitemapData = await this.service.cache.get('sitemap');
     if (!sitemapData) {
       const topics = await this.service.topic.getLimit5w();
-      topics.forEach(function(topic) {
+      topics.forEach(topic => {
         urlset.ele('url').ele('loc', 'http://cnodejs.org/topic/' + topic._id);
       });
       sitemapData = urlset.end();
