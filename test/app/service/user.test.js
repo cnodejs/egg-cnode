@@ -2,7 +2,7 @@
 
 const { app, assert } = require('egg-mock/bootstrap');
 
-describe('user service', () => {
+describe('test/app/service/user.test.js', () => {
   let loginname,
     email;
   before(async function() {
