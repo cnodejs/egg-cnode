@@ -84,24 +84,20 @@ class HomeController extends Controller {
     }
 
     const tabName = this.ctx.helper.tabName(tab);
-    const viewOptions = {
-      layout: 'layout.html',
+
+    const locals = {
+      topics,
+      current_page: page,
+      list_topic_count: limit,
+      tops,
+      no_reply_topics,
+      pages,
+      tabs: this.config.tabs,
+      tab,
+      pageTitle: tabName && tabName + '版块',
     };
-    await this.ctx.render(
-      'index',
-      {
-        topics,
-        current_page: page,
-        list_topic_count: limit,
-        tops,
-        no_reply_topics,
-        pages,
-        tabs: this.config.tabs,
-        tab,
-        pageTitle: tabName && tabName + '版块',
-      },
-      viewOptions
-    );
+
+    await this.ctx.render('index', locals);
   }
 
   async sitemap() {

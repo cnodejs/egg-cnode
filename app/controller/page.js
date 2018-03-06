@@ -4,31 +4,16 @@ const Controller = require('egg').Controller;
 
 class PageController extends Controller {
   async about() {
-    await this.ctx.render(
-      'static/about',
-      {
-        pageTitle: '关于我们',
-      },
-      {
-        layout: 'layout.html',
-      }
-    );
+    await this.ctx.render('static/about', { pageTitle: '关于我们' });
   }
 
   // FAQ
   async faq() {
-    await this.ctx.render('static/faq', {},
-      {
-        layout: 'layout.html',
-      });
+    await this.ctx.render('static/faq');
   }
 
   async getstart() {
-    await this.ctx.render('static/getstart', {
-      pageTitle: 'Node.js 新手入门',
-    }, {
-      layout: 'layout.html',
-    });
+    await this.ctx.render('static/getstart', { pageTitle: 'Node.js 新手入门' });
   }
 
   async robots() {
@@ -43,10 +28,7 @@ class PageController extends Controller {
   }
 
   async api() {
-    await this.ctx.render('static/api', {},
-      {
-        layout: 'layout.html',
-      });
+    await this.ctx.render('static/api');
   }
 
 }
