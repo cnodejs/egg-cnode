@@ -2,8 +2,8 @@
 
 module.exports = () => {
   return async function errorPage(ctx, next) {
+    await next();
     if (ctx.status === 404 && !ctx.body) {
-      await next();
       const { message } = ctx;
       if (ctx.acceptJSON) {
         ctx.body = { error: 'Not Found' };
