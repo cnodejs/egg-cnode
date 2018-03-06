@@ -28,6 +28,28 @@ $ npm run dev
 $ open http://localhost:7001/
 ```
 
+### Develop with docker
+Requirements:
+
+- docker
+- docker-compose
+
+```bash
+docker-compose up
+```
+
+Change github id and secret:
+
+```js
+// {APP_ROOT}/config/config.prod.js
+exports.passportGithub = {
+  key: process.env.EGG_PASSPORT_GITHUB_CLIENT_ID || '',
+  secret: process.env.EGG_PASSPORT_GITHUB_CLIENT_SECRET || '',
+};
+```
+
+Open: [http://localhost:7001](http://localhost:7001)
+
 ### Deploy
 
 ```bash
