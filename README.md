@@ -1,6 +1,6 @@
 # cnode
 
-
+[![Build Status](https://travis-ci.org/cnodejs/egg-cnode.svg?branch=master)](https://travis-ci.org/cnodejs/egg-cnode)
 
 ## QuickStart
 
