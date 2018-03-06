@@ -1,0 +1,58 @@
+version: '3'
+services: 
+  cnode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # args:
+      #   - env=value
+    environment:
+      - NODE_ENV=production
+      - EGG_SERVER_ENV=prod
+      - EGG_REDIS_DB=0
+      - EGG_REDIS_HOST=redis
+      - EGG_REDIS_PORT=6379
+      - EGG_REDIS_PASSWORD=egg_cnode
+      - EGG_MONGODB_URL=mongodb://egg_cnode:egg_cnode@mongodb:27017/egg_cnode
+      - EGG_PASSPORT_GITHUB_CLIENT_ID=test
+      - EGG_PASSPORT_GITHUB_CLIENT_SECRET=test
+    depends_on:
+      - redis
+      - mongodb
+    networks:
+      - docker_cnode
+    ports:
+      - 7001:7001
+
+  redis:
+    image: redis:3.2-alpine
+    command: redis-server --appendonly yes --requirepass egg_cnode
+    volumes:
+      - egg-redis:/data
+    networks:
+      - docker_cnode
+    ports:
+      - 6379:6379
+
+  mongodb:
+    image: mongo:3.2
+    restart: always
+    environment:      
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=mongodb
+      - MONGO_INITDB_DATABASE=egg_cnode
+    volumes:
+      - egg-mongo:/data/db
+      - ./init.d/mongo/docker-entrypoint-initdb.d
+    networks:
+      - docker_cnode
+    ports:
+      - 27017:27017
+
+volumes:
+  egg-mongo:
+  egg-redis:
+
+networks:
+  docker_cnode:
+    driver: bridge    
