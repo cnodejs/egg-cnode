@@ -48,6 +48,7 @@ module.exports = app => {
   // router.post('/reset_pass', sign.updatePass); // 更新密码
 
   // user controller
+  router.redirect('/user', '/user/user', 302);
   router.get('/user/:name', user.index); // 用户个人主页
   router.get('/setting', userRequired, user.showSetting); // 用户个人设置页
   router.post('/setting', userRequired, user.setting); // 提交个人信息设置

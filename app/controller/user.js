@@ -13,9 +13,9 @@ class UserController extends Controller {
     const user_name = ctx.params.name;
     const user = await ctx.service.user.getUserByLoginName(user_name);
     if (!user) {
-      ctx.status = 404;
-      ctx.message = '这个用户不存在。';
-      return;
+      // ctx.status = 404;
+      // ctx.message = '这个用户不存在。';
+      return await ctx.render('user/index');
     }
 
     let query = { author_id: user._id };
