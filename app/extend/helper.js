@@ -1,14 +1,4 @@
-/* !
- * nodeclub - common/render_helpers.js
- * Copyright(c) 2013 fengmk2 <fengmk2@gmail.com>
- * MIT Licensed
- */
-
 'use strict';
-
-/**
- * Module dependencies.
- */
 
 const MarkdownIt = require('markdown-it');
 const validator = require('validator');
@@ -54,7 +44,7 @@ md.renderer.rules.code_block = (tokens, idx /* , options */) => {
 };
 
 const myxss = new jsxss.FilterXSS({
-  onIgnoreTagAttr(tag, name, value, isWhiteAttr) {
+  onIgnoreTagAttr(tag, name, value) {
     // 让 prettyprint 可以工作
     if (tag === 'pre' && name === 'class') {
       return name + '="' + jsxss.escapeAttrValue(value) + '"';
