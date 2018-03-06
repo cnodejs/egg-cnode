@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = () => {
-  /**
+  /*
    * 需要管理员权限
    */
 
