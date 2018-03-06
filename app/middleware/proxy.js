@@ -1,9 +1,9 @@
 'use strict';
 
 const urllib = require('url');
-const request = require('request');
+// const request = require('request');
 // const logger = require('../common/logger');
-const _ = require('lodash');
+// const _ = require('lodash');
 
 module.exports = () => {
   return async function proxy(ctx, next) {
@@ -18,7 +18,7 @@ module.exports = () => {
     ];
 
     ctx.locals.proxy = avatar => {
-      const { request: req, response: res } = ctx;
+      // const { request: req, response: res } = ctx;
       const url = decodeURIComponent(avatar);
       const hostname = urllib.parse(url).hostname;
 
