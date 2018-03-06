@@ -9,6 +9,8 @@ module.exports = appInfo => {
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1519887194138_3450';
 
+  config.session_secret = 'node_club_secret'; // 务必修改
+
   // add your config here
   config.middleware = [
     'locals',
