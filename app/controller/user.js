@@ -26,9 +26,7 @@ class UserController extends Controller {
       service.reply.getRepliesByAuthorId(user._id, { limit: 20, sort: '-create_at' }),
     ]);
 
-    const topic_ids = [ new new Set(...replies.map(function(reply) {
-      return reply.topic_id.toString();
-    }))() ].slice(0, 5); // 只显示最近5条
+    const topic_ids = _.uniq(...replies.map(reply => reply.topic_id.toString())).slice(0, 5); // 只显示最近5条
 
     query = { _id: { $in: topic_ids } };
     let recent_replies = await service.topic.getTopicsByQuery(query, {});
