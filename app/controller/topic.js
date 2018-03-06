@@ -1,6 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
+const _ = require('lodash');
 
 class TopicController extends Controller {
 
