@@ -5,11 +5,8 @@ const Controller = require('egg').Controller;
 class SignController extends Controller {
   async showLogin() {
     const { ctx } = this;
-    const data = {};
-    const options = {
-      layout: 'layout.html',
-    };
-    await ctx.render('/sign/signin', data, options);
+    const locals = {};
+    await ctx.render('/sign/signin', locals);
   }
 
   async signup() {

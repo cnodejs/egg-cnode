@@ -1,7 +1,5 @@
 'use strict';
 
-const path = require('path');
-
 module.exports = appInfo => {
   const config = {};
 
@@ -43,14 +41,15 @@ module.exports = appInfo => {
   };
 
   config.view = {
-    root: path.join(appInfo.baseDir, 'app/view'),
     defaultViewEngine: 'ejs',
     mapping: {
       '.html': 'ejs',
     },
   };
 
-  config.ejs = {};
+  config.ejs = {
+    layout: 'layout.html',
+  };
 
   return config;
 };
