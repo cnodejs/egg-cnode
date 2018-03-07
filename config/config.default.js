@@ -13,6 +13,8 @@ module.exports = appInfo => {
   config.middleware = [
     'locals',
     'authUser',
+    'errorPage',
+    'proxy',
   ];
 
   config.authUser = {

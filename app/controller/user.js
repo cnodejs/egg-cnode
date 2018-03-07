@@ -12,9 +12,9 @@ class UserController extends Controller {
     const user_name = ctx.params.name;
     const user = await ctx.service.user.getUserByLoginName(user_name);
     if (!user) {
-      // ctx.status = 404;
-      // ctx.message = '这个用户不存在。';
-      return await ctx.render('user/index');
+      ctx.status = 404;
+      ctx.message = '这个用户不存在。';
+      return;
     }
 
     let query = { author_id: user._id };
@@ -26,9 +26,8 @@ class UserController extends Controller {
       service.reply.getRepliesByAuthorId(user._id, { limit: 20, sort: '-create_at' }),
     ]);
 
-    const topic_ids = [ new new Set(...replies.map(function(reply) {
-      return reply.topic_id.toString();
-    }))() ].slice(0, 5); // 只显示最近5条
+    // 只显示最近5条
+    const topic_ids = [ ...new Set(replies.map(reply => reply.topic_id.toString())) ].slice(0, 5);
 
     query = { _id: { $in: topic_ids } };
     let recent_replies = await service.topic.getTopicsByQuery(query, {});

@@ -12,7 +12,7 @@
   <div class='panel'>
     <div class="header"><%=user.loginname%> 创建的话题</div>
     <div class="inner padding">
-    <% if(typeof(topics) !== 'undefined' && topics.length > 0 ){ %>
+    <% if(typeof topics !== 'undefined' && topics.length > 0 ){ %>
       <%- partial('../topic/list',
       { topics: topics, pages: pages, current_pages: current_page, base: '/user/'+user.loginname+'/topics' }) %>
     <% }else{ %>
