@@ -10,7 +10,8 @@ describe('test/app/service/reply.test.js', () => {
     userId,
     topicId,
     email;
-  before(async function() {
+
+  before(async () => {
     ctx = app.mockContext();
     replyService = ctx.service.reply;
     loginname = `loginname_${Date.now()}`;
@@ -34,13 +35,10 @@ describe('test/app/service/reply.test.js', () => {
   });
 
   it('getReplyById should ok', async () => {
-    const result = await replyService.getReplyById(replyId);
-    assert.equal(result._id.toString(), replyId);
-  });
-
-  it('getReplyById return null when reply id is empty', async () => {
-    const result = await replyService.getReplyById();
-    assert(result === null);
+    const result1 = await replyService.getReplyById(replyId);
+    assert.equal(result1._id.toString(), replyId);
+    const result2 = await replyService.getReplyById();
+    assert(result2 === null);
   });
 
   it('getRepliesByTopicId should ok', async () => {
