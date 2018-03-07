@@ -20,6 +20,7 @@ class TopicService extends Service {
     const author = await this.service.user.getUserById(topic.author_id);
 
     let last_reply = null;
+    console.log(topic);
     if (topic.last_reply) {
       last_reply = await this.service.reply.getReplyById(topic.last_reply);
     }
@@ -54,7 +55,7 @@ class TopicService extends Service {
 
     await Promise.all(
       topics.map(async topic => {
-        const { author, reply } = await Promise.all([
+        const [ author, reply ] = await Promise.all([
           this.service.user.getUserById(topic.author_id),
           // 获取主题的最后回复
           this.service.reply.getReplyById(topic.last_reply),
