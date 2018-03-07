@@ -2,7 +2,7 @@
 
 const { app, assert } = require('egg-mock/bootstrap');
 
-describe('test/app/service/topic.test.js', async () => {
+describe('test/app/service/topic.test.js', () => {
   let ctx;
   let topic;
   let topicId;
