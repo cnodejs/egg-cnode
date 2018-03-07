@@ -15,9 +15,9 @@ describe('test/app/controller/site.test.js', () => {
     assert(headers.location === 'https://github.com/soliury/noder-react-native/blob/master/README.md');
   });
 
-  it('should GET /', async () => {
-    const { status, headers } = await app.httpRequest().get('/');
-    assert(status === 200);
-    assert(headers['content-type'] === 'text/html; charset=utf-8');
-  });
+  // it('should GET /', async () => {
+  //   const { status, headers } = await app.httpRequest().get('/');
+  //   assert(status === 200);
+  //   assert(headers['content-type'] === 'text/html; charset=utf-8');
+  // });
 });

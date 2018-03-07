@@ -67,7 +67,7 @@ module.exports = app => {
   // topic
 
   // // 新建文章界面
-  // router.get('/topic/create', userRequired, topic.create);
+  router.get('/topic/create', userRequired, topic.create);
 
   router.get('/topic/:tid', topic.index); // 显示某个话题
   // router.post('/topic/:tid/top', adminRequired, topic.top); // 将某话题置顶
