@@ -9,17 +9,17 @@
       </ul>
     </div>
     <div class='inner'>
-      <% if (typeof(error) !== 'undefined' && error) { %>
+      <% if (typeof error !== 'undefined' && error) { %>
       <div class="alert alert-error">
         <strong><%= error %></strong>
       </div>
       <% } %>
-      <% if (typeof(success) !== 'undefined' && success) { %>
+      <% if (typeof success !== 'undefined' && success) { %>
       <div class="alert alert-success">
         <strong><%= success %></strong>
       </div>
       <% } %>
-      <a href="<%- typeof(referer) !== 'undefined' ? referer : '/' %>"><span class="span-common">返回</span></a>
+      <a href="<%- typeof referer !== 'undefined' ? referer : '/' %>"><span class="span-common">返回</span></a>
     </div>
   </div>
 </div>

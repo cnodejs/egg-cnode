@@ -73,7 +73,7 @@
           Email (Seen by Administrator): <a href="mailto:<%= user.email %>"><%= user.email %></a>
 
           <% if (!user.active) { %>
-          <a href="/active_account?key=<%- typeof(token) !== 'undefined' && token %>&name=<%= user.loginname %>"
+          <a href="/active_account?key=<%- typeof token !== 'undefined' && token %>&name=<%= user.loginname %>"
              target="_blank">
             <span class="span-common">
               激活账号
@@ -89,7 +89,7 @@
     <div class="header">
       <span class="col_fade">最近创建的话题</span>
     </div>
-    <% if (typeof(recent_topics) !== 'undefined' && recent_topics.length > 0) { %>
+    <% if (typeof recent_topics !== 'undefined' && recent_topics.length > 0) { %>
       <%- partial('../topic/abstract', { collection: recent_topics, as: 'topic' }) %>
       <div class='cell more'>
         <a class='dark' href="/user/<%= user.loginname %>/topics">查看更多»</a>
@@ -104,7 +104,7 @@
     <div class="header">
       <span class="col_fade">最近参与的话题</span>
     </div>
-    <% if (typeof(recent_replies) !== 'undefined' && recent_replies.length > 0) { %>
+    <% if (typeof recent_replies !== 'undefined' && recent_replies.length > 0) { %>
       <%- partial('../topic/abstract', { collection: recent_replies, as: 'topic' }) %>
       <div class='cell more'>
         <a class='dark' href="/user/<%= user.loginname %>/replies">查看更多»</a>
