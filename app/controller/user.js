@@ -2,7 +2,8 @@
 
 const _ = require('lodash');
 const utility = require('utility');
-
+const tools = require('../common/tools');
+const validator = require('validator');
 const Controller = require('egg').Controller;
 
 class UserController extends Controller {
@@ -196,13 +197,11 @@ class UserController extends Controller {
   }
 
   async setting() {
-    var ep = new EventProxy();
-    ep.fail(next);
-
+    const { ctx, ctx: { request: req, response: res }, service } = this;
     // 显示出错或成功信息
-    function showMessage(msg, data, isSuccess) {
+    async function showMessage(msg, data, isSuccess) {
       data = data || req.body;
-      var data2 = {
+      const user = {
         loginname: data.loginname,
         email: data.email,
         url: data.url,
@@ -212,59 +211,49 @@ class UserController extends Controller {
         accessToken: data.accessToken,
       };
       if (isSuccess) {
-        data2.success = msg;
+        user.success = msg;
       } else {
-        data2.error = msg;
+        user.error = msg;
       }
-      res.render('user/setting', data2);
+      return await ctx.render('user/setting', { user });
     }
 
     // post
-    var action = req.body.action;
+    const { body, body: action } = req;
     if (action === 'change_setting') {
-      var url = validator.trim(req.body.url);
-      var location = validator.trim(req.body.location);
-      var weibo = validator.trim(req.body.weibo);
-      var signature = validator.trim(req.body.signature);
+      const url = validator.trim(body.url);
+      const location = validator.trim(body.location);
+      const weibo = validator.trim(body.weibo);
+      const signature = validator.trim(body.signature);
 
-      User.getUserById(req.session.user._id, ep.done(function (user) {
-        user.url = url;
-        user.location = location;
-        user.signature = signature;
-        user.weibo = weibo;
-        user.save(function (err) {
-          if (err) {
-            return next(err);
-          }
-          req.session.user = user.toObject({virtual: true});
-          return res.redirect('/setting?save=success');
-        });
-      }));
+      const user = await service.user.getUserById(req.session.user._id);
+      user.url = url;
+      user.location = location;
+      user.signature = signature;
+      user.weibo = weibo;
+      user.save();
+
+      ctx.session.passport.user = user.toObject({ virtual: true });
+      return ctx.redirect('/setting?save=success');
     }
+
     if (action === 'change_password') {
-      var old_pass = validator.trim(req.body.old_pass);
-      var new_pass = validator.trim(req.body.new_pass);
-      if (!old_pass || !new_pass) {
+      const oldPass = validator.trim(req.body.old_pass);
+      const newPass = validator.trim(req.body.new_pass);
+      if (!oldPass || !newPass) {
         return res.send('旧密码或新密码不得为空');
       }
 
-      User.getUserById(req.session.user._id, ep.done(function (user) {
-        tools.bcompare(old_pass, user.pass, ep.done(function (bool) {
-          if (!bool) {
-            return showMessage('当前密码不正确。', user);
-          }
+      const user = service.user.getUserById(req.session.passport.user._id);
+      const equal = tools.bcompare(oldPass, user.pass);
+      if (!equal) {
+        return showMessage('当前密码不正确。', user);
+      }
 
-          tools.bhash(new_pass, ep.done(function (passhash) {
-            user.pass = passhash;
-            user.save(function (err) {
-              if (err) {
-                return next(err);
-              }
-              return showMessage('密码已被修改。', user, true);
-            });
-          }));
-        }));
-      }));
+      const newPassHash = tools.bhash(newPass);
+      user.pass = newPassHash;
+      user.save();
+      return showMessage('密码已被修改。', user, true);
     }
   }
 }
