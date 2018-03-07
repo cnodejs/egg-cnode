@@ -22,6 +22,9 @@ module.exports = appInfo => {
     match: '/',
   };
 
+  // 是否允许直接注册（否则只能走 github 的方式）
+  config.allow_sign_up = true;
+
   // cdn host，如 http://cnodejs.qiniudn.com
   config.site_static_host = ''; // 静态文件存储域名
 

@@ -14,7 +14,6 @@
 [snyk-image]: https://snyk.io/test/github/cnodejs/egg-cnode/badge.svg?style=flat-square
 [snyk-url]: https://snyk.io/test/github/cnodejs/egg-cnode
 
-
 ## QuickStart
 
 <!-- add docs here for user -->
