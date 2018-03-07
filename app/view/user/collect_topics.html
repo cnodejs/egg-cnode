@@ -1,4 +1,4 @@
-<%- partial('../sidebar') %>
+<%- include('../sidebar.html') %>
 
 <div id='content'>
   <div class='panel'>
@@ -10,7 +10,7 @@
     </div>
     <div class='inner no-padding'>
       <% if (topics.length > 0) { %>
-        <%- partial('../topic/list', { topics: topics, pages: pages, current_pages: current_page, base: '/user/' +
+        <%- include('../topic/list.html', { topics: topics, pages: pages, current_pages: current_page, base: '/user/' +
           user.loginname + '/collections' }) %>
       <% } else { %>
         <p>找不到话题 (T_T)</p>

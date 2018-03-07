@@ -65,5 +65,10 @@ module.exports = appInfo => {
     'www.google-analytics.com',
   ];
 
+  config.auth_cookie_name = 'node_club';
+  config.admins = {
+    ADMIN_USER: true,
+  };
+
   return config;
 };

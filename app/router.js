@@ -9,7 +9,7 @@ module.exports = app => {
   const { site, sign, user, topic, rss, search, page } = controller;
 
   const userRequired = middleware.userRequired();
-  const adminRequired = middleware.adminRequired();
+  // const adminRequired = middleware.adminRequired();
 
   // home page
   router.get('/', site.index);

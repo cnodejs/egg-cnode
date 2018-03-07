@@ -6,7 +6,7 @@
       <span class='col_fade'>个人信息</span>
     </div>
     <div class='inner'>
-      <%-  include('../user/card.html', { object: typeof user === 'undefined' ? current_user : user, as: 'user' }) %>
+      <%-  include('./user/card.html', { user: typeof user === 'undefined' ? current_user : user }) %>
     </div>
     <% } else { %>
     <div class='inner'>
@@ -50,7 +50,7 @@
     <div class='inner'>
       <% if (no_reply_topics.length > 0) { %>
       <ul class="unstyled">
-        <%- include('topic/small', { collection: no_reply_topics, as: 'topic' }) %>
+        <%- include('topic/small', { topic: no_reply_topics }) %>
       </ul>
       <% } else { %>
       <p>无</p>

@@ -14,11 +14,7 @@ module.exports = () => {
       return await next();
     }
 
-    // TODO:
-    // If use current_user in locals, should use ctx.session.passport.user and
-    // save cookies, config auth_cookie_name.
-
-    let user = ctx.session.user;
+    let { user } = ctx.session;
     if (user) {
       const auth_token = ctx.cookies.get(ctx.app.config.auth_cookie_name, {
         signed: true,
@@ -41,7 +37,7 @@ module.exports = () => {
       user.is_admin = true;
     }
 
-    const count = await this.service.message.getMessagesCount(user._id);
+    const count = await ctx.service.message.getMessagesCount(user._id);
     user.messages_count = count;
     ctx.session.user = user;
     ctx.locals.current_user = user;
