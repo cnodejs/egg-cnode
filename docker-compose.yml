@@ -43,7 +43,7 @@ services:
       - MONGO_INITDB_DATABASE=egg_cnode
     volumes:
       - egg-mongo:/data/db
-      - ./init.d/mongo/docker-entrypoint-initdb.d
+      - ./init.d/mongo:/docker-entrypoint-initdb.d
     networks:
       - docker_cnode
     ports:
