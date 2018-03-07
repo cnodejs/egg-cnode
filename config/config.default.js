@@ -56,5 +56,15 @@ module.exports = appInfo => {
     layout: 'layout.html',
   };
 
+  config.avatars_allow_hostname = [
+    'avatars0.githubusercontent.com',
+    'avatars1.githubusercontent.com',
+    'avatars2.githubusercontent.com',
+    'avatars.githubusercontent.com',
+    'www.gravatar.com',
+    'gravatar.com',
+    'www.google-analytics.com',
+  ];
+
   return config;
 };

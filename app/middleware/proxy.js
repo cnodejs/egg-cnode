@@ -5,17 +5,10 @@ const urllib = require('url');
 // const logger = require('../common/logger');
 // const _ = require('lodash');
 
-module.exports = () => {
+module.exports = (opt, app) => {
+  const ALLOW_HOSTNAME = app.config.avatars_allow_hostname;
+
   return async function proxy(ctx, next) {
-    const ALLOW_HOSTNAME = [
-      'avatars0.githubusercontent.com',
-      'avatars1.githubusercontent.com',
-      'avatars2.githubusercontent.com',
-      'avatars.githubusercontent.com',
-      'www.gravatar.com',
-      'gravatar.com',
-      'www.google-analytics.com',
-    ];
 
     ctx.locals.proxy = avatar => {
       // const { request: req, response: res } = ctx;
