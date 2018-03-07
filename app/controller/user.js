@@ -177,6 +177,96 @@ class UserController extends Controller {
     });
   }
 
+  async showSetting() {
+    const { ctx, service } = this;
+    const id = ctx.session.passport.user._id;
+    const user = await service.user.getUserById(id);
+
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = '发生错误';
+      return;
+    }
+
+    // if (req.query.save === 'success') {
+    //   user.success = '保存成功。';
+    // }
+
+    return await ctx.render('user/setting', { user });
+  }
+
+  async setting() {
+    var ep = new EventProxy();
+    ep.fail(next);
+
+    // 显示出错或成功信息
+    function showMessage(msg, data, isSuccess) {
+      data = data || req.body;
+      var data2 = {
+        loginname: data.loginname,
+        email: data.email,
+        url: data.url,
+        location: data.location,
+        signature: data.signature,
+        weibo: data.weibo,
+        accessToken: data.accessToken,
+      };
+      if (isSuccess) {
+        data2.success = msg;
+      } else {
+        data2.error = msg;
+      }
+      res.render('user/setting', data2);
+    }
+
+    // post
+    var action = req.body.action;
+    if (action === 'change_setting') {
+      var url = validator.trim(req.body.url);
+      var location = validator.trim(req.body.location);
+      var weibo = validator.trim(req.body.weibo);
+      var signature = validator.trim(req.body.signature);
+
+      User.getUserById(req.session.user._id, ep.done(function (user) {
+        user.url = url;
+        user.location = location;
+        user.signature = signature;
+        user.weibo = weibo;
+        user.save(function (err) {
+          if (err) {
+            return next(err);
+          }
+          req.session.user = user.toObject({virtual: true});
+          return res.redirect('/setting?save=success');
+        });
+      }));
+    }
+    if (action === 'change_password') {
+      var old_pass = validator.trim(req.body.old_pass);
+      var new_pass = validator.trim(req.body.new_pass);
+      if (!old_pass || !new_pass) {
+        return res.send('旧密码或新密码不得为空');
+      }
+
+      User.getUserById(req.session.user._id, ep.done(function (user) {
+        tools.bcompare(old_pass, user.pass, ep.done(function (bool) {
+          if (!bool) {
+            return showMessage('当前密码不正确。', user);
+          }
+
+          tools.bhash(new_pass, ep.done(function (passhash) {
+            user.pass = passhash;
+            user.save(function (err) {
+              if (err) {
+                return next(err);
+              }
+              return showMessage('密码已被修改。', user, true);
+            });
+          }));
+        }));
+      }));
+    }
+  }
 }
 
 // var User         = require('../proxy').User;

@@ -49,8 +49,8 @@ module.exports = app => {
 
   // user controller
   router.get('/user/:name', user.index); // 用户个人主页
-  // router.get('/setting', userRequired, user.showSetting); // 用户个人设置页
-  // router.post('/setting', userRequired, user.setting); // 提交个人信息设置
+  router.get('/setting', userRequired, user.showSetting); // 用户个人设置页
+  router.post('/setting', userRequired, user.setting); // 提交个人信息设置
   router.get('/stars', user.listStars); // 显示所有达人列表页
   router.get('/users/top100', user.top100); // 显示积分前一百用户页
   router.get('/user/:name/collections', user.listCollectedTopics); // 用户收藏的所有话题页

@@ -14,6 +14,10 @@ module.exports = () => {
       return await next();
     }
 
+    // TODO:
+    // If use current_user in locals, should use ctx.session.passport.user and
+    // save cookies, config auth_cookie_name.
+
     let user = ctx.session.user;
     if (user) {
       const auth_token = ctx.cookies.get(ctx.app.config.auth_cookie_name, {

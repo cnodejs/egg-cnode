@@ -6,7 +6,8 @@ module.exports = () => {
    */
 
   return async function(ctx, next) {
-    if (!ctx.session || !ctx.session.user || !ctx.session.user._id) {
+    const { session } = ctx
+    if (!session || !session.passport.user || !session.passport.user._id) {
       ctx.status = 403;
       ctx.body = 'forbidden!';
       return;
