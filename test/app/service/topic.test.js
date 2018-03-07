@@ -83,7 +83,7 @@ describe('test/app/service/topic.test.js', () => {
 
   it('getFullTopic throws error when topic id is emoty', async () => {
     try {
-      await await topic.getFullTopic();
+      await topic.getFullTopic();
     } catch (e) {
       assert(e.message === '此话题不存在或已被删除。');
     }
@@ -102,7 +102,7 @@ describe('test/app/service/topic.test.js', () => {
 
   it('updateLastReply throws error when topic id is emoty', async () => {
     try {
-      await await topic.updateLastReply();
+      await topic.updateLastReply();
     } catch (e) {
       assert(e.message === '此话题不存在或已被删除。');
     }
