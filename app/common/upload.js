@@ -10,6 +10,6 @@ if (qn_access && qn_access.secretKey !== 'your secret key') {
   qnClient = qn.create(qn_access);
 }
 
-const qnUpload = promisify(qnClient.upload);
+const upload = promisify(qnClient.upload);
 
-module.exports = qnUpload;
+module.exports = upload;
