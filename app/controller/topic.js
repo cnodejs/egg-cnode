@@ -2,9 +2,13 @@
 
 const Controller = require('egg').Controller;
 const _ = require('lodash');
+const validator = require('validator');
+const path = require('path');
+const fs = require('fs');
+const awaitWriteStream = require('await-stream-ready').write;
+const sendToWormhole = require('stream-wormhole');
 
 class TopicController extends Controller {
-
   /**
    * Topic page
    */
@@ -25,10 +29,7 @@ class TopicController extends Controller {
       return;
     }
 
-    const [
-      topic,
-      author,
-      replies ] = await service.topic.getFullTopic(topic_id);
+    const [ topic, author, replies ] = await service.topic.getFullTopic(topic_id);
 
     topic.visit_count += 1;
     await topic.save();
@@ -39,7 +40,7 @@ class TopicController extends Controller {
     // 点赞数排名第三的回答，它的点赞数就是阈值
     topic.reply_up_threshold = (function() {
       let allUpCount = replies.map(function(reply) {
-        return reply.ups && reply.ups.length || 0;
+        return (reply.ups && reply.ups.length) || 0;
       });
       allUpCount = _.sortBy(allUpCount, Number).reverse();
 
@@ -67,7 +68,10 @@ class TopicController extends Controller {
     if (!currentUser) {
       is_collect = null;
     } else {
-      is_collect = await service.topicCollect.getTopicCollect(currentUser._id, topic_id);
+      is_collect = await service.topicCollect.getTopicCollect(
+        currentUser._id,
+        topic_id
+      );
     }
 
     await ctx.render('topic/index', {
@@ -78,382 +82,347 @@ class TopicController extends Controller {
       is_collect,
     });
   }
+
+  /**
+   * 进入创建主题页面
+   */
+  async create() {
+    const { ctx, config } = this;
+    await ctx.render('topic/edit', {
+      tabs: config.tabs,
+    });
+  }
+
+  /**
+   * 发表主题帖
+   */
+  async put() {
+    const { ctx, service } = this;
+    const { tabs } = this.config;
+    const title = validator.trim(ctx.body.title);
+    const tab = validator.trim(ctx.body.tab);
+    const content = validator.trim(ctx.body.t_content);
+
+    // 得到所有的 tab, e.g. ['ask', 'share', ..]
+    const allTabs = tabs.map(function(tPair) {
+      return tPair[0];
+    });
+
+    // 验证
+    let editError;
+    if (title === '') {
+      editError = '标题不能是空的。';
+    } else if (title.length < 5 || title.length > 100) {
+      editError = '标题字数太多或太少。';
+    } else if (!tab || allTabs.indexOf(tab) === -1) {
+      editError = '必须选择一个版块。';
+    } else if (content === '') {
+      editError = '内容不可为空';
+    }
+    // END 验证
+
+    if (editError) {
+      ctx.status = 422;
+      await ctx.render('topic/edit', {
+        edit_error: editError,
+        title,
+        content,
+        tabs,
+      });
+      return;
+    }
+
+    // 储存新主题帖
+    const topic = await service.topic.newAndSave(
+      title,
+      content,
+      tab,
+      ctx.session.user._id
+    );
+
+    // 发帖用户增加积分,增加发表主题数量
+    const author = await service.user.getUserById(topic.author_id);
+    author.score += 5;
+    author.topic_count += 1;
+    await author.save();
+    ctx.session.user = author;
+
+    ctx.redirect('/topic/' + topic._id);
+
+    // 通知被@的用户
+    await service.at.sendMessageToMentionUsers(
+      content,
+      topic._id,
+      ctx.session.user._id
+    );
+  }
+
+  /**
+   * 显示编辑页面
+   */
+  async showEdit() {
+    const { ctx, service, config } = this;
+    const topic_id = ctx.params.tid;
+
+    const { topic } = await service.getTopicById(topic_id);
+    if (!topic) {
+      ctx.status = 404;
+      ctx.message = '此话题不存在或已被删除。';
+      return;
+    }
+
+    if (
+      String(topic.author_id) === String(ctx.session.user._id) ||
+      ctx.session.user.is_admin
+    ) {
+      await ctx.render('topic/edit', {
+        action: 'edit',
+        topic_id: topic._id,
+        title: topic.title,
+        content: topic.content,
+        tab: topic.tab,
+        tabs: config.tabs,
+      });
+    } else {
+      ctx.status = 403;
+      ctx.message = '对不起，你不能编辑此话题。';
+    }
+  }
+
+  /**
+   * 更新主题帖
+   */
+  async update() {
+    const { ctx, service, config } = this;
+
+    const topic_id = ctx.params.tid;
+    let { title, tab } = ctx.body.title;
+    let content = ctx.body.t_content;
+
+    const { topic } = await service.getTopicById(topic_id);
+    if (!topic) {
+      ctx.status = 404;
+      ctx.message = '此话题不存在或已被删除。';
+      return;
+    }
+
+    if (
+      topic.author_id.equals(ctx.session.user._id) || ctx.session.user.is_admin
+    ) {
+      title = validator.trim(title);
+      tab = validator.trim(tab);
+      content = validator.trim(content);
+
+      // 验证
+      let editError;
+      if (title === '') {
+        editError = '标题不能是空的。';
+      } else if (title.length < 5 || title.length > 100) {
+        editError = '标题字数太多或太少。';
+      } else if (!tab) {
+        editError = '必须选择一个版块。';
+      }
+      // END 验证
+
+      if (editError) {
+        await ctx.render('topic/edit', {
+          action: 'edit',
+          edit_error: editError,
+          topic_id: topic._id,
+          content,
+          tabs: config.tabs,
+        });
+        return;
+      }
+
+      // 保存话题
+      topic.title = title;
+      topic.content = content;
+      topic.tab = tab;
+      topic.update_at = new Date();
+
+      await topic.save();
+
+      await service.at.sendMessageToMentionUsers(
+        content,
+        topic._id,
+        ctx.session.user._id
+      );
+
+      ctx.redirect('/topic/' + topic._id);
+    } else {
+      ctx.status = 403;
+      ctx.message = '对不起，你不能编辑此话题。';
+    }
+  }
+
+  /**
+   * 删除主题帖
+   */
+  async delete() {
+    // 删除话题, 话题作者topic_count减1
+    // 删除回复，回复作者reply_count减1
+    // 删除topic_collect，用户collect_topic_count减1
+    const { ctx, service } = this;
+    const topic_id = ctx.params.tid;
+    const [ topic, author ] = await service.topic.getFullTopic(topic_id);
+
+    if (
+      !ctx.session.user.is_admin &&
+      !topic.author_id.equals(ctx.session.user._id)
+    ) {
+      ctx.status = 403;
+      ctx.body = { success: false, message: '无权限' };
+      return;
+    }
+
+    if (!topic) {
+      ctx.status = 422;
+      ctx.body = { success: false, message: '此话题不存在或已被删除。' };
+      return;
+    }
+
+    author.score -= 5;
+    author.topic_count -= 1;
+    await author.save();
+
+    topic.deleted = true;
+
+    await topic.save();
+    ctx.body = { success: true, message: '话题已被删除。' };
+  }
+
+  async top() {
+    const { ctx, service } = this;
+    const topic_id = ctx.params.tid;
+    const referer = ctx.get('referer');
+
+    if (topic_id.length !== 24) {
+      ctx.status = 404;
+      ctx.message = '此话题不存在或已被删除。';
+      return;
+    }
+
+    const topic = await service.topic.getTopic(topic_id);
+    if (!topic) {
+      ctx.status = 404;
+      ctx.message = '此话题不存在或已被删除。';
+      return;
+    }
+    topic.top = !topic.top;
+    await topic.save();
+    const msg = topic.top ? '此话题已置顶。' : '此话题已取消置顶。';
+    await ctx.render('notify/notify', { success: msg, referer });
+  }
+
+  async good() {
+    const { ctx, service } = this;
+    const topic_id = ctx.params.tid;
+    const referer = ctx.get('referer');
+
+    const topic = await service.topic.getTopic(topic_id);
+    if (!topic) {
+      ctx.status = 404;
+      ctx.message = '此话题不存在或已被删除。';
+      return;
+    }
+    topic.good = !topic.good;
+    await topic.save();
+    const msg = topic.good ? '此话题已加精。' : '此话题已取消加精。';
+    await ctx.render('notify/notify', { success: msg, referer });
+  }
+
+  async lock() {
+    const { ctx, service } = this;
+    const topic_id = ctx.params.tid;
+    const referer = ctx.get('referer');
+
+    const topic = await service.topic.getTopic(topic_id);
+    if (!topic) {
+      ctx.status = 404;
+      ctx.message = '此话题不存在或已被删除。';
+      return;
+    }
+    topic.lock = !topic.lock;
+    await topic.save();
+    const msg = topic.lock ? '此话题已锁定。' : '此话题已取消锁定。';
+    await ctx.render('notify/notify', { success: msg, referer });
+  }
+
+  async collect() {
+    const { ctx, service } = this;
+    const topic_id = ctx.params.tid;
+
+    const topic = await service.topic.getTopic(topic_id);
+
+    if (!topic) {
+      ctx.body = { status: 'failed' };
+    }
+
+    const doc = await service.topic_collect.getTopicCollect(
+      ctx.session.user._id,
+      topic._id
+    );
+
+    if (doc) {
+      ctx.body = { status: 'failed' };
+      return;
+    }
+
+    await service.topic_collect.newAndSave(ctx.session.user._id, topic._id);
+    ctx.body = { status: 'success' };
+
+    const user = await service.user.getUserById(ctx.session.user._id);
+    user.collect_topic_count += 1;
+    await user.save();
+
+    ctx.session.user.collect_topic_count += 1;
+    topic.collect_count += 1;
+    await topic.save();
+  }
+
+  async de_collect() {
+    const { ctx, service } = this;
+    const topic_id = ctx.params.tid;
+    const topic = await service.topic.getTopic(topic_id);
+    if (!topic) {
+      ctx.body = { status: 'failed' };
+    }
+
+    const removeResult = await service.topic_collect.remove(
+      ctx.session.user._id,
+      topic._id
+    );
+    if (removeResult.result.n === 0) {
+      ctx.body = { status: 'failed' };
+    }
+
+    const user = await service.user.getUserById(ctx.session.user._id);
+
+    user.collect_topic_count -= 1;
+    ctx.session.user = user;
+    await user.save();
+
+    topic.collect_count -= 1;
+    await topic.save();
+
+    ctx.body = { status: 'success' };
+  }
+
+  async upload() {
+    const stream = await this.ctx.getFileStream();
+    const filename = encodeURIComponent(stream.fields.name) +
+      path.extname(stream.filename).toLowerCase();
+    const target = path.join(this.config.baseDir, 'app/public', filename);
+    const writeStream = fs.createWriteStream(target);
+    try {
+      await awaitWriteStream(stream.pipe(writeStream));
+    } catch (err) {
+      await sendToWormhole(stream);
+      throw err;
+    }
+    this.ctx.redirect('/public/img/' + filename);
+  }
 }
 
 module.exports = TopicController;
-
-// var validator = require('validator');
-
-// var at           = require('../common/at');
-// var User         = require('../proxy').User;
-// var Topic        = require('../proxy').Topic;
-// var TopicCollect = require('../proxy').TopicCollect;
-// var EventProxy   = require('eventproxy');
-// var tools        = require('../common/tools');
-// var store        = require('../common/store');
-// var config       = require('../config');
-// var _            = require('lodash');
-// var cache        = require('../common/cache');
-// var logger = require('../common/logger')
-
-// exports.create = function (req, res, next) {
-//   res.render('topic/edit', {
-//     tabs: config.tabs
-//   });
-// };
-
-
-// exports.put = function (req, res, next) {
-//   var title   = validator.trim(req.body.title);
-//   var tab     = validator.trim(req.body.tab);
-//   var content = validator.trim(req.body.t_content);
-
-//   // 得到所有的 tab, e.g. ['ask', 'share', ..]
-//   var allTabs = config.tabs.map(function (tPair) {
-//     return tPair[0];
-//   });
-
-//   // 验证
-//   var editError;
-//   if (title === '') {
-//     editError = '标题不能是空的。';
-//   } else if (title.length < 5 || title.length > 100) {
-//     editError = '标题字数太多或太少。';
-//   } else if (!tab || allTabs.indexOf(tab) === -1) {
-//     editError = '必须选择一个版块。';
-//   } else if (content === '') {
-//     editError = '内容不可为空';
-//   }
-//   // END 验证
-
-//   if (editError) {
-//     res.status(422);
-//     return res.render('topic/edit', {
-//       edit_error: editError,
-//       title: title,
-//       content: content,
-//       tabs: config.tabs
-//     });
-//   }
-
-//   Topic.newAndSave(title, content, tab, req.session.user._id, function (err, topic) {
-//     if (err) {
-//       return next(err);
-//     }
-
-//     var proxy = new EventProxy();
-
-//     proxy.all('score_saved', function () {
-//       res.redirect('/topic/' + topic._id);
-//     });
-//     proxy.fail(next);
-//     User.getUserById(req.session.user._id, proxy.done(function (user) {
-//       user.score += 5;
-//       user.topic_count += 1;
-//       user.save();
-//       req.session.user = user;
-//       proxy.emit('score_saved');
-//     }));
-
-//     //发送at消息
-//     at.sendMessageToMentionUsers(content, topic._id, req.session.user._id);
-//   });
-// };
-
-// exports.showEdit = function (req, res, next) {
-//   var topic_id = req.params.tid;
-
-//   Topic.getTopicById(topic_id, function (err, topic, tags) {
-//     if (!topic) {
-//       res.render404('此话题不存在或已被删除。');
-//       return;
-//     }
-
-//     if (String(topic.author_id) === String(req.session.user._id) || req.session.user.is_admin) {
-//       res.render('topic/edit', {
-//         action: 'edit',
-//         topic_id: topic._id,
-//         title: topic.title,
-//         content: topic.content,
-//         tab: topic.tab,
-//         tabs: config.tabs
-//       });
-//     } else {
-//       res.renderError('对不起，你不能编辑此话题。', 403);
-//     }
-//   });
-// };
-
-// exports.update = function (req, res, next) {
-//   var topic_id = req.params.tid;
-//   var title    = req.body.title;
-//   var tab      = req.body.tab;
-//   var content  = req.body.t_content;
-
-//   Topic.getTopicById(topic_id, function (err, topic, tags) {
-//     if (!topic) {
-//       res.render404('此话题不存在或已被删除。');
-//       return;
-//     }
-
-//     if (topic.author_id.equals(req.session.user._id) || req.session.user.is_admin) {
-//       title   = validator.trim(title);
-//       tab     = validator.trim(tab);
-//       content = validator.trim(content);
-
-//       // 验证
-//       var editError;
-//       if (title === '') {
-//         editError = '标题不能是空的。';
-//       } else if (title.length < 5 || title.length > 100) {
-//         editError = '标题字数太多或太少。';
-//       } else if (!tab) {
-//         editError = '必须选择一个版块。';
-//       }
-//       // END 验证
-
-//       if (editError) {
-//         return res.render('topic/edit', {
-//           action: 'edit',
-//           edit_error: editError,
-//           topic_id: topic._id,
-//           content: content,
-//           tabs: config.tabs
-//         });
-//       }
-
-//       //保存话题
-//       topic.title     = title;
-//       topic.content   = content;
-//       topic.tab       = tab;
-//       topic.update_at = new Date();
-
-//       topic.save(function (err) {
-//         if (err) {
-//           return next(err);
-//         }
-//         //发送at消息
-//         at.sendMessageToMentionUsers(content, topic._id, req.session.user._id);
-
-//         res.redirect('/topic/' + topic._id);
-
-//       });
-//     } else {
-//       res.renderError('对不起，你不能编辑此话题。', 403);
-//     }
-//   });
-// };
-
-// exports.delete = function (req, res, next) {
-//   //删除话题, 话题作者topic_count减1
-//   //删除回复，回复作者reply_count减1
-//   //删除topic_collect，用户collect_topic_count减1
-
-//   var topic_id = req.params.tid;
-
-//   Topic.getFullTopic(topic_id, function (err, err_msg, topic, author, replies) {
-//     if (err) {
-//       return res.send({ success: false, message: err.message });
-//     }
-//     if (!req.session.user.is_admin && !(topic.author_id.equals(req.session.user._id))) {
-//       res.status(403);
-//       return res.send({success: false, message: '无权限'});
-//     }
-//     if (!topic) {
-//       res.status(422);
-//       return res.send({ success: false, message: '此话题不存在或已被删除。' });
-//     }
-//     author.score -= 5;
-//     author.topic_count -= 1;
-//     author.save();
-
-//     topic.deleted = true;
-//     topic.save(function (err) {
-//       if (err) {
-//         return res.send({ success: false, message: err.message });
-//       }
-//       res.send({ success: true, message: '话题已被删除。' });
-//     });
-//   });
-// };
-
-// // 设为置顶
-// exports.top = function (req, res, next) {
-//   var topic_id = req.params.tid;
-//   var referer  = req.get('referer');
-
-//   if (topic_id.length !== 24) {
-//     res.render404('此话题不存在或已被删除。');
-//     return;
-//   }
-//   Topic.getTopic(topic_id, function (err, topic) {
-//     if (err) {
-//       return next(err);
-//     }
-//     if (!topic) {
-//       res.render404('此话题不存在或已被删除。');
-//       return;
-//     }
-//     topic.top = !topic.top;
-//     topic.save(function (err) {
-//       if (err) {
-//         return next(err);
-//       }
-//       var msg = topic.top ? '此话题已置顶。' : '此话题已取消置顶。';
-//       res.render('notify/notify', {success: msg, referer: referer});
-//     });
-//   });
-// };
-
-// // 设为精华
-// exports.good = function (req, res, next) {
-//   var topicId = req.params.tid;
-//   var referer = req.get('referer');
-
-//   Topic.getTopic(topicId, function (err, topic) {
-//     if (err) {
-//       return next(err);
-//     }
-//     if (!topic) {
-//       res.render404('此话题不存在或已被删除。');
-//       return;
-//     }
-//     topic.good = !topic.good;
-//     topic.save(function (err) {
-//       if (err) {
-//         return next(err);
-//       }
-//       var msg = topic.good ? '此话题已加精。' : '此话题已取消加精。';
-//       res.render('notify/notify', {success: msg, referer: referer});
-//     });
-//   });
-// };
-
-// // 锁定主题，不可再回复
-// exports.lock = function (req, res, next) {
-//   var topicId = req.params.tid;
-//   var referer = req.get('referer');
-//   Topic.getTopic(topicId, function (err, topic) {
-//     if (err) {
-//       return next(err);
-//     }
-//     if (!topic) {
-//       res.render404('此话题不存在或已被删除。');
-//       return;
-//     }
-//     topic.lock = !topic.lock;
-//     topic.save(function (err) {
-//       if (err) {
-//         return next(err);
-//       }
-//       var msg = topic.lock ? '此话题已锁定。' : '此话题已取消锁定。';
-//       res.render('notify/notify', {success: msg, referer: referer});
-//     });
-//   });
-// };
-
-// // 收藏主题
-// exports.collect = function (req, res, next) {
-//   var topic_id = req.body.topic_id;
-
-//   Topic.getTopic(topic_id, function (err, topic) {
-//     if (err) {
-//       return next(err);
-//     }
-//     if (!topic) {
-//       res.json({status: 'failed'});
-//     }
-
-//     TopicCollect.getTopicCollect(req.session.user._id, topic._id, function (err, doc) {
-//       if (err) {
-//         return next(err);
-//       }
-//       if (doc) {
-//         res.json({status: 'failed'});
-//         return;
-//       }
-
-//       TopicCollect.newAndSave(req.session.user._id, topic._id, function (err) {
-//         if (err) {
-//           return next(err);
-//         }
-//         res.json({status: 'success'});
-//       });
-//       User.getUserById(req.session.user._id, function (err, user) {
-//         if (err) {
-//           return next(err);
-//         }
-//         user.collect_topic_count += 1;
-//         user.save();
-//       });
-
-//       req.session.user.collect_topic_count += 1;
-//       topic.collect_count += 1;
-//       topic.save();
-//     });
-//   });
-// };
-
-// exports.de_collect = function (req, res, next) {
-//   var topic_id = req.body.topic_id;
-//   Topic.getTopic(topic_id, function (err, topic) {
-//     if (err) {
-//       return next(err);
-//     }
-//     if (!topic) {
-//       res.json({status: 'failed'});
-//     }
-//     TopicCollect.remove(req.session.user._id, topic._id, function (err, removeResult) {
-//       if (err) {
-//         return next(err);
-//       }
-//       if (removeResult.result.n == 0) {
-//         return res.json({status: 'failed'})
-//       }
-
-//       User.getUserById(req.session.user._id, function (err, user) {
-//         if (err) {
-//           return next(err);
-//         }
-//         user.collect_topic_count -= 1;
-//         req.session.user = user;
-//         user.save();
-//       });
-
-//       topic.collect_count -= 1;
-//       topic.save();
-
-//       res.json({status: 'success'});
-//     });
-//   });
-// };
-
-// exports.upload = function (req, res, next) {
-//   var isFileLimit = false;
-//   req.busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
-//       file.on('limit', function () {
-//         isFileLimit = true;
-
-//         res.json({
-//           success: false,
-//           msg: 'File size too large. Max is ' + config.file_limit
-//         })
-//       });
-
-//       store.upload(file, {filename: filename}, function (err, result) {
-//         if (err) {
-//           return next(err);
-//         }
-//         if (isFileLimit) {
-//           return;
-//         }
-//         res.json({
-//           success: true,
-//           url: result.url,
-//         });
-//       });
-
-//     });
-
-//   req.pipe(req.busboy);
-// };
