@@ -292,6 +292,9 @@ class TopicController extends Controller {
     ctx.body = { success: true, message: '话题已被删除。' };
   }
 
+  /**
+   * 设为置顶
+   */
   async top() {
     const { ctx, service } = this;
     const topic_id = ctx.params.tid;
@@ -315,6 +318,9 @@ class TopicController extends Controller {
     await ctx.render('notify/notify', { success: msg, referer });
   }
 
+  /**
+   * 设为精华
+   */
   async good() {
     const { ctx, service } = this;
     const topic_id = ctx.params.tid;
@@ -332,6 +338,9 @@ class TopicController extends Controller {
     await ctx.render('notify/notify', { success: msg, referer });
   }
 
+  /**
+   * 锁定帖子,不能回复
+   */
   async lock() {
     const { ctx, service } = this;
     const topic_id = ctx.params.tid;
@@ -349,6 +358,9 @@ class TopicController extends Controller {
     await ctx.render('notify/notify', { success: msg, referer });
   }
 
+  /**
+   * 收藏主题帖
+   */
   async collect() {
     const { ctx, service } = this;
     const topic_id = ctx.params.tid;
@@ -381,10 +393,14 @@ class TopicController extends Controller {
     await topic.save();
   }
 
+  /**
+   * 取消收藏主题帖
+   */
   async de_collect() {
     const { ctx, service } = this;
     const topic_id = ctx.params.tid;
     const topic = await service.topic.getTopic(topic_id);
+
     if (!topic) {
       ctx.body = { status: 'failed' };
     }
@@ -409,6 +425,9 @@ class TopicController extends Controller {
     ctx.body = { status: 'success' };
   }
 
+  /**
+   * 上传
+   */
   async upload() {
     const stream = await this.ctx.getFileStream();
     const filename = encodeURIComponent(stream.fields.name) +
