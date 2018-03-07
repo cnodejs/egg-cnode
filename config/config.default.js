@@ -14,7 +14,6 @@ module.exports = appInfo => {
     'locals',
     'authUser',
     'errorPage',
-    'proxy',
   ];
 
   config.authUser = {

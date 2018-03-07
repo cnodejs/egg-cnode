@@ -1,10 +1,10 @@
 'use strict';
 
-module.exports = (options, app) => {
-
+module.exports = () => {
   /**
    * 需要登录
    */
+
   return async function(ctx, next) {
     if (!ctx.session || !ctx.session.user || !ctx.session.user._id) {
       ctx.status = 403;
