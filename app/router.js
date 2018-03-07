@@ -67,22 +67,22 @@ module.exports = app => {
   // topic
 
   // // 新建文章界面
-  // router.get('/topic/create', userRequired, topic.create);
+  router.get('/topic/create', userRequired, topic.create);
 
   router.get('/topic/:tid', topic.index); // 显示某个话题
-  // router.post('/topic/:tid/top', adminRequired, topic.top); // 将某话题置顶
-  // router.post('/topic/:tid/good', adminRequired, topic.good); // 将某话题加精
-  // router.get('/topic/:tid/edit', userRequired, topic.showEdit); // 编辑某话题
-  // router.post('/topic/:tid/lock', adminRequired, topic.lock); // 锁定主题，不能再回复
+  router.post('/topic/:tid/top', adminRequired, topic.top); // 将某话题置顶
+  router.post('/topic/:tid/good', adminRequired, topic.good); // 将某话题加精
+  router.get('/topic/:tid/edit', userRequired, topic.showEdit); // 编辑某话题
+  router.post('/topic/:tid/lock', adminRequired, topic.lock); // 锁定主题，不能再回复
 
-  // router.post('/topic/:tid/delete', userRequired, topic.delete);
+  router.post('/topic/:tid/delete', userRequired, topic.delete);
 
   // // 保存新建的文章
   // router.post('/topic/create', userRequired, limit.peruserperday('create_topic', config.create_post_per_day, { showJson: false }), topic.put);
 
-  // router.post('/topic/:tid/edit', userRequired, topic.update);
-  // router.post('/topic/collect', userRequired, topic.collect); // 关注某话题
-  // router.post('/topic/de_collect', userRequired, topic.de_collect); // 取消关注某话题
+  router.post('/topic/:tid/edit', userRequired, topic.update);
+  router.post('/topic/collect', userRequired, topic.collect); // 关注某话题
+  router.post('/topic/de_collect', userRequired, topic.de_collect); // 取消关注某话题
 
   // // reply controller
   router.post('/:topic_id/reply', userRequired,
