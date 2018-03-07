@@ -36,44 +36,44 @@ describe('test/app/service/topic.test.js', () => {
     assert.equal(result.author_id, userId);
   });
 
+  it('updateLastReply should ok', async () => {
+    const result1 = await topic.updateLastReply(topicId, replyId);
+    assert(result1.last_reply === replyId);
+    const result2 = await topic.updateLastReply();
+    assert(!result2);
+  });
+
   it('getTopicById should ok', async () => {
-    const result = await topic.getTopicById(topicId);
-    assert.equal(result.topic._id.toString(), topicId);
-    assert.equal(result.author._id.toString(), userId);
-    assert(result.last_reply === null);
-  });
-
-  it('getTopicById should ok when topic id is empty', async () => {
-    const result = await topic.getTopicById();
-    assert(result.topic === null);
-    assert(result.author === null);
-    assert(result.last_reply === null);
-  });
-
-  it('getTopicById should return last_reply', async () => {
-    // const result = await topic.getTopicById(topicId);
-    // assert.equal(result.last_reply._id.toString(), replyId);
+    const result1 = await topic.getTopicById(topicId);
+    assert.equal(result1.topic._id.toString(), topicId);
+    assert.equal(result1.author._id.toString(), userId);
+    assert.equal(result1.last_reply._id.toString(), replyId);
+    const result2 = await topic.getTopicById();
+    assert(result2.topic === null);
+    assert(result2.author === null);
+    assert(result2.last_reply === null);
   });
 
   it('getCountByQuery should ok', async () => {
-    const result = await topic.getCountByQuery('first');
-    assert(result >= 1);
-  });
-
-  it('getTopicsByQuery should ok', async () => {
     const query = {
       good: false,
     };
-    const result = await topic.getTopicsByQuery(query, {});
-    assert(result.length > 0);
+    const result = await topic.getCountByQuery(query);
+    assert(result > 0);
   });
 
-  it('getTopicsByQuery should ok when result is empty', async () => {
-    const query = {
+  it('getTopicsByQuery should ok', async () => {
+    const query1 = {
+      good: false,
+    };
+    const result1 = await topic.getTopicsByQuery(query1, {});
+    assert(result1.length > 0);
+
+    const query2 = {
       good: 'test',
     };
-    const result = await topic.getTopicsByQuery(query, {});
-    assert(result.length === 0);
+    const result2 = await topic.getTopicsByQuery(query2, {});
+    assert(result2.length === 0);
   });
 
   it('getLimit5w should ok', async () => {
@@ -81,31 +81,29 @@ describe('test/app/service/topic.test.js', () => {
     assert(result.length > 0);
   });
 
-  it('getFullTopic throws error when topic id is emoty', async () => {
+  it('getFullTopic should ok', async () => {
+    let err1;
     try {
       await topic.getFullTopic();
     } catch (e) {
+      err1 = e;
       assert(e.message === '此话题不存在或已被删除。');
     }
-  });
+    assert(err1);
 
-  it('getFullTopic should ok', async () => {
     const result = await topic.getFullTopic(topicId);
     assert.equal(result[0]._id.toString(), topicId);
     assert(result[1].loginname === loginname);
-  });
 
-  it('updateLastReply should ok', async () => {
-    const result = await topic.updateLastReply(topicId, replyId);
-    assert(result.last_reply === replyId);
-  });
-
-  it('updateLastReply throws error when topic id is emoty', async () => {
+    let err2;
+    await ctx.model.User.deleteOne({ _id: userId }).exec();
     try {
-      await topic.updateLastReply();
+      await topic.getFullTopic(topicId);
     } catch (e) {
-      assert(e.message === '此话题不存在或已被删除。');
+      err2 = e;
+      assert(e.message === '话题的作者丢了。');
     }
+    assert(err2);
   });
 
   it('getTopic should ok', async () => {
@@ -115,29 +113,19 @@ describe('test/app/service/topic.test.js', () => {
   });
 
   it('reduceCount should ok', async () => {
-    const result = await topic.getFullTopic(topicId);
-    assert.equal(result[0]._id.toString(), topicId);
-  });
+    const result1 = await topic.reduceCount(topicId);
+    assert(result1.last_reply, replyId);
+    await ctx.model.Reply.deleteOne({ _id: replyId }).exec();
+    const result2 = await topic.reduceCount(topicId);
+    assert(result2.last_reply === null);
 
-  it('reduceCount should ok when reply is empty', async () => {
-    // const result = await topic.getFullTopic(topicId);
-    // assert.equal(result[0]._id.toString(), topicId);
-  });
-
-  it('reduceCount throws error when topic id is empty', async () => {
+    let err;
     try {
       await topic.reduceCount();
     } catch (e) {
+      err = e;
       assert(e.message === '该主题不存在');
     }
-  });
-
-  it('getFullTopic throws error when author id is emoty', async () => {
-    await ctx.model.User.deleteOne({ _id: userId }).exec();
-    try {
-      await topic.getFullTopic(topicId);
-    } catch (e) {
-      assert(e.message === '话题的作者丢了。');
-    }
+    assert(err);
   });
 });
