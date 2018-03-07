@@ -4,7 +4,7 @@ exports.redis = {
   client: {
     host: '127.0.0.1',
     port: 6379,
-    password: '',
+    password: 'egg_cnode',
     db: 0,
   },
 };
@@ -13,7 +13,7 @@ exports.redis = {
  * @see http://mongodb.github.io/node-mongodb-native/2.2/api/Db.html#createCollection
  */
 exports.mongoose = {
-  url: 'mongodb://127.0.0.1/node_club_test',
+  url: 'mongodb://egg_cnode:egg_cnode@127.0.0.1:27017/egg_cnode',
   options: {
     server: { poolSize: 20 },
   },
