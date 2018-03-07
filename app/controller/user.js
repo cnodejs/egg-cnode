@@ -189,15 +189,15 @@ class UserController extends Controller {
       return;
     }
 
-    // if (req.query.save === 'success') {
-    //   user.success = '保存成功。';
-    // }
+    if (ctx.request.query.save === 'success') {
+      user.success = '保存成功。';
+    }
 
     return await ctx.render('user/setting', { user });
   }
 
   async setting() {
-    const { ctx, ctx: { request: req, response: res }, service } = this;
+    const { ctx, ctx: { request: req }, service } = this;
     // 显示出错或成功信息
     async function showMessage(msg, data, isSuccess) {
       data = data || req.body;
@@ -219,14 +219,14 @@ class UserController extends Controller {
     }
 
     // post
-    const { body, body: action } = req;
+    const { body, body: { action } } = req;
     if (action === 'change_setting') {
       const url = validator.trim(body.url);
       const location = validator.trim(body.location);
       const weibo = validator.trim(body.weibo);
       const signature = validator.trim(body.signature);
 
-      const user = await service.user.getUserById(req.session.user._id);
+      const user = await service.user.getUserById(ctx.session.passport.user._id);
       user.url = url;
       user.location = location;
       user.signature = signature;
@@ -241,10 +241,10 @@ class UserController extends Controller {
       const oldPass = validator.trim(req.body.old_pass);
       const newPass = validator.trim(req.body.new_pass);
       if (!oldPass || !newPass) {
-        return res.send('旧密码或新密码不得为空');
+        return showMessage('旧密码或新密码不得为空');
       }
 
-      const user = service.user.getUserById(req.session.passport.user._id);
+      const user = await service.user.getUserById(ctx.session.passport.user._id);
       const equal = tools.bcompare(oldPass, user.pass);
       if (!equal) {
         return showMessage('当前密码不正确。', user);

@@ -79,8 +79,7 @@
           <label class='control-label' for='signature'>个性签名</label>
 
           <div class='controls'>
-            <textarea class='input-xlarge' id='signature' name='signature' size='30'>
-              <%= typeof user.signature !== 'undefined' ? user.signature : "" %>
+            <textarea class='input-xlarge' id='signature' name='signature' size='30'><%= typeof user.signature !== 'undefined' ? user.signature : "" %>
             </textarea>
           </div>
         </div>
