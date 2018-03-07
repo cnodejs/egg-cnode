@@ -4,7 +4,7 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller } = app;
+  const { router, controller, config } = app;
 
   const { site, sign, user, topic, rss, search, page } = controller;
 
@@ -15,16 +15,16 @@ module.exports = app => {
   // mobile app download
   router.get('/app/download', site.appDownload);
 
-  // // sign controller
-  // if (config.allow_sign_up) {
-  //   router.get('/signup', sign.showSignup); // 跳转到注册页面
-  //   router.post('/signup', sign.signup); // 提交注册信息
-  // } else {
-  //   // 进行github验证
-  //   router.get('/signup', function (req, res, next) {
-  //     return res.redirect('/auth/github');
-  //   });
-  // }
+  // sign controller
+  if (config.allow_sign_up) {
+    router.get('/signup', sign.showSignup); // 跳转到注册页面
+    router.post('/signup', sign.signup); // 提交注册信息
+  } else {
+    // 进行github验证
+    router.get('/signup', async function() {
+      this.ctx.redirect('/auth/github');
+    });
+  }
 
   const localStrategy = app.passport.authenticate('local', {
     successRedirect: '/',

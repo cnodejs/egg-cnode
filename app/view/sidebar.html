@@ -69,7 +69,9 @@
     <div class='inner'>
       <% if (tops.length > 0) { %>
       <ol>
-        <%- include('user/top', { collection: tops, as: 'user' }) %>
+        <% tops.forEach((user) => { %>
+        <%- include('user/top.html', { user }) %>
+        <% }) %>
       </ol>
       <% } else { %>
       <p>无</p>

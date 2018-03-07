@@ -22,7 +22,8 @@ module.exports = app => {
     }
 
     const passhash = existUser.pass;
-    const equal = tools.compare(passhash, password);
+    // TODO: change to async compare
+    const equal = tools.bcompare(passhash, password);
 
     // 密码不匹配
     if (!equal) {

@@ -15,7 +15,8 @@ class UserService extends Service {
       return [];
     }
 
-    return this.ctx.model.User.find({ loginname: { $in: names } }).exec();
+    const query = { loginname: { $in: names } };
+    return this.ctx.model.User.find(query).exec();
   }
 
   /*
@@ -74,15 +75,13 @@ class UserService extends Service {
 
   /*
    * 根据查询条件，获取一个用户
-   * Callback:
-   * - err, 数据库异常
-   * - user, 用户
    * @param {String} name 用户名
    * @param {String} key 激活码
-   * @return {Promise[users]} 承载用户列表的 Promise 对象
+   * @return {Promise[user]} 承载用户的 Promise 对象
    */
   getUserByNameAndKey(loginname, key) {
-    return this.ctx.model.User.findOne({ loginname, retrieve_key: key }).exec();
+    const query = { loginname, retrieve_key: key };
+    return this.ctx.model.User.findOne(query).exec();
   }
 
   newAndSave(name, loginname, pass, email, avatar_url, active) {
@@ -107,7 +106,7 @@ class UserService extends Service {
   }
 
   getGravatar(user) {
-    return user.avatar || this.makeGravatar(user);
+    return user.avatar || this.makeGravatar(user.email);
   }
 }
 
