@@ -1,6 +1,6 @@
 'use strict';
 
-// const _ = require('lodash');
+const _ = require('lodash');
 const utility = require('utility');
 
 const Controller = require('egg').Controller;
@@ -32,10 +32,9 @@ class UserController extends Controller {
     query = { _id: { $in: topic_ids } };
     let recent_replies = await service.topic.getTopicsByQuery(query, {});
 
-    recent_replies = recent_replies.filter(topic => topic_ids.indexOf(topic._id.toString()) > -1);
-    // recent_replies = _.sortBy(recent_replies, function(topic) {
-    //   return topic_ids.indexOf(topic._id.toString());
-    // });
+    recent_replies = _.sortBy(recent_replies, function(topic) {
+      return topic_ids.indexOf(topic._id.toString());
+    });
 
     user.url = (function() {
       if (user.url && user.url.indexOf('http') !== 0) {
@@ -101,10 +100,9 @@ class UserController extends Controller {
     });
     const query = { _id: { $in: ids } };
     let topics = await service.topic.getTopicsByQuery(query, {});
-    topics = topics.filter(topic => ids.indexOf(topic._id.toString()) > -1);
-    // topics = _.sortBy(topics, function(topic) {
-    //   return ids.indexOf(String(topic._id));
-    // });
+    topics = _.sortBy(topics, function(topic) {
+      return ids.indexOf(String(topic._id));
+    });
 
     await ctx.render('user/collect_topics', {
       topics,
@@ -165,10 +163,9 @@ class UserController extends Controller {
     // 获取所有有评论的主题
     const query = { _id: { $in: topic_ids } };
     let topics = await service.topic.getTopicsByQuery(query, {});
-    topics = topics.filter(topic => topic_ids.indexOf(topic._id.toString()) > -1);
-    // topics = _.sortBy(topics, function(topic) {
-    //   return topic_ids.indexOf(topic._id.toString());
-    // });
+    topics = _.sortBy(topics, function(topic) {
+      return topic_ids.indexOf(topic._id.toString());
+    });
     const count = await service.reply.getCountByAuthorId(user._id);
     const pages = Math.ceil(count / limit);
 
