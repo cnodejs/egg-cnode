@@ -46,7 +46,7 @@ describe('test/app/controller/sign.test.js', () => {
   it('should GET /active_account', async () => {
     await app.httpRequest()
       .get('/active_account')
-      .expect(404)
+      .expect(200)
       .expect(/用户不存在/);
   });
 
