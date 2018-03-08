@@ -13,8 +13,8 @@ describe('test/app/controller/topic.test.js', () => {
     key,
     username,
     user,
-    topic,
-    topic_collect;
+    // topic_collect,
+    topic;
 
   before(async () => {
     ctx = app.mockContext();
@@ -140,26 +140,25 @@ describe('test/app/controller/topic.test.js', () => {
   //     .expect(200);
   // });
 
-  // 测试报错,正在排查:Cannot read property 'getTopicCollect' of undefined
-  // it('should POST /topic/:tid/edit ok', async () => {
-  //   app.mockSession({
-  //     user: {
-  //       name: username,
-  //       _id: user_id,
-  //       is_admin: true,
-  //     },
-  //   });
-  //   app.mockCsrf();
-  //   await app
-  //     .httpRequest()
-  //     .post(`/topic/${topic_id}/edit`)
-  //     .send({
-  //       tab: 'new tab',
-  //       title: 'new title',
-  //       t_content: 'new content',
-  //     })
-  //     .expect(200);
-  // });
+  it('should POST /topic/:tid/edit ok', async () => {
+    app.mockSession({
+      user: {
+        name: username,
+        _id: user_id,
+        is_admin: true,
+      },
+    });
+    app.mockCsrf();
+    await app
+      .httpRequest()
+      .post(`/topic/${topic_id}/edit`)
+      .send({
+        tab: 'share',
+        title: 'new title',
+        t_content: 'new content',
+      })
+      .expect(302);
+  });
 
   // 测试报错,正在排查:Cannot read property 'getTopicCollect' of undefined
   // it('should POST /topic/collect ok', async () => {

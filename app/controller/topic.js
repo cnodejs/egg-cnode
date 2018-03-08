@@ -202,7 +202,7 @@ class TopicController extends Controller {
     let tab = ctx.request.body.tab;
     let content = ctx.request.body.t_content;
 
-    const { topic } = await service.getTopicById(topic_id);
+    const { topic } = await service.topic.getTopicById(topic_id);
     if (!topic) {
       ctx.status = 404;
       ctx.message = '此话题不存在或已被删除。';
@@ -210,7 +210,7 @@ class TopicController extends Controller {
     }
 
     if (
-      topic.author_id.equals(ctx.session.user._id) || ctx.session.user.is_admin
+      topic.author_id === ctx.session.user._id || ctx.session.user.is_admin
     ) {
       title = validator.trim(title);
       tab = validator.trim(tab);
