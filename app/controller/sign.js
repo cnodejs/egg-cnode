@@ -1,6 +1,8 @@
 'use strict';
 
 const validator = require('validator');
+const utility = require('utility');
+const uuid = require('uuid');
 const Controller = require('egg').Controller;
 
 const tools = require('../common/tools');
@@ -84,6 +86,130 @@ class SignController extends Controller {
     ctx.session = null;
     ctx.logout();
     ctx.redirect('/');
+  }
+
+  async activeAccount() {
+    const { ctx, service, config } = this;
+    const key = validator.trim(ctx.query.key);
+    const name = validator.trim(ctx.query.name);
+
+    const user = await service.user.getUserByLoginName(name);
+    if (!user) {
+      throw new Error('[ACTIVE_ACCOUNT] no such user: ' + name);
+    }
+
+    const passhash = user.pass;
+    if (!user || utility.md5(user.email + passhash + config.session_secret) !== key) {
+      await ctx.render('notify/notify', { error: '信息有误，帐号无法被激活。' });
+      return;
+    }
+
+    if (user.active) {
+      await ctx.render('notify/notify', { error: '帐号已经是激活状态。' });
+      return;
+    }
+
+    user.active = true;
+    await user.save();
+    await ctx.render('notify/notify', { success: '帐号已被激活，请登录' });
+  }
+
+  async showSearchPass() {
+    await this.ctx.render('sign/search_pass');
+  }
+
+  async updateSearchPass() {
+    const { ctx, service } = this;
+    const email = validator.trim(ctx.request.body.email).toLowerCase();
+    if (!validator.isEmail(email)) {
+      await this.ctx.render('sign/search_pass', {
+        error: '邮箱不合法',
+        email,
+      });
+      return;
+    }
+
+    // 动态生成retrive_key和timestamp到users collection,之后重置密码进行验证
+    const retrieveKey = uuid.v4();
+    const retrieveTime = Date.now();
+
+    const user = await service.user.getUserByMail(email);
+    if (!user) {
+      await this.ctx.render('sign/search_pass', {
+        error: '没有这个电子邮箱。',
+        email,
+      });
+      return;
+    }
+
+    user.retrieve_key = retrieveKey;
+    user.retrieve_time = retrieveTime;
+    await user.save();
+
+    // 发送重置密码邮件
+    // mail.sendResetPassMail(email, retrieveKey, user.loginname);
+    await this.ctx.render('notify/notify', {
+      success: '我们已给您填写的电子邮箱发送了一封邮件，请在24小时内点击里面的链接来重置密码。',
+    });
+  }
+
+  async resetPass() {
+    const { ctx, service } = this;
+    const key = validator.trim(ctx.query.key || '');
+    const name = validator.trim(ctx.query.name || '');
+
+    const user = await service.user.getUserByNameAndKey(name, key);
+    if (!user) {
+      ctx.status = 403;
+      await this.ctx.render('notify/notify', {
+        error: '信息有误，密码无法重置。',
+      });
+      return;
+    }
+
+    const now = Date.now();
+    const oneDay = 1000 * 60 * 60 * 24;
+    if (!user.retrieve_time || now - user.retrieve_time > oneDay) {
+      ctx.status = 403;
+      await this.ctx.render('notify/notify', {
+        error: '该链接已过期，请重新申请。',
+      });
+      return;
+    }
+    await this.ctx.render('sign/reset', { name, key });
+  }
+
+  async updatePass() {
+    const { ctx, service } = this;
+    const psw = validator.trim(ctx.body.psw) || '';
+    const repsw = validator.trim(ctx.body.repsw) || '';
+    const key = validator.trim(ctx.body.key) || '';
+    const name = validator.trim(ctx.body.name) || '';
+
+    if (psw !== repsw) {
+      await this.ctx.render('sign/reset', {
+        name,
+        key,
+        error: '两次密码输入不一致。',
+      });
+      return;
+    }
+    const user = await service.user.getUserByNameAndKey(name, key);
+
+    if (!user) {
+      await this.ctx.render('notify/notify', {
+        error: '错误的激活链接',
+      });
+      return;
+    }
+    const passhash = tools.bhash(psw);
+    user.pass = passhash;
+    user.retrieve_key = null;
+    user.retrieve_time = null;
+    user.active = true; // 用户激活
+
+    await user.save();
+    await this.ctx.render('notify/notify', { success: '你的密码已重置。' });
   }
 }
 
