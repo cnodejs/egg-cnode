@@ -20,29 +20,34 @@ describe('test/app/controller/user.test.js', () => {
   // afterEach(app.mock.restore);
 
   it('should GET /user return 404', async () => {
-    const { status } = await app.httpRequest().get('/user');
-    assert(status === 404);
+    await app.httpRequest()
+      .get('/user')
+      .expect(404);
   });
 
   it('should GET /user/:unexisted_user return 404', async () => {
-    const { status } = await app.httpRequest().get('/user/unexisted_user');
-    assert(status === 404);
+    await app.httpRequest()
+      .get('/user/unexisted_user')
+      .expect(404);
   });
 
   it('should GET /user/:existed_user return 200', async () => {
-    const { status } = await app.httpRequest().get(`/user/${loginname}`);
-    assert(status === 200);
+    await app.httpRequest()
+      .get(`/user/${loginname}`)
+      .expect(200);
   });
 
   it('should GET /setting without session return 403', async () => {
-    const { status } = await app.httpRequest().get('/setting');
-    assert(status === 403);
+    await app.httpRequest()
+      .get('/setting')
+      .expect(403);
   });
 
   it('should GET /setting with session return 200', async () => {
     app.mockSession({ user });
-    const { status } = await app.httpRequest().get('/setting');
-    assert(status === 200);
+    await app.httpRequest()
+      .get('/setting')
+      .expect(200);
   });
 
   describe('POST /setting', () => {
@@ -56,12 +61,12 @@ describe('test/app/controller/user.test.js', () => {
     it('should POST /setting action change_setting, return 302', async () => {
       app.mockCsrf();
       app.mockSession({ user });
-      const res = await app.httpRequest()
+      await app.httpRequest()
         .post('/setting')
         .type('form')
-        .send(Object.assign({}, body, { action: 'change_setting' }));
-      assert(res.status === 302);
-      assert(res.headers.location === '/setting?save=success');
+        .send(Object.assign({}, body, { action: 'change_setting' }))
+        .expect(302)
+        .expect('location', '/setting?save=success');
     });
 
     it('should update user setting', async () => {
