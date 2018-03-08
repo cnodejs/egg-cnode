@@ -8,3 +8,6 @@ script:
   - npm run ci
 after_script:
   - npminstall codecov && codecov
+services:
+  - redis
+  - mongodb
