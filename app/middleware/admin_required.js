@@ -11,7 +11,7 @@ module.exports = () => {
       return;
     }
 
-    if (!ctx.user.is_admin) {
+    if (!ctx.session.is_admin) {
       await ctx.render('notify/notify', { error: '需要管理员权限。' });
       return;
     }

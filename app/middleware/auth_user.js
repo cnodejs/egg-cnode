@@ -40,6 +40,8 @@ module.exports = () => {
     const count = await ctx.service.message.getMessagesCount(user._id);
     user.messages_count = count;
     ctx.locals.current_user = user;
+    // 这里需要设置is_admin, 因为ctx.user为只读, 所以使用ctx.session.is_admin
+    ctx.session.is_admin = user.is_admin;
     await next();
   };
 };
