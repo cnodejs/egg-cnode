@@ -28,6 +28,9 @@ describe('test/app/controller/topic.test.js', () => {
       'avatar_url',
       'active'
     );
+
+    user_id = user._id;
+
     topic = await ctx.service.topic.newAndSave(
       'title',
       'content',
@@ -40,7 +43,7 @@ describe('test/app/controller/topic.test.js', () => {
     //   topic_id
     // );
     topic_id = topic._id;
-    user_id = user._id;
+
   });
   it('should GET /topic/:tid ok', async () => {
     await app.httpRequest().get('/topic/:tid').expect(404);
@@ -125,20 +128,17 @@ describe('test/app/controller/topic.test.js', () => {
   });
 
   // 测试报错,目前没找到原因:AtService.fetchUsers is not a function
-  // it('should POST /topic/:tid/delete ok', async () => {
-  //   app.mockSession({
-  //     user: {
-  //       name: username,
-  //       _id: user_id,
-  //       is_admin: true,
-  //     },
-  //   });
-  //   app.mockCsrf();
-  //   await app
-  //     .httpRequest()
-  //     .post(`/topic/${topic_id}/delete`)
-  //     .expect(200);
-  // });
+  it('should POST /topic/:tid/delete ok', async () => {
+    app.mockSession({
+      user: {
+        name: username,
+        _id: user_id,
+        is_admin: true,
+      },
+    });
+    app.mockCsrf();
+    await app.httpRequest().post(`/topic/${topic_id}/delete`).expect(200);
+  });
 
   it('should POST /topic/:tid/edit ok', async () => {
     app.mockSession({

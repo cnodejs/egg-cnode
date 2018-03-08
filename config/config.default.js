@@ -12,16 +12,11 @@ module.exports = appInfo => {
 
   config.session_secret = 'node_club_secret'; // 务必修改
 
-  // add your config here
-<<<<<<< HEAD
-  config.middleware = [ 'locals', 'authUser', 'errorPage', 'proxy' ];
-=======
   config.middleware = [
     'locals',
     'authUser',
     'errorPage',
   ];
->>>>>>> upstream/master
 
   config.authUser = {
     enable: true,
