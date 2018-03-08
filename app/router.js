@@ -6,7 +6,7 @@
 module.exports = app => {
   const { router, controller, config, middleware } = app;
 
-  const { site, sign, user, topic, rss, search, page } = controller;
+  const { site, sign, user, topic, rss, search, page, reply } = controller;
 
   const userRequired = middleware.userRequired();
   const adminRequired = middleware.adminRequired();
@@ -85,21 +85,13 @@ module.exports = app => {
   // router.post('/topic/de_collect', userRequired, topic.de_collect); // 取消关注某话题
 
   // // reply controller
-  router.post('/:topic_id/reply',
-    // auth.userRequired, limit.peruserperday('create_reply', config.create_reply_per_day, { showJson: false }),
+  router.post('/:topic_id/reply', userRequired,
+    // limit.peruserperday('create_reply', config.create_reply_per_day, { showJson: false }),
     reply.add); // 提交一级回复
-  router.get('/reply/:reply_id/edit',
-    // auth.userRequired,
-    reply.showEdit); // 修改自己的评论页
-  router.post('/reply/:reply_id/edit',
-    // auth.userRequired,
-    reply.update); // 修改某评论
-  router.post('/reply/:reply_id/delete',
-    // auth.userRequired,
-    reply.delete); // 删除某评论
-  router.post('/reply/:reply_id/up',
-    // auth.userRequired,
-    reply.up); // 为评论点赞
+  router.get('/reply/:reply_id/edit', userRequired, reply.showEdit); // 修改自己的评论页
+  router.post('/reply/:reply_id/edit', userRequired, reply.update); // 修改某评论
+  router.post('/reply/:reply_id/delete', userRequired, reply.delete); // 删除某评论
+  router.post('/reply/:reply_id/up', userRequired, reply.up); // 为评论点赞
   // router.post('/upload', auth.userRequired, topic.upload); // 上传图片
 
   // static page

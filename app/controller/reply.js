@@ -72,11 +72,11 @@ class ReplyController extends Controller {
         reply_id: reply._id,
         content: reply.content,
       });
-    } else {
-      ctx.status = 403;
-      ctx.message = '对不起，你不能编辑此回复。';
       return;
     }
+    ctx.status = 403;
+    ctx.message = '对不起，你不能编辑此回复。';
+    return;
   }
   /**
    * 提交编辑回复
@@ -134,7 +134,7 @@ class ReplyController extends Controller {
       ctx.status = 200;
       ctx.body = { status: 'failed' };
     }
-    service.topic.reduceCount(reply.topic_id);
+    await service.topic.reduceCount(reply.topic_id);
     return;
   }
   /**
@@ -173,7 +173,6 @@ class ReplyController extends Controller {
       success: true,
       action,
     };
-    return;
   }
 }
 
