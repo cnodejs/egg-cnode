@@ -7,7 +7,7 @@ module.exports = () => {
 
   return async function(ctx, next) {
     const { session } = ctx;
-    if (!session || !session.user || !session.user._id) {
+    if (!session.user || !session.user._id) {
       ctx.status = 403;
       ctx.body = 'forbidden!';
       return;
