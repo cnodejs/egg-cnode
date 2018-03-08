@@ -70,7 +70,7 @@ class TopicController extends Controller {
     if (!currentUser) {
       is_collect = null;
     } else {
-      is_collect = await service.topicCollect.getTopicCollect(
+      is_collect = service.topicCollect.getTopicCollect(
         currentUser._id,
         topic_id
       );
@@ -166,7 +166,7 @@ class TopicController extends Controller {
     const { ctx, service, config } = this;
     const topic_id = ctx.params.tid;
 
-    const { topic } = await service.getTopicById(topic_id);
+    const { topic } = await service.topic.getTopicById(topic_id);
     if (!topic) {
       ctx.status = 404;
       ctx.message = '此话题不存在或已被删除。';
@@ -187,7 +187,7 @@ class TopicController extends Controller {
       });
     } else {
       ctx.status = 403;
-      ctx.message = '对不起，你不能编辑此话题。';
+      // ctx.message = '对不起，你不能编辑此话题。';
     }
   }
 
@@ -198,8 +198,9 @@ class TopicController extends Controller {
     const { ctx, service, config } = this;
 
     const topic_id = ctx.params.tid;
-    let { title, tab } = ctx.body.title;
-    let content = ctx.body.t_content;
+    let title = ctx.request.body.title;
+    let tab = ctx.request.body.tab;
+    let content = ctx.request.body.t_content;
 
     const { topic } = await service.getTopicById(topic_id);
     if (!topic) {
@@ -267,6 +268,7 @@ class TopicController extends Controller {
     // 删除topic_collect，用户collect_topic_count减1
     const { ctx, service } = this;
     const topic_id = ctx.params.tid;
+
     const [ topic, author ] = await service.topic.getFullTopic(topic_id);
 
     if (
@@ -309,6 +311,7 @@ class TopicController extends Controller {
     }
 
     const topic = await service.topic.getTopic(topic_id);
+
     if (!topic) {
       ctx.status = 404;
       ctx.message = '此话题不存在或已被删除。';
@@ -365,7 +368,7 @@ class TopicController extends Controller {
    */
   async collect() {
     const { ctx, service } = this;
-    const topic_id = ctx.params.tid;
+    const topic_id = ctx.request.body.topic_id;
 
     const topic = await service.topic.getTopic(topic_id);
 
@@ -383,7 +386,7 @@ class TopicController extends Controller {
       return;
     }
 
-    await service.topic_collect.newAndSave(ctx.session.user._id, topic._id);
+    service.topic_collect.newAndSave(ctx.session.user._id, topic._id);
     ctx.body = { status: 'success' };
 
     const user = await service.user.getUserById(ctx.session.user._id);
@@ -400,14 +403,14 @@ class TopicController extends Controller {
    */
   async de_collect() {
     const { ctx, service } = this;
-    const topic_id = ctx.params.tid;
+    const topic_id = ctx.request.body.topic_id;
     const topic = await service.topic.getTopic(topic_id);
 
     if (!topic) {
       ctx.body = { status: 'failed' };
     }
 
-    const removeResult = await service.topic_collect.remove(
+    const removeResult = service.topic_collect.remove(
       ctx.session.user._id,
       topic._id
     );
