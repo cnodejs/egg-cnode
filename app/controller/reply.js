@@ -98,16 +98,14 @@ class ReplyController extends Controller {
         reply.update_at = new Date();
         await reply.save();
         ctx.redirect('/topic/' + reply.topic_id + '#' + reply._id);
-      } else {
-        ctx.status = 400;
-        ctx.message = '回复的字数太少。';
-        return;
       }
-    } else {
-      ctx.status = 403;
-      ctx.message = '对不起，你不能编辑此回复。';
+      ctx.status = 400;
+      ctx.message = '回复的字数太少。';
       return;
     }
+    ctx.status = 403;
+    ctx.message = '对不起，你不能编辑此回复。';
+    return;
   }
   /**
    * 删除回复
