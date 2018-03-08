@@ -20,8 +20,8 @@ exports.mongoose = {
 };
 
 exports.passportGithub = {
-  key: process.env.EGG_PASSPORT_GITHUB_CLIENT_ID || '',
-  secret: process.env.EGG_PASSPORT_GITHUB_CLIENT_SECRET || '',
+  key: process.env.EGG_PASSPORT_GITHUB_CLIENT_ID || 'test',
+  secret: process.env.EGG_PASSPORT_GITHUB_CLIENT_SECRET || 'test',
 };
 
 exports.passportLocal = {
