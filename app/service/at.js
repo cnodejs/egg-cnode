@@ -72,7 +72,7 @@ class AtService extends Service {
    * @return {String} 替换后的文本内容
    */
   linkUsers(text) {
-    const users = AtService.fetchUsers(text);
+    const users = this.fetchUsers(text);
     for (let i = 0; i < users.length; i++) {
       const name = users[i];
       text = text.replace(
