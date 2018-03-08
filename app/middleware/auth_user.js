@@ -7,14 +7,14 @@ module.exports = () => {
     ctx.locals.current_user = null;
     if (ctx.app.config.debug && ctx.cookies.get('mock_user')) {
       const mockUser = JSON.parse(ctx.cookies.get('mock_user'));
-      ctx.session.user = new ctx.model.User(mockUser);
+      ctx.user = new ctx.model.User(mockUser);
       if (mockUser.is_admin) {
-        ctx.session.user.is_admin = true;
+        ctx.user.is_admin = true;
       }
       return await next();
     }
 
-    let { user } = ctx.session;
+    let { user } = ctx;
     if (user) {
       const auth_token = ctx.cookies.get(ctx.app.config.auth_cookie_name, {
         signed: true,
@@ -39,7 +39,6 @@ module.exports = () => {
 
     const count = await ctx.service.message.getMessagesCount(user._id);
     user.messages_count = count;
-    ctx.session.user = user;
     ctx.locals.current_user = user;
     await next();
   };
