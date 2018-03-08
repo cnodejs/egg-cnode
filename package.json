@@ -41,7 +41,8 @@
   "scripts": {
     "start": "egg-scripts start --daemon --title=egg-server-cnode",
     "stop": "egg-scripts stop --title=egg-server-cnode",
-    "dev": "egg-bin dev",
+    "docker": "egg-scripts start --title=egg-server-cnode",
+    "dev": "egg-bin dev",    
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "egg-bin test",
