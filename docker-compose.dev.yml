@@ -1,0 +1,34 @@
+version: '3'
+services:
+  redis:
+    image: redis:3.2-alpine
+    command: redis-server --appendonly yes --requirepass egg_cnode
+    volumes:
+      - egg-redis:/data
+    networks:
+      - docker_cnode
+    ports:
+      - 6379:6379
+
+  mongodb:
+    image: mongo:3.2
+    restart: always
+    environment:      
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=mongodb
+      - MONGO_INITDB_DATABASE=egg_cnode
+    volumes:
+      - egg-mongo:/data/db
+      - ./init.d/mongo/:/docker-entrypoint-initdb.d/
+    networks:
+      - docker_cnode
+    ports:
+      - 27017:27017
+
+volumes:
+  egg-mongo:
+  egg-redis:
+
+networks:
+  docker_cnode:
+    driver: bridge    
