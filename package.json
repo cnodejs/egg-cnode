@@ -4,6 +4,7 @@
   "description": "",
   "private": true,
   "dependencies": {
+    "async-retry": "^1.2.1",
     "bcryptjs": "^2.4.3",
     "data2xml": "^1.2.5",
     "egg": "^2.2.1",
@@ -18,6 +19,9 @@
     "loader-koa": "^2.0.1",
     "lodash": "^4.17.5",
     "markdown-it": "^8.4.1",
+    "nodemailer": "^4.6.2",
+    "nodemailer-smtp-transport": "^2.7.4",
+    "util": "^0.10.3",
     "uuid": "^3.2.1",
     "validator": "^9.4.1",
     "xmlbuilder": "^9.0.7"
