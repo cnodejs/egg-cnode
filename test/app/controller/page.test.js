@@ -1,11 +1,12 @@
 'use strict';
 
-const { app, assert } = require('egg-mock/bootstrap');
+const { app } = require('egg-mock/bootstrap');
 
 describe('test/app/controller/page.test.js', () => {
   it('should GET /about', async () => {
-    const { status } = await app.httpRequest().get('/about');
-    assert(status === 200);
+    await app.httpRequest()
+      .get('/about')
+      .expect(200);
   });
 
   it('should GET /faq', async () => {

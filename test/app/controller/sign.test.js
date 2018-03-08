@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, assert } = require('egg-mock/bootstrap');
+const { app } = require('egg-mock/bootstrap');
 
 describe('test/app/controller/sign.test.js', () => {
   const loginname = 'loginname' + Date.now();
@@ -31,38 +31,38 @@ describe('test/app/controller/sign.test.js', () => {
   });
 
   it('should GET /search_pass', async () => {
-    const res = await app.httpRequest()
-      .get('/search_pass');
-    assert(res.statusCode === 200);
+    await app.httpRequest()
+      .get('/search_pass')
+      .expect(200);
   });
 
   it('should GET /reset_pass', async () => {
-    const res = await app.httpRequest()
-      .get('/reset_pass');
-    assert(res.statusCode === 403);
-    assert(res.text.includes('信息有误，密码无法重置。'));
+    await app.httpRequest()
+      .get('/reset_pass')
+      .expect(403)
+      .expect(/信息有误，密码无法重置。/);
   });
 
   it('should GET /active_account', async () => {
-    const res = await app.httpRequest()
-      .get('/active_account');
-    assert(res.text.includes('用户不存在'));
+    await app.httpRequest()
+      .get('/active_account')
+      .expect(404)
+      .expect(/用户不存在/);
   });
 
   it('should POST /signup', async () => {
     app.mockCsrf();
-    const res = await app.httpRequest()
+    await app.httpRequest()
       .post('/signup')
       .type('form')
-      .send({});
-
-    assert(res.statusCode === 422);
-    assert(res.text.includes('信息不完整。'));
+      .send({})
+      .expect(422)
+      .expect(/信息不完整。/);
   });
 
   it('should POST /signup loginname less 5', async () => {
     app.mockCsrf();
-    const res = await app.httpRequest()
+    await app.httpRequest()
       .post('/signup')
       .type('form')
       .send({
@@ -70,15 +70,14 @@ describe('test/app/controller/sign.test.js', () => {
         email: 'email@myemail.com',
         pass: '123456',
         re_pass: '123456',
-      });
-
-    assert(res.statusCode === 422);
-    assert(res.text.includes('用户名至少需要5个字符。'));
+      })
+      .expect(422)
+      .expect(/用户名至少需要5个字符。/);
   });
 
   it('should POST /signup invalid loginname', async () => {
     app.mockCsrf();
-    const res = await app.httpRequest()
+    await app.httpRequest()
       .post('/signup')
       .type('form')
       .send({
@@ -86,15 +85,14 @@ describe('test/app/controller/sign.test.js', () => {
         email: 'email@myemail.com',
         pass: '123456',
         re_pass: '123456',
-      });
-
-    assert(res.statusCode === 422);
-    assert(res.text.includes('用户名不合法。'));
+      })
+      .expect(422)
+      .expect(/用户名不合法。/);
   });
 
   it('should POST /signup invalid email', async () => {
     app.mockCsrf();
-    const res = await app.httpRequest()
+    await app.httpRequest()
       .post('/signup')
       .type('form')
       .send({
@@ -102,15 +100,14 @@ describe('test/app/controller/sign.test.js', () => {
         email: 'invalid_email',
         pass: '123456',
         re_pass: '123456',
-      });
-
-    assert(res.statusCode === 422);
-    assert(res.text.includes('邮箱不合法。'));
+      })
+      .expect(422)
+      .expect(/邮箱不合法。/);
   });
 
   it('should POST /signup unmatch password', async () => {
     app.mockCsrf();
-    const res = await app.httpRequest()
+    await app.httpRequest()
       .post('/signup')
       .type('form')
       .send({
@@ -118,15 +115,14 @@ describe('test/app/controller/sign.test.js', () => {
         email: 'email@myemail.com',
         pass: '123456',
         re_pass: '1234567',
-      });
-
-    assert(res.statusCode === 422);
-    assert(res.text.includes('两次密码输入不一致。'));
+      })
+      .expect(422)
+      .expect(/两次密码输入不一致。/);
   });
 
   it('should POST /signup ok', async () => {
     app.mockCsrf();
-    const res = await app.httpRequest()
+    await app.httpRequest()
       .post('/signup')
       .type('form')
       .send({
@@ -134,15 +130,14 @@ describe('test/app/controller/sign.test.js', () => {
         email,
         pass: '123456',
         re_pass: '123456',
-      });
-
-    assert(res.statusCode === 200);
-    assert(res.text.includes('欢迎加入 cnode！我们已给您的注册邮箱发送了一封邮件，请点击里面的链接来激活您的帐号'));
+      })
+      .expect(200)
+      .expect(/欢迎加入 cnode！我们已给您的注册邮箱发送了一封邮件，请点击里面的链接来激活您的帐号/);
   });
 
   it('should POST /signup user or email in use', async () => {
     app.mockCsrf();
-    const res = await app.httpRequest()
+    await app.httpRequest()
       .post('/signup')
       .type('form')
       .send({
@@ -150,9 +145,8 @@ describe('test/app/controller/sign.test.js', () => {
         email,
         pass: '123456',
         re_pass: '123456',
-      });
-
-    assert(res.statusCode === 422);
-    assert(res.text.includes('用户名或邮箱已被使用。'));
+      })
+      .expect(422)
+      .expect(/用户名或邮箱已被使用。/);
   });
 });
