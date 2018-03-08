@@ -14,7 +14,6 @@ module.exports = appInfo => {
     'locals',
     'authUser',
     'errorPage',
-    'proxy',
   ];
 
   config.authUser = {
@@ -54,6 +53,21 @@ module.exports = appInfo => {
 
   config.ejs = {
     layout: 'layout.html',
+  };
+
+  config.avatars_allow_hostname = [
+    'avatars0.githubusercontent.com',
+    'avatars1.githubusercontent.com',
+    'avatars2.githubusercontent.com',
+    'avatars.githubusercontent.com',
+    'www.gravatar.com',
+    'gravatar.com',
+    'www.google-analytics.com',
+  ];
+
+  config.auth_cookie_name = 'node_club';
+  config.admins = {
+    ADMIN_USER: true,
   };
 
   return config;

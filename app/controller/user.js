@@ -2,7 +2,8 @@
 
 const _ = require('lodash');
 const utility = require('utility');
-
+const tools = require('../common/tools');
+const validator = require('validator');
 const Controller = require('egg').Controller;
 
 class UserController extends Controller {
@@ -177,6 +178,145 @@ class UserController extends Controller {
     });
   }
 
+  async showSetting() {
+    const { ctx, service } = this;
+    const id = ctx.session.user._id;
+    const user = await service.user.getUserById(id);
+
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = '发生错误';
+      return;
+    }
+
+    if (ctx.request.query.save === 'success') {
+      user.success = '保存成功。';
+    }
+
+    return await ctx.render('user/setting', { user });
+  }
+
+  async setting() {
+    const { ctx, ctx: { request: req }, service } = this;
+    // 显示出错或成功信息
+    async function showMessage(msg, data, isSuccess) {
+      data = data || req.body;
+      const user = {
+        loginname: data.loginname,
+        email: data.email,
+        url: data.url,
+        location: data.location,
+        signature: data.signature,
+        weibo: data.weibo,
+        accessToken: data.accessToken,
+      };
+      if (isSuccess) {
+        user.success = msg;
+      } else {
+        user.error = msg;
+      }
+      return await ctx.render('user/setting', { user });
+    }
+
+    // post
+    const { body, body: { action } } = req;
+    if (action === 'change_setting') {
+      const url = validator.trim(body.url);
+      const location = validator.trim(body.location);
+      const weibo = validator.trim(body.weibo);
+      const signature = validator.trim(body.signature);
+
+      const user = await service.user.getUserById(ctx.session.user._id);
+      user.url = url;
+      user.location = location;
+      user.signature = signature;
+      user.weibo = weibo;
+      user.save();
+
+      ctx.session.user = user.toObject({ virtual: true });
+      return ctx.redirect('/setting?save=success');
+    }
+
+    if (action === 'change_password') {
+      const oldPass = validator.trim(req.body.old_pass);
+      const newPass = validator.trim(req.body.new_pass);
+      if (!oldPass || !newPass) {
+        return showMessage('旧密码或新密码不得为空');
+      }
+
+      const user = await service.user.getUserById(ctx.session.user._id);
+      const equal = tools.bcompare(oldPass, user.pass);
+      if (!equal) {
+        return showMessage('当前密码不正确。', user);
+      }
+
+      const newPassHash = tools.bhash(newPass);
+      user.pass = newPassHash;
+      user.save();
+      return showMessage('密码已被修改。', user, true);
+    }
+  }
+
+  async toggleStar() {
+    const { ctx, ctx: { request: req }, service } = this;
+    const { body } = req;
+    const user_id = body.user_id;
+    const user = await service.user.getUserById(user_id);
+
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = 'user is not exists';
+      return;
+    }
+    user.is_star = !user.is_star;
+    user.save();
+
+    ctx.body = { status: 'success' };
+  }
+
+  async block() {
+    const { ctx, ctx: { request: req }, service } = this;
+    const { body: { action } } = req;
+    const loginname = ctx.params.name;
+
+    const user = await service.user.getUserByLoginName(loginname);
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = 'user is not exists';
+      return;
+    }
+
+    if (action === 'set_block') {
+      user.is_block = true;
+      user.save();
+      ctx.body = { status: 'success' };
+    } else if (action === 'cancel_block') {
+      user.is_block = false;
+      user.save();
+      ctx.body = { status: 'success' };
+    }
+  }
+
+  async deleteAll() {
+    const { ctx, service } = this;
+    const loginname = ctx.params.name;
+
+
+    const user = await service.user.getUserByLoginName(loginname);
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = 'user is not exists';
+      return;
+    }
+
+    // 删除主题
+    ctx.model.Topic.update({ author_id: user._id }, { $set: { deleted: true } }, { multi: true });
+    // 删除评论
+    ctx.model.Reply.update({ author_id: user._id }, { $set: { deleted: true } }, { multi: true });
+    // 点赞数也全部干掉
+    ctx.model.Reply.update({}, { $pull: { ups: user._id } }, { multi: true });
+    ctx.body = { status: 'success' };
+  }
 }
 
 // var User         = require('../proxy').User;
