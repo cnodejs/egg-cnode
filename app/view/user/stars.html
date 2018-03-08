@@ -1,4 +1,4 @@
-<%- partial('../sidebar') %>
+<%- include('../sidebar.html') %>
 
 <div id='content'>
   <div class='panel'>
@@ -10,7 +10,9 @@
     </div>
     <div class='inner'>
       <% if (typeof stars !== 'undefined' && stars.length > 0) { %>
-        <%- partial('./user',{ collection: stars, as: 'user' }) %>
+        <% stars.map(star => { %>
+          <%- include('./user.html', { user: star }) %>
+        <% }) %>
       <% } else { %>
         <p>还没有社区达人</p>
       <% } %>
