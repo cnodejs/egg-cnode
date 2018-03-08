@@ -17,7 +17,7 @@
       <span class='col_fade'>作者其它话题</span>
     </div>
     <div class='inner'>
-      <% if (typeof(author_other_topics) === 'undefined' || author_other_topics.length > 0) { %>
+      <% if (typeof author_other_topics === 'undefined' || author_other_topics.length > 0) { %>
       <ul class='unstyled'>
         <%- include('../topic/small.html', { collection: author_other_topics, as: 'topic' }) %>
       </ul>
@@ -32,7 +32,7 @@
       <span class='col_fade'>无人回复的话题</span>
     </div>
     <div class='inner'>
-      <% if (typeof(no_reply_topics) !== 'undefined' && no_reply_topics.length > 0) { %>
+      <% if (typeof no_reply_topics !== 'undefined' && no_reply_topics.length > 0) { %>
       <ul class='unstyled'>
         <%- include('../topic/small.html', { collection: no_reply_topics, as: 'topic' }) %>
       </ul>
@@ -141,7 +141,7 @@
     <%- include('../reply/reply.html', topic.replies) %>
   </div>
   <% } %>
-  <% if (current_user && typeof(topic) !== 'undefined') { %>
+  <% if (current_user && typeof topic !== 'undefined') { %>
   <div class='panel'>
     <div class='header'>
       <span class='col_fade'>添加回复</span>
@@ -180,7 +180,7 @@
 </div>
 
 
-<% if (current_user && typeof(topic) !== 'undefined') { %>
+<% if (current_user && typeof topic !== 'undefined') { %>
 <!-- markdown editor -->
 <%- include('../includes/editor.html') %>
 <script>
