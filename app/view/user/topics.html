@@ -1,4 +1,4 @@
-<%- partial('../sidebar') %>
+<%- include('../sidebar.html') %>
 
 <div id='content'>
   <div class='panel'>
@@ -13,7 +13,7 @@
     <div class="header"><%=user.loginname%> 创建的话题</div>
     <div class="inner padding">
     <% if(typeof topics !== 'undefined' && topics.length > 0 ){ %>
-      <%- partial('../topic/list',
+      <%- include('../topic/list.html',
       { topics: topics, pages: pages, current_pages: current_page, base: '/user/'+user.loginname+'/topics' }) %>
     <% }else{ %>
       <div class='inner'>

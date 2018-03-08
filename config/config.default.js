@@ -10,8 +10,18 @@ module.exports = appInfo => {
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1519887194138_3450';
 
+  config.session_secret = 'node_club_secret'; // 务必修改
+
   // add your config here
+<<<<<<< HEAD
   config.middleware = [ 'locals', 'authUser', 'errorPage', 'proxy' ];
+=======
+  config.middleware = [
+    'locals',
+    'authUser',
+    'errorPage',
+  ];
+>>>>>>> upstream/master
 
   config.authUser = {
     enable: true,
@@ -66,6 +76,21 @@ module.exports = appInfo => {
 
   config.ejs = {
     layout: 'layout.html',
+  };
+
+  config.avatars_allow_hostname = [
+    'avatars0.githubusercontent.com',
+    'avatars1.githubusercontent.com',
+    'avatars2.githubusercontent.com',
+    'avatars.githubusercontent.com',
+    'www.gravatar.com',
+    'gravatar.com',
+    'www.google-analytics.com',
+  ];
+
+  config.auth_cookie_name = 'node_club';
+  config.admins = {
+    ADMIN_USER: true,
   };
 
   return config;

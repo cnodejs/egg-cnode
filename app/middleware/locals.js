@@ -1,6 +1,7 @@
 'use strict';
 
 const Loader = require('loader');
+const helper = require('../extend/helper');
 
 module.exports = (options, app) => {
   // assets
@@ -24,6 +25,7 @@ module.exports = (options, app) => {
     ctx.locals.Loader = Loader;
     ctx.locals.assets = assets;
     ctx.locals.csrf = ctx.csrf;
+    ctx.locals = Object.assign({}, ctx.locals, helper);
     await next();
   };
 };
