@@ -42,7 +42,7 @@ describe('test/app/controller/user.test.js', () => {
     });
 
 
-    it('should POST /setting : change setting ok', async () => {
+    it('should POST /setting change setting ok', async () => {
       app.mockCsrf();
       app.mockContext({ user });
       const res = await app.httpRequest()
@@ -58,7 +58,7 @@ describe('test/app/controller/user.test.js', () => {
       });
     });
 
-    it('should POST /setting : change password ok', async () => {
+    it('should POST /setting change password ok', async () => {
       app.mockCsrf();
       app.mockContext({ user });
       const { status } = await app.httpRequest()
@@ -109,36 +109,47 @@ describe('test/app/controller/user.test.js', () => {
       cb(updatedUser);
     }
 
-    it('should POST /user/set_star user reject', async () => {
+    it('should POST /user/set_star no_admin reject', async () => {
       await handleUserPost('/user/set_star');
     });
 
 
-    it('should POST /user/set_star admin access', async () => {
+    it('should POST /user/set_star ok', async () => {
       await handleAdminPost('/user/set_star', { user_id: user._id }, user => {
         assert(user.is_star === true);
       });
     });
 
-    it('should POST /user/cancel_star admin access', async () => {
+    it('should POST /user/cancel_star ok', async () => {
       await handleAdminPost('/user/cancel_star', { user_id: user._id }, user => {
         assert(user.is_star === false);
       });
     });
 
-    it('should POST /user/:name/block user reject', async () => {
+    it('should POST /user/:name/block no_admin reject', async () => {
       await handleUserPost(`/user/${user.loginname}/block`);
     });
 
-    it('should POST /user/:name/block admin access', async () => {
+    it('should POST /user/:name/block set block ok', async () => {
       await handleAdminPost(`/user/${user.loginname}/block`, { action: 'set_block' }, user => {
         assert(user.is_block === true);
       });
     });
 
-    it('should POST /user/:name/block admin access', async () => {
+    it('should POST /user/:name/block cancel block ok', async () => {
       await handleAdminPost(`/user/${user.loginname}/block`, { action: 'cancel_block' }, user => {
         assert(user.is_block === false);
+      });
+    });
+
+    it('should POST /user/:name/delete_all no_admin reject', async () => {
+      await handleUserPost(`/user/${user.loginname}/delete_all`);
+    });
+
+    it('should POST /user/:name/delete_all ok', async () => {
+      await handleAdminPost(`/user/${user.loginname}/delete_all`, {}, user => {
+        assert(user);
+        // TODO: Check topics and replies by service method.
       });
     });
   });
