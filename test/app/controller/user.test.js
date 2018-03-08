@@ -10,7 +10,6 @@ describe('test/app/controller/user.test.js', () => {
   let ctx;
 
   before(async function() {
-    // 创建 ctx
     ctx = app.mockContext();
     loginname = `loginname_${Date.now()}`;
     email = `${loginname}@test.com`;
@@ -151,6 +150,26 @@ describe('test/app/controller/user.test.js', () => {
         assert(user);
         // TODO: Check topics and replies by service method.
       });
+    });
+  });
+
+  describe('- Top100', () => {
+    it('should GET /users/top100 ok', async () => {
+      await app.httpRequest().get('/users/top100').expect(200);
+    });
+  });
+
+  describe('- Records', () => {
+    it('should GET /user/:name/collections ok', async () => {
+      await app.httpRequest().get(`/user/${user.loginname}/collections`).expect(200);
+    });
+
+    it('should GET /user/:name/topics ok', async () => {
+      await app.httpRequest().get(`/user/${user.loginname}/topics`).expect(200);
+    });
+
+    it('should GET /user/:name/replies ok', async () => {
+      await app.httpRequest().get(`/user/${user.loginname}/replies`).expect(200);
     });
   });
 });
