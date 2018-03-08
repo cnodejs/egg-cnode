@@ -127,7 +127,7 @@ describe('test/app/controller/topic.test.js', () => {
     await app.httpRequest().post(`/topic/${topic_id}/lock`).expect(200);
   });
 
-  // 测试报错,目前没找到原因:AtService.fetchUsers is not a function
+
   it('should POST /topic/:tid/delete ok', async () => {
     app.mockSession({
       user: {
