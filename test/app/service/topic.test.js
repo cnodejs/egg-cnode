@@ -27,13 +27,16 @@ describe('test/app/service/topic.test.js', () => {
     const content = 'hello world';
     const tab = 'share';
     const result = await topic.newAndSave(title, content, tab, userId);
-    topicId = result._id;
-    const reply = await ctx.service.reply.newAndSave('hi', topicId, userId);
-    replyId = reply._id;
     assert(result.title === title);
     assert(result.content === content);
     assert(result.tab === tab);
     assert.equal(result.author_id, userId);
+    topicId = result._id;
+    const reply = await ctx.service.reply.newAndSave('hi', topicId, userId);
+    assert(reply.content === 'hi');
+    assert(reply.author_id === userId);
+    assert(reply.topic_id === topicId);
+    replyId = reply._id;
   });
 
   it('updateLastReply should ok', async () => {
@@ -59,7 +62,7 @@ describe('test/app/service/topic.test.js', () => {
       good: false,
     };
     const result = await topic.getCountByQuery(query);
-    assert(result > 0);
+    assert(result === 1);
   });
 
   it('getTopicsByQuery should ok', async () => {
@@ -67,7 +70,7 @@ describe('test/app/service/topic.test.js', () => {
       good: false,
     };
     const result1 = await topic.getTopicsByQuery(query1, {});
-    assert(result1.length > 0);
+    assert(result1.length === 1);
 
     const query2 = {
       good: 'test',
@@ -78,7 +81,7 @@ describe('test/app/service/topic.test.js', () => {
 
   it('getLimit5w should ok', async () => {
     const result = await topic.getLimit5w();
-    assert(result.length > 0);
+    assert(result.length === 1);
   });
 
   it('getFullTopic should ok', async () => {
