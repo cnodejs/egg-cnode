@@ -80,10 +80,4 @@ module.exports = app => {
     }
     return existUser;
   });
-
-  app.passport.serializeUser(async (ctx, user) => {
-    // 默认会注入session.passport.user, 为方便使用改为session.user (?)
-    ctx.session.user = user;
-    return user;
-  });
 };

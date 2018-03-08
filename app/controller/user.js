@@ -46,7 +46,7 @@ class UserController extends Controller {
 
     // 如果用户没有激活，那么管理员可以帮忙激活
     let token = '';
-    if (!user.active && ctx.session.user && ctx.session.user.is_admin) {
+    if (!user.active && ctx.user && ctx.user.is_admin) {
       token = utility.md5(user.email + user.pass + config.session_secret);
     }
 
@@ -180,7 +180,7 @@ class UserController extends Controller {
 
   async showSetting() {
     const { ctx, service } = this;
-    const id = ctx.session.user._id;
+    const id = ctx.user._id;
     const user = await service.user.getUserById(id);
 
     if (!user) {
@@ -226,14 +226,14 @@ class UserController extends Controller {
       const weibo = validator.trim(body.weibo);
       const signature = validator.trim(body.signature);
 
-      const user = await service.user.getUserById(ctx.session.user._id);
+      const user = await service.user.getUserById(ctx.user._id);
       user.url = url;
       user.location = location;
       user.signature = signature;
       user.weibo = weibo;
       user.save();
 
-      ctx.session.user = user.toObject({ virtual: true });
+      ctx.user = user.toObject({ virtual: true });
       return ctx.redirect('/setting?save=success');
     }
 
@@ -244,7 +244,7 @@ class UserController extends Controller {
         return showMessage('旧密码或新密码不得为空');
       }
 
-      const user = await service.user.getUserById(ctx.session.user._id);
+      const user = await service.user.getUserById(ctx.user._id);
       const equal = tools.bcompare(oldPass, user.pass);
       if (!equal) {
         return showMessage('当前密码不正确。', user);
