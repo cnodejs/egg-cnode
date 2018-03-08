@@ -8,17 +8,20 @@ class ReplyController extends Controller {
    */
   async add() {
     const { ctx, service } = this;
-    const content = ctx.body.r_content;
-    const reply_id = ctx.body.reply_id;
+    const content = ctx.request.body.r_content;
+    const reply_id = ctx.params.reply_id;
 
     if (content.trim() === '') {
       ctx.status = 422;
-      ctx.message = '回复内容不能为空！';
+      ctx.body = {
+        error: '回复内容不能为空!',
+      };
       return;
     }
 
     const topic_id = ctx.params.topic_id;
-    const topic = await service.topic.getTopicById(topic_id);
+    let topic = await service.topic.getTopicById(topic_id);
+    topic = topic.topic;
 
     if (!topic) {
       ctx.status = 404;
@@ -27,7 +30,9 @@ class ReplyController extends Controller {
     }
     if (topic.lock) {
       ctx.status = 403;
-      ctx.message = '此主题已锁定。';
+      ctx.body = {
+        error: '该主题已锁定',
+      };
       return;
     }
 
@@ -59,7 +64,7 @@ class ReplyController extends Controller {
    */
   async showEdit() {
     const { ctx, service } = this;
-    const reply_id = ctx.params.topic_id;
+    const reply_id = ctx.params.reply_id;
     const reply = await service.reply.getReplyById(reply_id);
 
     if (!reply) {
@@ -75,7 +80,9 @@ class ReplyController extends Controller {
       return;
     }
     ctx.status = 403;
-    ctx.message = '对不起，你不能编辑此回复。';
+    ctx.body = {
+      error: '对不起，你不能编辑此回复',
+    };
     return;
   }
   /**
@@ -84,7 +91,7 @@ class ReplyController extends Controller {
   async update() {
     const { ctx, service } = this;
     const reply_id = ctx.params.reply_id;
-    const content = ctx.body.t_content;
+    const content = ctx.request.body.t_content;
     const reply = await service.reply.getReplyById(reply_id);
 
     if (!reply) {
@@ -98,13 +105,18 @@ class ReplyController extends Controller {
         reply.update_at = new Date();
         await reply.save();
         ctx.redirect('/topic/' + reply.topic_id + '#' + reply._id);
+        return;
       }
       ctx.status = 400;
-      ctx.message = '回复的字数太少。';
+      ctx.body = {
+        error: '回复的字数太少。',
+      };
       return;
     }
     ctx.status = 403;
-    ctx.message = '对不起，你不能编辑此回复。';
+    ctx.body = {
+      error: '对不起，你不能编辑此回复',
+    };
     return;
   }
   /**
