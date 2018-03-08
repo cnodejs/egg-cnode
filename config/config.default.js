@@ -67,7 +67,7 @@ module.exports = appInfo => {
 
   config.auth_cookie_name = 'node_club';
   config.admins = {
-    ADMIN_USER: true,
+    lqs469: true,
   };
 
   return config;

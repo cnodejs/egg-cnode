@@ -256,6 +256,67 @@ class UserController extends Controller {
       return showMessage('密码已被修改。', user, true);
     }
   }
+
+  async toggleStar() {
+    const { ctx, ctx: { request: req }, service } = this;
+    const { body } = req;
+    const user_id = body.user_id;
+    const user = await service.user.getUserById(user_id);
+
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = 'user is not exists';
+      return;
+    }
+    user.is_star = !user.is_star;
+    user.save();
+
+    ctx.body = { status: 'success' };
+  }
+
+  async block() {
+    const { ctx, ctx: { request: req }, service } = this;
+    const { body: { action } } = req;
+    const loginname = ctx.params.name;
+
+    const user = await service.user.getUserByLoginName(loginname);
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = 'user is not exists';
+      return;
+    }
+
+    if (action === 'set_block') {
+      user.is_block = true;
+      user.save();
+      ctx.body = { status: 'success' };
+    } else if (action === 'cancel_block') {
+      user.is_block = false;
+      user.save();
+      ctx.body = { status: 'success' };
+    }
+  }
+
+  async deleteAll() {
+    const { ctx, service } = this;
+    const loginname = ctx.params.name;
+
+
+    const user = await service.user.getUserByLoginName(loginname);
+    if (!user) {
+      ctx.status = 404;
+      ctx.message = 'user is not exists';
+      return;
+    }
+
+    // 删除主题
+    ctx.model.Topic.update({ author_id: user._id }, { $set: { deleted: true } }, { multi: true });
+    // 删除评论
+    ctx.model.Reply.update({ author_id: user._id }, { $set: { deleted: true } }, { multi: true });
+    // 点赞数也全部干掉
+    ctx.model.Reply.update({}, { $pull: { ups: user._id } }, { multi: true });
+    ctx.body = { status: 'success' };
+  }
 }
 
 // var User         = require('../proxy').User;

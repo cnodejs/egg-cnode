@@ -9,7 +9,7 @@ module.exports = app => {
   const { site, sign, user, topic, rss, search, page } = controller;
 
   const userRequired = middleware.userRequired();
-  // const adminRequired = middleware.adminRequired();
+  const adminRequired = middleware.adminRequired();
 
   // home page
   router.get('/', site.index);
@@ -56,10 +56,10 @@ module.exports = app => {
   router.get('/user/:name/collections', user.listCollectedTopics); // 用户收藏的所有话题页
   router.get('/user/:name/topics', user.listTopics); // 用户发布的所有话题页
   router.get('/user/:name/replies', user.listReplies); // 用户参与的所有回复页
-  // router.post('/user/set_star', adminRequired, user.toggleStar); // 把某用户设为达人
-  // router.post('/user/cancel_star', adminRequired, user.toggleStar); // 取消某用户的达人身份
-  // router.post('/user/:name/block', adminRequired, user.block); // 禁言某用户
-  // router.post('/user/:name/delete_all', adminRequired, user.deleteAll); // 删除某用户所有发言
+  router.post('/user/set_star', adminRequired, user.toggleStar); // 把某用户设为达人
+  router.post('/user/cancel_star', adminRequired, user.toggleStar); // 取消某用户的达人身份
+  router.post('/user/:name/block', adminRequired, user.block); // 禁言某用户
+  router.post('/user/:name/delete_all', adminRequired, user.deleteAll); // 删除某用户所有发言
 
   // // message controler
   // router.get('/my/messages', userRequired, message.index); // 用户个人的所有消息页
