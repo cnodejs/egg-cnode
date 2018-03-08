@@ -17,10 +17,14 @@ describe('test/app/service/reply.test.js', () => {
     loginname = `loginname_${Date.now()}`;
     email = `${loginname}@test.com`;
     const user = await ctx.service.user.newAndSave('name', loginname, 'pass', email, 'avatar_url', 'active');
-    const topic = await ctx.service.topic.newAndSave('first post', 'hello', 'share', userId);
+    assert(user.loginname === loginname);
+    const topic = await ctx.service.topic.newAndSave('first post', '<h1>hello</h1>', 'share', userId);
+    assert(topic.title === 'first post');
+    assert(topic.content === '<h1>hello</h1>');
+    assert(topic.tab === 'share');
+    assert(topic.author_id === userId);
     topicId = topic._id;
     userId = user._id;
-    assert(user.loginname === loginname);
   });
 
   it('newAndSave should ok', async () => {
@@ -55,7 +59,7 @@ describe('test/app/service/reply.test.js', () => {
 
   it('getRepliesByAuthorId should ok', async () => {
     const result = await replyService.getRepliesByAuthorId(userId);
-    assert(result.length >= 1);
+    assert(result.length === 1);
   });
 
   it('getCountByAuthorId should ok', async () => {
