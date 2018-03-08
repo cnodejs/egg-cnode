@@ -23,8 +23,7 @@ module.exports = app => {
 
     const passhash = existUser.pass;
     // TODO: change to async compare
-    const equal = tools.bcompare(passhash, password);
-
+    const equal = tools.bcompare(password, passhash);
     // 密码不匹配
     if (!equal) {
       return null;
@@ -67,6 +66,24 @@ module.exports = app => {
   app.passport.verify(async (ctx, user) => {
     ctx.logger.debug('passport.verify', user);
     const handler = user.provider === 'github' ? githubHandler : localHandler;
-    return handler(ctx, user);
+    const existUser = await handler(ctx, user);
+    if (existUser) {
+      // id存入Cookie, 用于验证过期.
+      const auth_token = existUser._id + '$$$$'; // 以后可能会存储更多信息，用 $$$$ 来分隔
+      const opts = {
+        path: '/',
+        maxAge: 1000 * 60 * 60 * 24 * 30,
+        signed: true,
+        httpOnly: true,
+      };
+      ctx.cookies.set(app.config.auth_cookie_name, auth_token, opts); // cookie 有效期30天
+    }
+    return existUser;
+  });
+
+  app.passport.serializeUser(async (ctx, user) => {
+    // 默认会注入session.passport.user, 为方便使用改为session.user (?)
+    ctx.session.user = user;
+    return user;
   });
 };
