@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = appinfo => {
+module.exports = appInfo => {
   const config = {};
 
   config.name = 'CNode';
@@ -9,7 +9,7 @@ module.exports = appinfo => {
   config.debug = true;
 
   // use for cookie sign key, should change to your own and keep security
-  config.keys = appinfo.name + '_1519887194138_3450';
+  config.keys = appInfo.name + '_1519887194138_3450';
 
   config.host = 'http://cnodejs.org';
 
