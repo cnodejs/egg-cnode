@@ -21,10 +21,10 @@ class SignController extends Controller {
 
   async signup() {
     const { ctx, service, config } = this;
-    const loginname = validator.trim(ctx.request.body.loginname).toLowerCase();
-    const email = validator.trim(ctx.request.body.email).toLowerCase();
-    const pass = validator.trim(ctx.request.body.pass);
-    const rePass = validator.trim(ctx.request.body.re_pass);
+    const loginname = validator.trim(ctx.request.body.loginname || '').toLowerCase();
+    const email = validator.trim(ctx.request.body.email || '').toLowerCase();
+    const pass = validator.trim(ctx.request.body.pass || '');
+    const rePass = validator.trim(ctx.request.body.re_pass || '');
 
     let msg;
     // 验证信息的正确性
@@ -90,12 +90,13 @@ class SignController extends Controller {
 
   async activeAccount() {
     const { ctx, service, config } = this;
-    const key = validator.trim(ctx.query.key);
-    const name = validator.trim(ctx.query.name);
+    const key = validator.trim(ctx.query.key || '');
+    const name = validator.trim(ctx.query.name || '');
 
     const user = await service.user.getUserByLoginName(name);
     if (!user) {
-      throw new Error('[ACTIVE_ACCOUNT] no such user: ' + name);
+      await ctx.render('notify/notify', { error: '用户不存在' });
+      return;
     }
 
     const passhash = user.pass;
