@@ -10,8 +10,12 @@
     </div>
     <div class='inner no-padding'>
       <% if (topics.length > 0) { %>
-        <%- include('../topic/list.html', { topics: topics, pages: pages, current_pages: current_page, base: '/user/' +
-          user.loginname + '/collections' }) %>
+        <%- include('../topic/list.html', {
+          topics,
+          pages,
+          current_pages,
+          base: `/user/${user.loginname}/collections`
+        }) %>
       <% } else { %>
         <p>找不到话题 (T_T)</p>
       <% } %>
