@@ -19,7 +19,9 @@
           <th>评论数</th>
         </thead>
         <tbody>
-        <%- include('./top100_user.html',{ collection: users, as: 'user' }) %>
+        <% users.map((user, indexInCollection) => { %>
+          <%- include('./top100_user.html', { user, indexInCollection }) %>
+        <%}) %>
         </tbody>
       </table>
       <% } else { %>
