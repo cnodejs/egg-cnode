@@ -18,14 +18,14 @@ class MailService extends Service {
     for (let i = 1; i < 6; i++) {
       try {
         await transporter.sendMail(data);
-        logger.info('send mail success');
+        logger.info('send mail success', data);
         break;
       } catch (err) {
         if (i === 5) {
-          logger.error('send mail finally error');
+          logger.error('send mail finally error', err, data);
           throw new Error(err);
         }
-        logger.error('send mail error');
+        logger.error('send mail error', err, data);
       }
     }
   }

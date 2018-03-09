@@ -109,7 +109,7 @@ module.exports = appInfo => {
 
   // 邮箱配置
   config.mail_opts = {
-    host: 'smtp.163.com',
+    host: 'smtp.126.com',
     port: 25,
     auth: {
       user: 'club@126.com',
