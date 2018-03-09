@@ -3,11 +3,15 @@
 module.exports = appInfo => {
   const config = {};
 
+  config.name = 'CNode';
+
   // debug 为 true 时，用于本地调试
   config.debug = true;
 
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1519887194138_3450';
+
+  config.host = 'http://cnodejs.org';
 
   config.session_secret = 'node_club_secret'; // 务必修改
 
@@ -101,6 +105,17 @@ module.exports = appInfo => {
   config.passportLocal = {
     usernameField: 'name',
     passwordField: 'pass',
+  };
+
+  // 邮箱配置
+  config.mail_opts = {
+    host: 'smtp.126.com',
+    port: 25,
+    auth: {
+      user: 'club@126.com',
+      pass: 'club',
+    },
+    ignoreTLS: true,
   };
 
   return config;
