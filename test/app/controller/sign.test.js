@@ -137,7 +137,7 @@ describe('test/app/controller/sign.test.js', () => {
       });
 
     assert(res.statusCode === 200);
-    assert(res.text.includes('欢迎加入 cnode！我们已给您的注册邮箱发送了一封邮件，请点击里面的链接来激活您的帐号'));
+    assert(res.text.includes('欢迎加入 CNode！我们已给您的注册邮箱发送了一封邮件，请点击里面的链接来激活您的帐号'));
   });
 
   it('should POST /signup user or email in use', async () => {
