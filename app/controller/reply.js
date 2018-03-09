@@ -36,7 +36,7 @@ class ReplyController extends Controller {
       return;
     }
 
-    const user_id = ctx.session.user._id;
+    const user_id = ctx.user._id;
     const topicAuthor = await service.user.getUserById(topic.author_id);
     const newContent = content.replace('@' + topicAuthor.loginname + ' ', '');
     const [
@@ -72,7 +72,7 @@ class ReplyController extends Controller {
       ctx.message = '此回复不存在或已被删除。';
       return;
     }
-    if (ctx.session.user._id.toString() === reply.author_id.toString() || ctx.session.user.is_admin) {
+    if (ctx.user._id.toString() === reply.author_id.toString() || ctx.user.is_admin) {
       await ctx.render('reply/edit', {
         reply_id: reply._id,
         content: reply.content,
@@ -99,7 +99,7 @@ class ReplyController extends Controller {
       ctx.message = '此回复不存在或已被删除。';
       return;
     }
-    if (ctx.session.user._id.toString() === reply.author_id.toString() || ctx.session.user.is_admin) {
+    if (ctx.user._id.toString() === reply.author_id.toString() || ctx.user.is_admin) {
       if (content.trim() !== '') {
         reply.content = content;
         reply.update_at = new Date();
@@ -132,7 +132,7 @@ class ReplyController extends Controller {
       ctx.body = { status: 'no reply ' + reply_id + ' exists' };
       return;
     }
-    if (reply.author_id.toString() === ctx.session.user._id.toString() || ctx.session.user.is_admin) {
+    if (reply.author_id.toString() === ctx.user._id.toString() || ctx.user.is_admin) {
       reply.deleted = true;
       reply.save();
       ctx.status = 200;
@@ -153,7 +153,7 @@ class ReplyController extends Controller {
   async up() {
     const { ctx, service } = this;
     const reply_id = ctx.params.reply_id;
-    const user_id = ctx.session.user._id;
+    const user_id = ctx.user._id;
     const reply = await service.reply.getReplyById(reply_id);
 
     if (!reply) {

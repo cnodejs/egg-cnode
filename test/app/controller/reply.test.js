@@ -36,7 +36,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /:topic_id/reply ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: user._id,
@@ -54,7 +54,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /:topic_id/reply ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: user._id,
@@ -72,7 +72,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /:topic_id/reply ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: user._id,
@@ -90,7 +90,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /:topic_id/reply ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: user._id,
@@ -108,7 +108,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should GET /reply/:reply_id/edit ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: user._id,
@@ -123,7 +123,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should GET /reply/:reply_id/edit ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -138,7 +138,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should GET /reply/:reply_id/edit ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -153,7 +153,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/edit ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -171,7 +171,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/edit ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -189,7 +189,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/edit ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -207,7 +207,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/edit ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -225,7 +225,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/delete ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -241,7 +241,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/delete ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -258,7 +258,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/delete ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -275,7 +275,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/up ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: '565c4473d0bc14ae279399fe',
@@ -291,7 +291,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/up ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: user._id,
@@ -308,7 +308,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/up ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: topic._id,
@@ -325,7 +325,7 @@ describe('test/app/controller/reply.test.js', () => {
   });
 
   it('should POST /reply/:reply_id/up ok', async () => {
-    app.mockSession({
+    app.mockContext({
       user: {
         name,
         _id: topic._id,
