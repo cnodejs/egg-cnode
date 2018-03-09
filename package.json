@@ -21,6 +21,8 @@
     "markdown-it": "^8.4.1",
     "qn": "^1.3.0",
     "stream-wormhole": "^1.0.3",
+    "nodemailer": "^4.6.2",
+    "nodemailer-smtp-transport": "^2.7.4",
     "uuid": "^3.2.1",
     "validator": "^9.4.1",
     "xmlbuilder": "^9.0.7"
@@ -42,7 +44,7 @@
     "start": "egg-scripts start --daemon --title=egg-server-cnode",
     "stop": "egg-scripts stop --title=egg-server-cnode",
     "docker": "egg-scripts start --title=egg-server-cnode",
-    "dev": "egg-bin dev",    
+    "dev": "egg-bin dev",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "egg-bin test",

@@ -70,7 +70,7 @@ class TopicController extends Controller {
     if (!currentUser) {
       is_collect = null;
     } else {
-      is_collect = service.topicCollect.getTopicCollect(
+      is_collect = await service.topicCollect.getTopicCollect(
         currentUser._id,
         topic_id
       );
@@ -273,7 +273,7 @@ class TopicController extends Controller {
 
     if (
       !ctx.session.user.is_admin &&
-      !topic.author_id.equals(ctx.session.user._id)
+      topic.author_id !== ctx.session.user._id
     ) {
       ctx.status = 403;
       ctx.body = { success: false, message: '无权限' };
@@ -375,8 +375,7 @@ class TopicController extends Controller {
     if (!topic) {
       ctx.body = { status: 'failed' };
     }
-
-    const doc = await service.topic_collect.getTopicCollect(
+    const doc = await service.topicCollect.getTopicCollect(
       ctx.session.user._id,
       topic._id
     );
@@ -386,7 +385,7 @@ class TopicController extends Controller {
       return;
     }
 
-    service.topic_collect.newAndSave(ctx.session.user._id, topic._id);
+    await service.topicCollect.newAndSave(ctx.session.user._id, topic._id);
     ctx.body = { status: 'success' };
 
     const user = await service.user.getUserById(ctx.session.user._id);
@@ -410,7 +409,7 @@ class TopicController extends Controller {
       ctx.body = { status: 'failed' };
     }
 
-    const removeResult = service.topic_collect.remove(
+    const removeResult = await service.topicCollect.remove(
       ctx.session.user._id,
       topic._id
     );

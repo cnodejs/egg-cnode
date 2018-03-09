@@ -13,7 +13,7 @@ describe('test/app/controller/topic.test.js', () => {
     key,
     username,
     user,
-    // topic_collect,
+    admin,
     topic;
 
   before(async () => {
@@ -38,12 +38,13 @@ describe('test/app/controller/topic.test.js', () => {
       user_id
     );
 
-    // topic_collect = ctx.service.topic_collect.newAndSave(
-    //   user_id,
-    //   topic_id
-    // );
+    await ctx.service.topicCollect.newAndSave(
+      user_id,
+      topic_id
+    );
     topic_id = topic._id;
 
+    admin = Object.assign(user, { is_admin: true });
   });
   it('should GET /topic/:tid ok', async () => {
     await app.httpRequest().get('/topic/:tid').expect(404);
@@ -58,53 +59,29 @@ describe('test/app/controller/topic.test.js', () => {
   });
 
   it('should GET /topic/create ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
-    });
+    app.mockContext({ user });
     await app.httpRequest().get('/topic/create').expect(200);
   });
 
   it('should POST /topic/:tid/top ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
-    });
+    app.mockContext({ user });
     app.mockCsrf();
     await app.httpRequest().post(`/topic/${topic_id}/top`).expect(200);
   });
 
   it('should POST /topic/:tid/good ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
-    });
+    app.mockContext({ user });
     app.mockCsrf();
     await app.httpRequest().post(`/topic/${topic_id}/good`).expect(200);
   });
 
   it('should GET /topic/:tid/edit ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
-    });
-
+    app.mockContext({ user });
+    app.mockSession({ user: admin });
     await app.httpRequest().get(`/topic/${topic_id}/edit`).expect(200);
   });
 
-  it('should GET /topic/:tid/edit ok', async () => {
+  it('should GET /topic/:tid/edit forbidden', async () => {
     app.mockSession({
       user: {
         name: 'other',
@@ -116,38 +93,21 @@ describe('test/app/controller/topic.test.js', () => {
   });
 
   it('should POST /topic/:tid/lock ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
-    });
+    app.mockContext({ user });
     app.mockCsrf();
     await app.httpRequest().post(`/topic/${topic_id}/lock`).expect(200);
   });
 
-
-  it('should POST /topic/:tid/delete ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
-    });
+  it('should POST /topic/:tid/delete admin ok', async () => {
+    app.mockContext({ user });
+    app.mockSession({ user: admin });
     app.mockCsrf();
     await app.httpRequest().post(`/topic/${topic_id}/delete`).expect(200);
   });
 
   it('should POST /topic/:tid/edit ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
-    });
+    app.mockContext({ user });
+    app.mockSession({ user: admin });
     app.mockCsrf();
     await app
       .httpRequest()
@@ -161,42 +121,33 @@ describe('test/app/controller/topic.test.js', () => {
   });
 
   // 测试报错,正在排查:Cannot read property 'getTopicCollect' of undefined
-  // it('should POST /topic/collect ok', async () => {
-  //   app.mockSession({
-  //     user: {
-  //       name: username,
-  //       _id: user_id,
-  //       is_admin: true,
-  //     },
-  //   });
-  //   app.mockCsrf();
-  //   await app
-  //     .httpRequest()
-  //     .post('/topic/collect')
-  //     .send({
-  //       topic_id,
-  //     })
-  //     .expect(200);
-  // });
+  // 排查出原因: service文件下不能用topic_collect格式,无法识别,改用用驼峰命名topicCollect
+  it('should POST /topic/collect ok', async () => {
+    app.mockContext({ user });
+    app.mockSession({ user: admin });
+    app.mockCsrf();
+    await app
+      .httpRequest()
+      .post('/topic/collect')
+      .send({
+        topic_id,
+      })
+      .expect(200);
+  });
 
-  // 测试报错,正在排查:Cannot read property 'getTopicCollect' of undefined
-  // it('should POST /topic/collect ok', async () => {
-  //   app.mockSession({
-  //     user: {
-  //       name: username,
-  //       _id: user_id,
-  //       is_admin: true,
-  //     },
-  //   });
-  //   app.mockCsrf();
-  //   await app
-  //     .httpRequest()
-  //     .post('/topic/collect')
-  //     .send({
-  //       topic_id,
-  //     })
-  //     .set('Content-Type', 'application/json')
-  //     .set('Accept', 'application/json')
-  //     .expect(200);
-  // });
+
+  it('should POST /topic/collect ok', async () => {
+    app.mockContext({ user });
+    app.mockSession({ user: admin });
+    app.mockCsrf();
+    await app
+      .httpRequest()
+      .post('/topic/collect')
+      .send({
+        topic_id,
+      })
+      .set('Content-Type', 'application/json')
+      .set('Accept', 'application/json')
+      .expect(200);
+  });
 });
