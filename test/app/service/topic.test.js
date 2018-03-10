@@ -62,7 +62,7 @@ describe('test/app/service/topic.test.js', () => {
       good: false,
     };
     const result = await topic.getCountByQuery(query);
-    assert(result === 1);
+    assert(result >= 1);
   });
 
   it('getTopicsByQuery should ok', async () => {
@@ -70,7 +70,7 @@ describe('test/app/service/topic.test.js', () => {
       good: false,
     };
     const result1 = await topic.getTopicsByQuery(query1, {});
-    assert(result1.length === 1);
+    assert(result1.length >= 1);
 
     const query2 = {
       good: 'test',
@@ -81,7 +81,7 @@ describe('test/app/service/topic.test.js', () => {
 
   it('getLimit5w should ok', async () => {
     const result = await topic.getLimit5w();
-    assert(result.length === 1);
+    assert(result.length >= 1);
   });
 
   it('getFullTopic should ok', async () => {
