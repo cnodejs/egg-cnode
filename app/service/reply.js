@@ -68,6 +68,7 @@ class ReplyService extends Service {
           return;
         }
         item.content = await this.service.at.linkUsers(item.content);
+        return item;
       })
     );
   }
