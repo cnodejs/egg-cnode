@@ -17,6 +17,8 @@ module.exports = app => {
     content_is_html: { type: Boolean },
     ups: [ Schema.Types.ObjectId ],
     deleted: { type: Boolean, default: false },
+  }, {
+    usePushEach: true,
   });
 
   ReplySchema.plugin(BaseModel);
