@@ -19,7 +19,7 @@
     <div class='inner'>
       <% if (typeof author_other_topics === 'undefined' || author_other_topics.length > 0) { %>
       <ul class='unstyled'>
-        <%- include('../topic/small.html', { collection: author_other_topics, as: 'topic' }) %>
+        <%- include('./small.html', { collection: author_other_topics, as: 'topic' }) %>
       </ul>
       <% } else { %>
       <p>无</p>

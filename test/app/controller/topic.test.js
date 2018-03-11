@@ -120,8 +120,6 @@ describe('test/app/controller/topic.test.js', () => {
       .expect(302);
   });
 
-  // 测试报错,正在排查:Cannot read property 'getTopicCollect' of undefined
-  // 排查出原因: service文件下不能用topic_collect格式,无法识别,改用用驼峰命名topicCollect
   it('should POST /topic/collect ok', async () => {
     app.mockContext({ user });
     app.mockSession({ user: admin });
