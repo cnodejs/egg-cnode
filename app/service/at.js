@@ -45,9 +45,10 @@ class AtService extends Service {
    * @param {String} text 文本内容
    * @param {String} topicId 主题ID
    * @param {String} authorId 作者ID
+   * @param {String} type 回复类型
    * @param {String} reply_id 回复ID
    */
-  async sendMessageToMentionUsers(text, topicId, authorId, reply_id = null) {
+  async sendMessageToMentionUsers(text, topicId, authorId, type, reply_id = null) {
     let users = await this.service.user.getUsersByNames(this.fetchUsers(text));
 
     users = users.filter(user => {
@@ -60,6 +61,7 @@ class AtService extends Service {
           user._id,
           authorId,
           topicId,
+          type,
           reply_id
         );
       })

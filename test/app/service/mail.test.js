@@ -2,7 +2,7 @@
 
 const { app } = require('egg-mock/bootstrap');
 
-describe('test/app/service/mail.js', () => {
+describe('test/app/service/mail.test.js', () => {
   describe('sendActiveMail', () => {
     it('should ok', async () => {
       const ctx = app.mockContext();
