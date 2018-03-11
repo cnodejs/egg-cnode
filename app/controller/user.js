@@ -90,10 +90,7 @@ class UserController extends Controller {
     }
 
     const pages = Math.ceil(user.collect_topic_count / limit);
-    const opt = {
-      skip: (page - 1) * limit,
-      limit,
-    };
+    const opt = { skip: (page - 1) * limit, limit };
 
     const collects = await service.topicCollect.getTopicCollectsByUserId(user._id, opt);
     const ids = collects.map(function(doc) {
@@ -183,12 +180,6 @@ class UserController extends Controller {
     const id = ctx.user._id;
     const user = await service.user.getUserById(id);
 
-    if (!user) {
-      ctx.status = 404;
-      ctx.message = '发生错误';
-      return;
-    }
-
     if (ctx.request.query.save === 'success') {
       user.success = '保存成功。';
     }
@@ -263,11 +254,6 @@ class UserController extends Controller {
     const user_id = body.user_id;
     const user = await service.user.getUserById(user_id);
 
-    if (!user) {
-      ctx.status = 404;
-      ctx.message = 'user is not exists';
-      return;
-    }
     user.is_star = !user.is_star;
     await user.save();
 
@@ -278,13 +264,7 @@ class UserController extends Controller {
     const { ctx, ctx: { request: req }, service } = this;
     const { body: { action } } = req;
     const loginname = ctx.params.name;
-
     const user = await service.user.getUserByLoginName(loginname);
-    if (!user) {
-      ctx.status = 404;
-      ctx.message = 'user is not exists';
-      return;
-    }
 
     if (action === 'set_block') {
       user.is_block = true;
@@ -300,14 +280,7 @@ class UserController extends Controller {
   async deleteAll() {
     const { ctx, service } = this;
     const loginname = ctx.params.name;
-
-
     const user = await service.user.getUserByLoginName(loginname);
-    if (!user) {
-      ctx.status = 404;
-      ctx.message = 'user is not exists';
-      return;
-    }
 
     // 删除主题
     await ctx.model.Topic.update({ author_id: user._id }, { $set: { deleted: true } }, { multi: true });
