@@ -247,7 +247,8 @@ class TopicController extends Controller {
       await service.at.sendMessageToMentionUsers(
         content,
         topic._id,
-        ctx.user._id
+        ctx.user._id,
+        'at'
       );
 
       ctx.redirect('/topic/' + topic._id);
@@ -274,13 +275,13 @@ class TopicController extends Controller {
       !topic.author_id.equals(ctx.user._id)
     ) {
       ctx.status = 403;
-      ctx.body = { success: false, message: '无权限' };
+      ctx.message = '无权限';
       return;
     }
 
     if (!topic) {
       ctx.status = 422;
-      ctx.body = { success: false, message: '此话题不存在或已被删除。' };
+      ctx.message = '此话题不存在或已被删除。';
       return;
     }
 
@@ -291,7 +292,7 @@ class TopicController extends Controller {
     topic.deleted = true;
 
     await topic.save();
-    ctx.body = { success: true, message: '话题已被删除。' };
+    ctx.message = '话题已被删除。';
   }
 
   /**
@@ -301,12 +302,6 @@ class TopicController extends Controller {
     const { ctx, service } = this;
     const topic_id = ctx.params.tid;
     const referer = ctx.get('referer');
-
-    if (topic_id.length !== 24) {
-      ctx.status = 404;
-      ctx.message = '此话题不存在或已被删除。';
-      return;
-    }
 
     const topic = await service.topic.getTopic(topic_id);
 

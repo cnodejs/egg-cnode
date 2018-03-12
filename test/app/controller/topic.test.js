@@ -13,7 +13,8 @@ describe('test/app/controller/topic.test.js', () => {
     key,
     username,
     user,
-    admin,
+    objectId = '565c4473d0bc14ae279399fe',
+    mockUser,
     topic;
 
   before(async () => {
@@ -38,124 +39,103 @@ describe('test/app/controller/topic.test.js', () => {
       user_id
     );
 
+    mockUser = (isAdmin = false) => {
+      app.mockContext({
+        user: {
+          name: username,
+          _id: user_id,
+          is_admin: isAdmin,
+        },
+      });
+      app.mockCsrf();
+    };
+
     await ctx.service.topicCollect.newAndSave(
       user_id,
       topic_id
     );
+
     topic_id = topic._id;
 
-    admin = Object.assign(user, { is_admin: true });
   });
-
   it('should GET /topic/:tid ok', async () => {
     await app.httpRequest().get('/topic/:tid').expect(404);
   });
 
-  it('should GET /topic/edit ok', async () => {
-    await app.httpRequest().get('/topic/edit').expect(404);
-  });
-
-  it('should GET /topic/create forbidden', async () => {
-    await app.httpRequest().get('/topic/create').expect(403);
-  });
-
   it('should GET /topic/create ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-    const res = await app.httpRequest().get('/topic/create');
-    assert(res.status === 200);
+    await app.httpRequest().get('/topic/create').expect(403);
+    mockUser();
+    await app.httpRequest().get('/topic/create').expect(200);
+  });
+
+  it('should GET /topic/:tid/edit ok', async () => {
+    await app.httpRequest().get(`/topic/${topic_id}/edit`).expect(403);
+    mockUser();
+    await app.httpRequest().get(`/topic/${objectId}/edit`).expect(404);
+    await app.httpRequest().get(`/topic/${topic_id}/edit`).expect(200);
   });
 
   it('should POST /topic/:tid/top ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-    app.mockCsrf();
+    mockUser();
+    const res = await app.httpRequest().post(`/topic/${topic_id}/top`);
+    assert(res.text.includes('需要管理员权限。'));
+    mockUser(true);
+    await app.httpRequest().post(`/topic/${objectId}/top`).expect(404);
     await app.httpRequest().post(`/topic/${topic_id}/top`).expect(200);
   });
 
   it('should POST /topic/:tid/good ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-    app.mockCsrf();
+    mockUser();
+    const res = await app.httpRequest().post(`/topic/${topic_id}/good`);
+    assert(res.text.includes('需要管理员权限。'));
+    mockUser(true);
+    await app.httpRequest().post(`/topic/${objectId}/good`).expect(404);
     await app.httpRequest().post(`/topic/${topic_id}/good`).expect(200);
   });
 
-  it('should GET /topic/:tid/edit ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-
-    const res = await app.httpRequest().get(`/topic/${topic_id}/edit`);
-    assert(res.status === 200);
-  });
-
-  it('should GET /topic/:tid/edit ok', async () => {
-    app.mockSession({
-      user: {
-        name: 'other',
-        _id: '123',
-      },
-    });
-
-    await app.httpRequest().get(`/topic/${topic_id}/edit`).expect(403);
-  });
-
   it('should POST /topic/:tid/lock ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
-    });
-    app.mockCsrf();
+    mockUser();
+    const res = await app.httpRequest().post(`/topic/${topic_id}/lock`);
+    assert(res.text.includes('需要管理员权限。'));
+    mockUser(true);
+    await app.httpRequest().post(`/topic/${objectId}/good`).expect(404);
     await app.httpRequest().post(`/topic/${topic_id}/lock`).expect(200);
   });
 
-
-  it('should POST /topic/:tid/delete ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-    app.mockCsrf();
-    await app.httpRequest().post(`/topic/${topic_id}/delete`).expect(200);
-  });
-
   it('should POST /topic/:tid/edit ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
+    const body = {
+      tab: 'share',
+      title: 'new title',
+      t_content: 'new content',
+    };
+
+    app.mockContext({
+      user: {
+        name: 'cnode',
+        _id: objectId,
+      },
     });
-    app.mockCsrf();
+    await app
+      .httpRequest()
+      .post(`/topic/${objectId}/edit`)
+      .send(body)
+      .expect(403);
+
+    mockUser();
+    await app
+      .httpRequest()
+      .post(`/topic/${objectId}/edit`)
+      .send(body)
+      .expect(404);
     await app
       .httpRequest()
       .post(`/topic/${topic_id}/edit`)
-      .send({
-        tab: 'share',
-        title: 'new title',
-        t_content: 'new content',
-      })
-      .expect(302);
+      .send(body)
+      .expect(200);
   });
 
   it('should POST /topic/collect ok', async () => {
-    app.mockContext({ user });
-    app.mockSession({ user: admin });
-    app.mockCsrf();
+    mockUser();
     await app
       .httpRequest()
       .post('/topic/collect')
@@ -165,9 +145,15 @@ describe('test/app/controller/topic.test.js', () => {
       .expect(200);
   });
 
+  it('should POST /topic/:tid/delete ok', async () => {
+    await app.httpRequest().post(`/topic/${topic_id}/delete`).expect(403);
+    mockUser();
+    await app.httpRequest().post(`/topic/${topic_id}/delete`).expect(200);
+    await app.httpRequest().post(`/topic/${topic_id}/delete`).expect(422);
+  });
   // 测试报错,正在排查:Cannot read property 'getTopicCollect' of undefined
   // it('should POST /topic/collect ok', async () => {
-  //   app.mockSession({
+  //   app.mockContext({
   //     user: {
   //       name: username,
   //       _id: user_id,
