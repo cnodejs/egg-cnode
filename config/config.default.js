@@ -94,7 +94,7 @@ module.exports = appInfo => {
     client: {
       host: process.env.EGG_REDIS_HOST || '127.0.0.1',
       port: process.env.EGG_REDIS_PORT || 6379,
-      password: process.env.EGG_REDIS_PASSWORD || '',
+      password: process.env.EGG_REDIS_PASSWORD || 'egg_cnode',
       db: process.env.EGG_REDIS_DB || '0',
     },
   };
@@ -103,7 +103,7 @@ module.exports = appInfo => {
    * @see http://mongodb.github.io/node-mongodb-native/2.2/api/Db.html#createCollection
    */
   config.mongoose = {
-    url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1:27017/egg_cnode',
+    url: process.env.EGG_MONGODB_URL || 'mongodb://egg_cnode:egg_cnode@127.0.0.1:27017/egg_cnode',
     options: {
       server: { poolSize: 20 },
     },
