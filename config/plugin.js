@@ -32,3 +32,8 @@ exports.passportLocal = {
   enable: true,
   package: 'egg-passport-local',
 };
+
+exports.alinode = {
+  enable: false,
+  package: 'egg-alinode',
+};
