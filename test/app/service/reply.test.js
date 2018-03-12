@@ -33,6 +33,14 @@ describe('reply service', () => {
     assert(reply.content === reply_content);
   });
 
+  it('getReply should ok', async function() {
+    // 创建 ctx
+    const ctx = app.mockContext();
+
+    const test_reply = await ctx.service.reply.getReply(reply._id);
+    assert(test_reply.content === reply.content);
+  });
+
   it('getReplyById should ok', async function() {
     // 创建 ctx
     const ctx = app.mockContext();
@@ -77,8 +85,10 @@ describe('reply service', () => {
     assert(test_topic.title === topic_title);
 
     const reply_content = '<div class=\"markdown-text\"><p>unit test reply</p>\n</div>';
-    const test_reply = await ctx.service.reply.newAndSave(reply_content, test_topic._id, user._id);
-    assert(test_reply.content === reply_content);
+    const test_reply1 = await ctx.service.reply.newAndSave(reply_content, test_topic._id, user._id);
+    const test_reply2 = await ctx.service.reply.newAndSave(reply_content, test_topic._id, user._id, reply._id);
+    assert(test_reply1.content === reply_content);
+    assert(test_reply2.reply_id.toString() === reply._id.toString());
   });
 
   it('getLastReplyByTopId should ok', async function() {
@@ -103,7 +113,7 @@ describe('reply service', () => {
     const ctx = app.mockContext();
 
     const count = await ctx.service.reply.getCountByAuthorId(user._id);
-    assert(count === 2);
+    assert(count >= 1);
   });
 
 });
