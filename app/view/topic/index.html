@@ -62,13 +62,13 @@
         <span>
           <%= topic.visit_count %> 次浏览
         </span>
-        <% if (topic.create_at != topic.update_at) { %>
+        <% if (topic.create_at.toString() !== topic.update_at.toString()) { %>
           <span>
             最后一次编辑是 <%= helper.ago(topic.update_at) %>
           </span>
         <% } %>
         <% if (topic.tab) { %>
-          <span> 来自 <%= topic.tabName %></span>
+          <span> 来自 <%= helper.tabName(topic.tab) %></span>
         <%}%>
 
         <% if (current_user) { %>
