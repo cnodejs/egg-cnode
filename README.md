@@ -20,6 +20,27 @@
 
 see [egg docs][egg] for more detail.
 
+### Environment Dependencies
+
+- [redis](https://redis.io/)
+- [mongodb](https://www.mongodb.com/)
+
+#### macOS Install
+
+```bash
+brew install redis mongodb
+brew services start redis
+brew services start mongodb
+```
+
+#### Linux Install
+
+TBD
+
+#### Windows Install
+
+TBD
+
 ### Development
 
 ```bash
