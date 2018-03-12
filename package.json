@@ -15,6 +15,7 @@
     "egg-passport-local": "^1.2.1",
     "egg-redis": "^2.0.0",
     "egg-scripts": "^2.5.0",
+    "egg-validate": "^1.0.0",
     "egg-view-ejs": "^2.0.0",
     "loader": "^2.1.1",
     "loader-koa": "^2.0.1",

@@ -137,5 +137,9 @@ module.exports = appInfo => {
     secret: process.env.EGG_ALINODE_SECRET || '',
   };
 
+  config.topic = {
+    perDayPerUserLimitCount: 10,
+  };
+
   return config;
 };

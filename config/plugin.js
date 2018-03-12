@@ -38,3 +38,8 @@ exports.alinode = {
   package: 'egg-alinode',
   env: [ 'prod' ],
 };
+
+exports.validate = {
+  enable: true,
+  package: 'egg-validate',
+};
