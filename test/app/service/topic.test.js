@@ -21,7 +21,6 @@ describe('test/app/service/topic.test.js', () => {
     assert(result.loginname === loginname);
   });
 
-
   it('newAndSave should ok', async () => {
     const title = 'first post';
     const content = 'hello world';
@@ -73,10 +72,10 @@ describe('test/app/service/topic.test.js', () => {
     assert(result1.length >= 1);
 
     const query2 = {
-      good: 'test',
+      good: true,
     };
     const result2 = await topic.getTopicsByQuery(query2, {});
-    assert(result2.length === 0);
+    assert(result2.length < result1.length);
   });
 
   it('getLimit5w should ok', async () => {
