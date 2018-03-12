@@ -40,7 +40,7 @@ describe('test/app/service/topic.test.js', () => {
 
   it('updateLastReply should ok', async () => {
     const result1 = await topic.updateLastReply(topicId, replyId);
-    assert(result1.last_reply === replyId);
+    assert(result1.last_reply.toString() === replyId.toString());
     const result2 = await topic.updateLastReply();
     assert(!result2);
   });

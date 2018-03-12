@@ -33,8 +33,10 @@ class TopicController extends Controller {
 
     const [ topic, author, replies ] = await service.topic.getFullTopic(topic_id);
 
+    // 增加 visit_count
     topic.visit_count += 1;
-    await topic.save();
+    // 写入 DB
+    await service.topic.incrementVisitCount(topic_id);
 
     topic.author = author;
     topic.replies = replies;
@@ -143,11 +145,7 @@ class TopicController extends Controller {
     );
 
     // 发帖用户增加积分,增加发表主题数量
-    const author = await service.user.getUserById(topic.author_id);
-    author.score += 5;
-    author.topic_count += 1;
-    await author.save();
-    ctx.user = author;
+    await service.user.incrementScoreAndReplyCount(topic.author_id, 5, 1);
 
     ctx.redirect('/topic/' + topic._id);
 
@@ -389,13 +387,10 @@ class TopicController extends Controller {
     await service.topicCollect.newAndSave(ctx.user._id, topic._id);
     ctx.body = { status: 'success' };
 
-    const user = await service.user.getUserById(ctx.user._id);
-    user.collect_topic_count += 1;
-    await user.save();
-
-    ctx.user.collect_topic_count += 1;
-    topic.collect_count += 1;
-    await topic.save();
+    await Promise.all([
+      service.user.incrementCollectTopicCount(ctx.user._id),
+      service.topic.incrementCollectCount(topic_id),
+    ]);
   }
 
   /**
