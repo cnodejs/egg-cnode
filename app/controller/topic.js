@@ -23,7 +23,7 @@ class TopicController extends Controller {
     }
     const { ctx, service } = this;
     const topic_id = ctx.params.tid;
-    const currentUser = ctx.session.user;
+    const currentUser = ctx.user;
 
     if (topic_id.length !== 24) {
       ctx.status = 404;
@@ -139,7 +139,7 @@ class TopicController extends Controller {
       title,
       content,
       tab,
-      ctx.session.user._id
+      ctx.user._id
     );
 
     // 发帖用户增加积分,增加发表主题数量
@@ -147,7 +147,7 @@ class TopicController extends Controller {
     author.score += 5;
     author.topic_count += 1;
     await author.save();
-    ctx.session.user = author;
+    ctx.user = author;
 
     ctx.redirect('/topic/' + topic._id);
 
@@ -155,7 +155,7 @@ class TopicController extends Controller {
     await service.at.sendMessageToMentionUsers(
       content,
       topic._id,
-      ctx.session.user._id
+      ctx.user._id
     );
   }
 
@@ -174,8 +174,8 @@ class TopicController extends Controller {
     }
 
     if (
-      String(topic.author_id) === String(ctx.session.user._id) ||
-      ctx.session.user.is_admin
+      String(topic.author_id) === String(ctx.user._id) ||
+      ctx.user.is_admin
     ) {
       await ctx.render('topic/edit', {
         action: 'edit',
@@ -210,7 +210,7 @@ class TopicController extends Controller {
     }
 
     if (
-      topic.author_id === ctx.session.user._id || ctx.session.user.is_admin
+      topic.author_id === ctx.user._id || ctx.user.is_admin
     ) {
       title = validator.trim(title);
       tab = validator.trim(tab);
@@ -249,7 +249,7 @@ class TopicController extends Controller {
       await service.at.sendMessageToMentionUsers(
         content,
         topic._id,
-        ctx.session.user._id
+        ctx.user._id
       );
 
       ctx.redirect('/topic/' + topic._id);
@@ -272,8 +272,8 @@ class TopicController extends Controller {
     const [ topic, author ] = await service.topic.getFullTopic(topic_id);
 
     if (
-      !ctx.session.user.is_admin &&
-      !topic.author_id.equals(ctx.session.user._id)
+      !ctx.user.is_admin &&
+      !topic.author_id.equals(ctx.user._id)
     ) {
       ctx.status = 403;
       ctx.body = { success: false, message: '无权限' };
@@ -376,8 +376,8 @@ class TopicController extends Controller {
       ctx.body = { status: 'failed' };
     }
 
-    const doc = await service.topic_collect.getTopicCollect(
-      ctx.session.user._id,
+    const doc = await service.topicCollect.getTopicCollect(
+      ctx.user._id,
       topic._id
     );
 
@@ -386,14 +386,14 @@ class TopicController extends Controller {
       return;
     }
 
-    service.topic_collect.newAndSave(ctx.session.user._id, topic._id);
+    await service.topicCollect.newAndSave(ctx.user._id, topic._id);
     ctx.body = { status: 'success' };
 
-    const user = await service.user.getUserById(ctx.session.user._id);
+    const user = await service.user.getUserById(ctx.user._id);
     user.collect_topic_count += 1;
     await user.save();
 
-    ctx.session.user.collect_topic_count += 1;
+    ctx.user.collect_topic_count += 1;
     topic.collect_count += 1;
     await topic.save();
   }
@@ -411,17 +411,17 @@ class TopicController extends Controller {
     }
 
     const removeResult = service.topic_collect.remove(
-      ctx.session.user._id,
+      ctx.user._id,
       topic._id
     );
     if (removeResult.result.n === 0) {
       ctx.body = { status: 'failed' };
     }
 
-    const user = await service.user.getUserById(ctx.session.user._id);
+    const user = await service.user.getUserById(ctx.user._id);
 
     user.collect_topic_count -= 1;
-    ctx.session.user = user;
+    ctx.user = user;
     await user.save();
 
     topic.collect_count -= 1;

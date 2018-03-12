@@ -1,6 +1,6 @@
 'use strict';
 
-const { app } = require('egg-mock/bootstrap');
+const { app, assert } = require('egg-mock/bootstrap');
 
 function randomInt() {
   return (Math.random() * 10000).toFixed(0);
@@ -13,7 +13,7 @@ describe('test/app/controller/topic.test.js', () => {
     key,
     username,
     user,
-    // topic_collect,
+    admin,
     topic;
 
   before(async () => {
@@ -38,13 +38,15 @@ describe('test/app/controller/topic.test.js', () => {
       user_id
     );
 
-    // topic_collect = ctx.service.topic_collect.newAndSave(
-    //   user_id,
-    //   topic_id
-    // );
+    await ctx.service.topicCollect.newAndSave(
+      user_id,
+      topic_id
+    );
     topic_id = topic._id;
 
+    admin = Object.assign(user, { is_admin: true });
   });
+
   it('should GET /topic/:tid ok', async () => {
     await app.httpRequest().get('/topic/:tid').expect(404);
   });
@@ -58,50 +60,44 @@ describe('test/app/controller/topic.test.js', () => {
   });
 
   it('should GET /topic/create ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
+    app.mockUser({
+      name: username,
+      _id: user_id,
+      is_admin: true,
     });
-    await app.httpRequest().get('/topic/create').expect(200);
+    const res = await app.httpRequest().get('/topic/create');
+    assert(res.status === 200);
   });
 
   it('should POST /topic/:tid/top ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
+    app.mockUser({
+      name: username,
+      _id: user_id,
+      is_admin: true,
     });
     app.mockCsrf();
     await app.httpRequest().post(`/topic/${topic_id}/top`).expect(200);
   });
 
   it('should POST /topic/:tid/good ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
+    app.mockUser({
+      name: username,
+      _id: user_id,
+      is_admin: true,
     });
     app.mockCsrf();
     await app.httpRequest().post(`/topic/${topic_id}/good`).expect(200);
   });
 
   it('should GET /topic/:tid/edit ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
+    app.mockUser({
+      name: username,
+      _id: user_id,
+      is_admin: true,
     });
 
-    await app.httpRequest().get(`/topic/${topic_id}/edit`).expect(200);
+    const res = await app.httpRequest().get(`/topic/${topic_id}/edit`);
+    assert(res.status === 200);
   });
 
   it('should GET /topic/:tid/edit ok', async () => {
@@ -129,24 +125,20 @@ describe('test/app/controller/topic.test.js', () => {
 
 
   it('should POST /topic/:tid/delete ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
+    app.mockUser({
+      name: username,
+      _id: user_id,
+      is_admin: true,
     });
     app.mockCsrf();
     await app.httpRequest().post(`/topic/${topic_id}/delete`).expect(200);
   });
 
   it('should POST /topic/:tid/edit ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
+    app.mockUser({
+      name: username,
+      _id: user_id,
+      is_admin: true,
     });
     app.mockCsrf();
     await app
