@@ -84,6 +84,18 @@ class UserService extends Service {
     return this.ctx.model.User.findOne(query).exec();
   }
 
+  incrementScoreAndReplyCount(id, score, replyCount) {
+    const query = { _id: id };
+    const update = { $inc: { score, reply_count: replyCount } };
+    return this.ctx.model.User.findByIdAndUpdate(query, update).exec();
+  }
+
+  incrementCollectTopicCount(id) {
+    const query = { _id: id };
+    const update = { $inc: { collect_topic_count: 1 } };
+    return this.ctx.model.User.findByIdAndUpdate(query, update).exec();
+  }
+
   newAndSave(name, loginname, pass, email, avatar_url, active) {
     const user = new this.ctx.model.User();
     user.name = loginname;

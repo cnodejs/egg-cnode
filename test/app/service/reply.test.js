@@ -87,7 +87,7 @@ describe('reply service', () => {
 
     const last_reply = await ctx.service.reply.getLastReplyByTopId(topic._id);
 
-    assert(last_reply[0]._id.toString() === reply._id.toString());
+    assert(last_reply._id.toString() === reply._id.toString());
   });
 
   it('getRepliesByAuthorId should ok', async function() {
