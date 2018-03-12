@@ -49,6 +49,23 @@ $ npm run dev
 $ open http://localhost:7001/
 ```
 
+#### Develop with docker
+Setup redis / mongodb, requirements:
+
+- docker
+- docker-compose
+
+```bash
+# start
+docker-compose -f docker-compose.dev.yml up
+
+# stop 
+docker-compose -f docker-compose.dev.yml down
+
+# remove volume/cache
+docker-compose -f docker-compose.dev.yml down -v
+```
+
 ### Deploy
 
 ```bash
