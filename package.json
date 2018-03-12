@@ -4,6 +4,7 @@
   "description": "",
   "private": true,
   "dependencies": {
+    "await-stream-ready": "^1.0.1",
     "bcryptjs": "^2.4.3",
     "data2xml": "^1.2.5",
     "egg": "^2.2.1",
@@ -18,6 +19,8 @@
     "loader-koa": "^2.0.1",
     "lodash": "^4.17.5",
     "markdown-it": "^8.4.1",
+    "qn": "^1.3.0",
+    "stream-wormhole": "^1.0.3",
     "nodemailer": "^4.6.2",
     "nodemailer-smtp-transport": "^2.7.4",
     "uuid": "^3.2.1",
