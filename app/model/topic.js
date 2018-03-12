@@ -4,7 +4,6 @@ module.exports = app => {
   const mongoose = app.mongoose;
   const Schema = mongoose.Schema;
   const ObjectId = Schema.ObjectId;
-  const config = app.config;
 
   const TopicSchema = new Schema({
     title: { type: String },
@@ -28,18 +27,6 @@ module.exports = app => {
   TopicSchema.index({ create_at: -1 });
   TopicSchema.index({ top: -1, last_reply_at: -1 });
   TopicSchema.index({ author_id: 1, create_at: -1 });
-
-  TopicSchema.virtual('tabName').get(function() {
-    const tab = this.tab;
-    const pair = config.tabs.find(function(_pair) {
-      return _pair[0] === tab;
-    });
-
-    if (pair) {
-      return pair[1];
-    }
-    return '';
-  });
 
   return mongoose.model('Topic', TopicSchema);
 };
