@@ -1,7 +1,5 @@
 'use strict';
 
-const BaseModel = require('../common/base_model');
-
 module.exports = app => {
   const mongoose = app.mongoose;
   const Schema = mongoose.Schema;
@@ -27,7 +25,6 @@ module.exports = app => {
     deleted: { type: Boolean, default: false },
   });
 
-  TopicSchema.plugin(BaseModel);
   TopicSchema.index({ create_at: -1 });
   TopicSchema.index({ top: -1, last_reply_at: -1 });
   TopicSchema.index({ author_id: 1, create_at: -1 });
