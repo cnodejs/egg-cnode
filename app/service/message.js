@@ -31,9 +31,9 @@ class MessageService extends Service {
       message.type === 'at'
     ) {
       const [ author, topic, reply ] = await Promise.all([
-        this.services.user.getUserById(message.author_id),
-        this.services.topic.getTopicById(message.topic_id),
-        this.services.reply.getReplyById(message.reply_id),
+        this.service.user.getUserById(message.author_id),
+        this.service.topic.getTopicById(message.topic_id),
+        this.service.reply.getReplyById(message.reply_id),
       ]);
 
       message.author = author;
