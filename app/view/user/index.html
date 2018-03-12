@@ -54,7 +54,7 @@
             <% } %>
           </ul>
         </div>
-        <p class="col_fade">注册时间 <%= user.create_at_ago() %></p>
+        <p class="col_fade">注册时间 <%= helper.ago(user.create_at) %></p>
         <% if (current_user && current_user.is_admin) { %>
           <% if (!user.is_star) { %>
           <span class='span-common' id='set_star_btn' action='set_star'>设为达人</span>
