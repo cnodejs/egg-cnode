@@ -36,4 +36,5 @@ exports.passportLocal = {
 exports.alinode = {
   enable: true,
   package: 'egg-alinode',
+  env: [ 'prod' ],
 };
