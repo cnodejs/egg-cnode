@@ -1,7 +1,6 @@
 'use strict';
 
 const utility = require('utility');
-const BaseModel = require('../common/base_model');
 
 module.exports = app => {
   const mongoose = app.mongoose;
@@ -46,8 +45,6 @@ module.exports = app => {
 
     accessToken: { type: String },
   });
-
-  UserSchema.plugin(BaseModel);
 
   UserSchema.index({ loginname: 1 }, { unique: true });
   UserSchema.index({ email: 1 }, { unique: true });
