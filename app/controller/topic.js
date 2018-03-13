@@ -169,7 +169,7 @@ class TopicController extends Controller {
 
     if (!topic) {
       ctx.status = 404;
-      ctx.body = { message: '此话题不存在或已被删除。' };
+      ctx.message = '此话题不存在或已被删除。';
       return;
     }
 
@@ -187,7 +187,7 @@ class TopicController extends Controller {
       });
     } else {
       ctx.status = 403;
-      ctx.body = { message: '对不起，你不能编辑此话题' };
+      ctx.message = '对不起，你不能编辑此话题';
     }
   }
 
@@ -205,7 +205,7 @@ class TopicController extends Controller {
     const { topic } = await service.topic.getTopicById(topic_id);
     if (!topic) {
       ctx.status = 404;
-      ctx.body = { message: '此话题不存在或已被删除。' };
+      ctx.message = '此话题不存在或已被删除。';
       return;
     }
 
@@ -258,7 +258,7 @@ class TopicController extends Controller {
       ctx.redirect('/topic/' + topic._id);
     } else {
       ctx.status = 403;
-      ctx.body = { message: '对不起，你不能编辑此话题。' };
+      ctx.message = '对不起，你不能编辑此话题。';
     }
   }
 
@@ -312,7 +312,7 @@ class TopicController extends Controller {
 
     if (!topic) {
       ctx.status = 404;
-      ctx.body = { message: '此话题不存在或已被删除。' };
+      ctx.message = '此话题不存在或已被删除。';
       return;
     }
     topic.top = !topic.top;
@@ -332,7 +332,7 @@ class TopicController extends Controller {
     const topic = await service.topic.getTopic(topic_id);
     if (!topic) {
       ctx.status = 404;
-      ctx.body = { message: '此话题不存在或已被删除。' };
+      ctx.message = '此话题不存在或已被删除。';
       return;
     }
     topic.good = !topic.good;
@@ -352,7 +352,7 @@ class TopicController extends Controller {
     const topic = await service.topic.getTopic(topic_id);
     if (!topic) {
       ctx.status = 404;
-      ctx.body = { message: '此话题不存在或已被删除。' };
+      ctx.message = '此话题不存在或已被删除。';
       return;
     }
     topic.lock = !topic.lock;
