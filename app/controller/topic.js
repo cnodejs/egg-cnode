@@ -410,7 +410,7 @@ class TopicController extends Controller {
       ctx.user._id,
       topic._id
     );
-    
+
     if (removeResult.result.n === 0) {
       ctx.body = { status: 'failed' };
       return;
