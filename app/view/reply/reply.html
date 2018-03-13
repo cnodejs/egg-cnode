@@ -3,11 +3,11 @@
     reply_id="<%= reply._id %>" reply_to_id="<%= reply.reply_id || '' %>" id="<%= reply._id %>">
   <div class='author_content'>
     <a href="/user/<%= reply.author.loginname %>" class="user_avatar">
-      <img src="<%= proxy(reply.author.avatar_url) %>" title="<%= reply.author.loginname %>"/></a>
+      <img src="<%= helper.proxy(reply.author.avatar_url) %>" title="<%= reply.author.loginname %>"/></a>
 
     <div class='user_info'>
       <a class='dark reply_author' href="/user/<%= reply.author.loginname %>"><%= reply.author.loginname %></a>
-      <a class="reply_time" href="#<%= reply._id %>"><%= indexInCollection + 1 %>楼•<%= helper.ago(reply.create_at)
+      <a class="reply_time" href="#<%= reply._id %>"><%= index + 1 %>楼•<%= helper.ago(reply.create_at)
         %></a>
       <% if (reply.author.loginname == topic.author.loginname) { %>
         <span class="reply_by_author">作者</span>
@@ -40,7 +40,7 @@
     </div>
   </div>
   <div class='reply_content from-<%= reply.author.loginname %>'>
-    <%- markdown(reply.content) %>
+    <%- helper.markdown(reply.content) %>
   </div>
   <div class='clearfix'>
     <div class='reply2_area'>

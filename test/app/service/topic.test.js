@@ -84,28 +84,16 @@ describe('test/app/service/topic.test.js', () => {
   });
 
   it('getFullTopic should ok', async () => {
-    let err1;
-    try {
-      await topic.getFullTopic();
-    } catch (e) {
-      err1 = e;
-      assert(e.message === '此话题不存在或已被删除。');
-    }
-    assert(err1);
+    const result1 = await topic.getFullTopic();
+    assert(result1.length === 0);
 
-    const result = await topic.getFullTopic(topicId);
-    assert.equal(result[0]._id.toString(), topicId);
-    assert(result[1].loginname === loginname);
+    const result2 = await topic.getFullTopic(topicId);
+    assert.equal(result2[0]._id.toString(), topicId);
+    assert(result2[1].loginname === loginname);
 
-    let err2;
     await ctx.model.User.deleteOne({ _id: userId }).exec();
-    try {
-      await topic.getFullTopic(topicId);
-    } catch (e) {
-      err2 = e;
-      assert(e.message === '话题的作者丢了。');
-    }
-    assert(err2);
+    const result3 = await topic.getFullTopic(topicId);
+    assert(result3.length === 0);
   });
 
   it('getTopic should ok', async () => {

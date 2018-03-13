@@ -93,14 +93,16 @@ class TopicService extends Service {
     const topic = await this.ctx.model.Topic.findOne(query);
 
     if (!topic) {
-      throw new Error('此话题不存在或已被删除。');
+      // throw new Error('此话题不存在或已被删除。');
+      return [];
     }
 
     topic.linkedContent = this.service.at.linkUsers(topic.content);
 
     const author = await this.service.user.getUserById(topic.author_id);
     if (!author) {
-      throw new Error('话题的作者丢了。');
+      // throw new Error('话题的作者丢了。');
+      return [];
     }
 
     const replies = await this.service.reply.getRepliesByTopicId(topic._id);
