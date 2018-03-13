@@ -16,6 +16,8 @@ services:
       - EGG_MONGODB_URL=mongodb://egg_cnode:egg_cnode@mongodb:27017/egg_cnode
       - EGG_PASSPORT_GITHUB_CLIENT_ID=test
       - EGG_PASSPORT_GITHUB_CLIENT_SECRET=test
+      - EGG_ALINODE_APPID=appid
+      - EGG_ALINODE_SECRET=secret
     depends_on:
       - redis
       - mongodb
@@ -31,8 +33,8 @@ services:
       - egg-redis:/data
     networks:
       - docker_cnode
-    ports:
-      - 6379:6379
+    # ports:
+    #   - 6379:6379
 
   mongodb:
     image: mongo:3.2
@@ -46,8 +48,8 @@ services:
       - ./init.d/mongo:/docker-entrypoint-initdb.d
     networks:
       - docker_cnode
-    ports:
-      - 27017:27017
+    # ports:
+    #   - 27017:27017
 
 volumes:
   egg-mongo:
