@@ -7,13 +7,15 @@ function randomInt() {
 }
 
 describe('test/app/controller/topic.test.js', () => {
+  const objectId = '565c4473d0bc14ae279399fe';
   let ctx,
-    topic_id,
-    user_id,
+    topicId,
+    userId,
     key,
     username,
     user,
-    admin,
+    mockUser,
+    fakeUser,
     topic;
 
   before(async () => {
@@ -29,160 +31,257 @@ describe('test/app/controller/topic.test.js', () => {
       'active'
     );
 
-    user_id = user._id;
+    userId = user._id;
 
     topic = await ctx.service.topic.newAndSave(
       'title',
       'content',
       'share',
-      user_id
+      userId
     );
+
+    mockUser = (isAdmin = false) => {
+      app.mockContext({
+        user: {
+          name: username,
+          _id: userId,
+          is_admin: isAdmin,
+        },
+      });
+      app.mockCsrf();
+    };
+
+    fakeUser = () => {
+      app.mockContext({
+        user: {
+          name: 'cnode',
+          _id: objectId,
+          is_admin: false,
+        },
+      });
+      app.mockCsrf();
+    };
 
     await ctx.service.topicCollect.newAndSave(
-      user_id,
-      topic_id
+      userId,
+      topicId
     );
-    topic_id = topic._id;
 
-    admin = Object.assign(user, { is_admin: true });
+    topicId = topic._id;
+    await ctx.service.reply.newAndSave('hi', topicId, userId);
   });
 
   it('should GET /topic/:tid ok', async () => {
-    await app.httpRequest().get('/topic/:tid').expect(404);
-  });
-
-  it('should GET /topic/edit ok', async () => {
-    await app.httpRequest().get('/topic/edit').expect(404);
-  });
-
-  it('should GET /topic/create forbidden', async () => {
-    await app.httpRequest().get('/topic/create').expect(403);
+    await app.httpRequest().get(`/topic/${topicId}`).expect(200);
+    await app.httpRequest().get('/topic/123').expect(404);
+    mockUser();
+    ctx.service.cache.setex('no_reply_topics', null, 60);
+    await app.httpRequest().get(`/topic/${topicId}`).expect(200);
   });
 
   it('should GET /topic/create ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-    const res = await app.httpRequest().get('/topic/create');
-    assert(res.status === 200);
+    mockUser();
+    await app.httpRequest().get('/topic/create').expect(200);
+  });
+
+  it('should GET /topic/:tid/edit ok', async () => {
+    fakeUser();
+    await app.httpRequest().get(`/topic/${topicId}/edit`).expect(403);
+    mockUser();
+    await app.httpRequest().get(`/topic/${objectId}/edit`).expect(404);
+    await app.httpRequest().get(`/topic/${topicId}/edit`).expect(200);
+  });
+
+  it('should POST /topic/create ok', async () => {
+    const body = {
+      title: '',
+      tab: '',
+      t_content: '',
+    };
+
+    mockUser();
+
+    const r1 = await app
+      .httpRequest()
+      .post('/topic/create')
+      .send(body);
+    assert(r1.text.includes('标题不能是空的。'));
+
+    body.title = 'hi';
+    const r2 = await app
+      .httpRequest()
+      .post('/topic/create')
+      .send(body);
+    assert(r2.text.includes('标题字数太多或太少。'));
+
+    body.title = '这是一个大标题';
+    const r4 = await app
+      .httpRequest()
+      .post('/topic/create')
+      .send(body);
+    assert(r4.text.includes('必须选择一个版块。'));
+
+    body.tab = 'share';
+    const r3 = await app
+      .httpRequest()
+      .post('/topic/create')
+      .send(body);
+    assert(r3.text.includes('内容不可为空。'));
+
+    body.t_content = 'hi';
+
+    await app
+      .httpRequest()
+      .post('/topic/create')
+      .send(body)
+      .expect(302);
   });
 
   it('should POST /topic/:tid/top ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-    app.mockCsrf();
-    await app.httpRequest().post(`/topic/${topic_id}/top`).expect(200);
+    mockUser();
+    const res = await app.httpRequest().post(`/topic/${topicId}/top`);
+    assert(res.text.includes('需要管理员权限。'));
+    mockUser(true);
+    await app.httpRequest().post(`/topic/${objectId}/top`).expect(404);
+    await app.httpRequest().post(`/topic/${topicId}/top`).expect(200);
   });
 
   it('should POST /topic/:tid/good ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-    app.mockCsrf();
-    await app.httpRequest().post(`/topic/${topic_id}/good`).expect(200);
-  });
-
-  it('should GET /topic/:tid/edit ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-
-    const res = await app.httpRequest().get(`/topic/${topic_id}/edit`);
-    assert(res.status === 200);
-  });
-
-  it('should GET /topic/:tid/edit ok', async () => {
-    app.mockSession({
-      user: {
-        name: 'other',
-        _id: '123',
-      },
-    });
-
-    await app.httpRequest().get(`/topic/${topic_id}/edit`).expect(403);
+    mockUser();
+    const res = await app.httpRequest().post(`/topic/${topicId}/good`);
+    assert(res.text.includes('需要管理员权限。'));
+    mockUser(true);
+    await app.httpRequest().post(`/topic/${objectId}/good`).expect(404);
+    await app.httpRequest().post(`/topic/${topicId}/good`).expect(200);
   });
 
   it('should POST /topic/:tid/lock ok', async () => {
-    app.mockSession({
-      user: {
-        name: username,
-        _id: user_id,
-        is_admin: true,
-      },
-    });
-    app.mockCsrf();
-    await app.httpRequest().post(`/topic/${topic_id}/lock`).expect(200);
-  });
-
-
-  it('should POST /topic/:tid/delete ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-    app.mockCsrf();
-    await app.httpRequest().post(`/topic/${topic_id}/delete`).expect(200);
+    mockUser();
+    const res = await app.httpRequest().post(`/topic/${topicId}/lock`);
+    assert(res.text.includes('需要管理员权限。'));
+    mockUser(true);
+    await app.httpRequest().post(`/topic/${objectId}/lock`).expect(404);
+    await app.httpRequest().post(`/topic/${topicId}/lock`).expect(200);
   });
 
   it('should POST /topic/:tid/edit ok', async () => {
-    app.mockUser({
-      name: username,
-      _id: user_id,
-      is_admin: true,
-    });
-    app.mockCsrf();
+    const body = {
+      title: '',
+      tab: '',
+      t_content: '',
+    };
+
+    fakeUser();
     await app
       .httpRequest()
-      .post(`/topic/${topic_id}/edit`)
-      .send({
-        tab: 'share',
-        title: 'new title',
-        t_content: 'new content',
-      })
+      .post(`/topic/${topicId}/edit`)
+      .send(body)
+      .expect(403);
+
+    mockUser();
+    await app
+      .httpRequest()
+      .post(`/topic/${objectId}/edit`)
+      .send(body)
+      .expect(404);
+
+    const r1 = await app
+      .httpRequest()
+      .post(`/topic/${topicId}/edit`)
+      .send(body);
+    assert(r1.text.includes('标题不能是空的。'));
+
+    body.title = 'hi';
+    const r2 = await app
+      .httpRequest()
+      .post(`/topic/${topicId}/edit`)
+      .send(body);
+    assert(r2.text.includes('标题字数太多或太少。'));
+
+    body.title = '这是一个大标题';
+    const r4 = await app
+      .httpRequest()
+      .post(`/topic/${topicId}/edit`)
+      .send(body);
+    assert(r4.text.includes('必须选择一个版块。'));
+
+    body.tab = 'share';
+    const r3 = await app
+      .httpRequest()
+      .post(`/topic/${topicId}/edit`)
+      .send(body);
+    assert(r3.text.includes('内容不可为空。'));
+
+    body.t_content = 'hi';
+    await app
+      .httpRequest()
+      .post(`/topic/${topicId}/edit`)
+      .send(body)
       .expect(302);
   });
 
   it('should POST /topic/collect ok', async () => {
-    app.mockContext({ user });
-    app.mockSession({ user: admin });
-    app.mockCsrf();
+    mockUser();
+    const result1 = await app
+      .httpRequest()
+      .post('/topic/collect')
+      .send({
+        topic_id: objectId,
+      });
+
+    assert(JSON.parse(result1.text).status === 'failed');
+
     await app
       .httpRequest()
       .post('/topic/collect')
       .send({
-        topic_id,
+        topic_id: topicId,
+      })
+      .expect(200);
+
+    const result2 = await app
+      .httpRequest()
+      .post('/topic/collect')
+      .send({
+        topic_id: topicId,
+      });
+
+    assert(JSON.parse(result2.text).status === 'failed');
+  });
+
+  it('should POST /topic/de_collect ok', async () => {
+    fakeUser();
+    const result1 = await app
+      .httpRequest()
+      .post('/topic/de_collect')
+      .send({
+        topic_id: topicId,
+      });
+    assert(JSON.parse(result1.text).status === 'failed');
+
+    mockUser();
+    const result2 = await app
+      .httpRequest()
+      .post('/topic/de_collect')
+      .send({
+        topic_id: objectId,
+      });
+    assert(JSON.parse(result2.text).status === 'failed');
+
+    await app
+      .httpRequest()
+      .post('/topic/de_collect')
+      .send({
+        topic_id: topicId,
       })
       .expect(200);
   });
 
-  // 测试报错,正在排查:Cannot read property 'getTopicCollect' of undefined
-  // it('should POST /topic/collect ok', async () => {
-  //   app.mockSession({
-  //     user: {
-  //       name: username,
-  //       _id: user_id,
-  //       is_admin: true,
-  //     },
-  //   });
-  //   app.mockCsrf();
-  //   await app
-  //     .httpRequest()
-  //     .post('/topic/collect')
-  //     .send({
-  //       topic_id,
-  //     })
-  //     .set('Content-Type', 'application/json')
-  //     .set('Accept', 'application/json')
-  //     .expect(200);
-  // });
+  it('should POST /topic/:tid/delete ok', async () => {
+    fakeUser();
+    await app.httpRequest().post(`/topic/${topicId}/delete`).expect(403);
+    mockUser();
+    await app.httpRequest().post(`/topic/${topicId}/delete`).expect(200);
+    await app.httpRequest().post(`/topic/${objectId}/delete`).expect(422);
+  });
 });
