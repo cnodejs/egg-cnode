@@ -80,6 +80,8 @@ module.exports = app => {
   // // 保存新建的文章
   // router.post('/topic/create', userRequired, limit.peruserperday('create_topic', config.create_post_per_day, { showJson: false }), topic.put);
 
+  router.post('/topic/create', userRequired, topic.put);
+
   router.post('/topic/:tid/edit', userRequired, topic.update);
   router.post('/topic/collect', userRequired, topic.collect); // 关注某话题
   router.post('/topic/de_collect', userRequired, topic.de_collect); // 取消关注某话题

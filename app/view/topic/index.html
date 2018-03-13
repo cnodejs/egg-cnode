@@ -4,7 +4,7 @@
       <span class='col_fade'>作者</span>
     </div>
     <div class='inner'>
-      <%- include('../user/card.html', { object: topic.author, as: 'user' }) %>
+      <%- include('../user/card.html', { user: topic.author }) %>
     </div>
   </div>
 
@@ -129,7 +129,7 @@
     <div class='inner topic'>
 
       <div class='topic_content'>
-        <%- markdown(topic.linkedContent) %>
+        <%- helper.markdown(topic.linkedContent) %>
       </div>
     </div>
   </div>
@@ -138,7 +138,9 @@
     <div class='header'>
       <span class='col_fade'><%= topic.replies.length %> 回复</span>
     </div>
-    <%- include('../reply/reply.html', topic.replies) %>
+    <% topic.replies.map((reply, index) => { %>
+      <%- include('../reply/reply.html', { reply, index }) %>
+    <%}) %>
   </div>
   <% } %>
   <% if (current_user && typeof topic !== 'undefined') { %>

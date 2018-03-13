@@ -72,7 +72,7 @@ class TopicController extends Controller {
     if (!currentUser) {
       is_collect = null;
     } else {
-      is_collect = service.topicCollect.getTopicCollect(
+      is_collect = await service.topicCollect.getTopicCollect(
         currentUser._id,
         topic_id
       );
@@ -103,9 +103,9 @@ class TopicController extends Controller {
   async put() {
     const { ctx, service } = this;
     const { tabs } = this.config;
-    const title = validator.trim(ctx.body.title);
-    const tab = validator.trim(ctx.body.tab);
-    const content = validator.trim(ctx.body.t_content);
+    const title = validator.trim(ctx.request.body.title);
+    const tab = validator.trim(ctx.request.body.tab);
+    const content = validator.trim(ctx.request.body.t_content);
 
     // 得到所有的 tab, e.g. ['ask', 'share', ..]
     const allTabs = tabs.map(function(tPair) {
@@ -155,6 +155,8 @@ class TopicController extends Controller {
       topic._id,
       ctx.user._id
     );
+
+    await ctx.redirect('/topic/' + topic._id);
   }
 
   /**
@@ -165,9 +167,10 @@ class TopicController extends Controller {
     const topic_id = ctx.params.tid;
 
     const { topic } = await service.topic.getTopicById(topic_id);
+
     if (!topic) {
       ctx.status = 404;
-      ctx.message = '此话题不存在或已被删除。';
+      ctx.body = { message: '此话题不存在或已被删除。' };
       return;
     }
 
@@ -185,7 +188,7 @@ class TopicController extends Controller {
       });
     } else {
       ctx.status = 403;
-      // ctx.message = '对不起，你不能编辑此话题。';
+      ctx.body = { message: '对不起，你不能编辑此话题' };
     }
   }
 
@@ -203,12 +206,12 @@ class TopicController extends Controller {
     const { topic } = await service.topic.getTopicById(topic_id);
     if (!topic) {
       ctx.status = 404;
-      ctx.message = '此话题不存在或已被删除。';
+      ctx.body = { message: '此话题不存在或已被删除。' };
       return;
     }
 
     if (
-      topic.author_id === ctx.user._id || ctx.user.is_admin
+      topic.author_id.toString() === ctx.user._id.toString() || ctx.user.is_admin
     ) {
       title = validator.trim(title);
       tab = validator.trim(tab);
@@ -254,7 +257,7 @@ class TopicController extends Controller {
       ctx.redirect('/topic/' + topic._id);
     } else {
       ctx.status = 403;
-      ctx.message = '对不起，你不能编辑此话题。';
+      ctx.body = { message: '对不起，你不能编辑此话题。' };
     }
   }
 
@@ -270,18 +273,18 @@ class TopicController extends Controller {
 
     const [ topic, author ] = await service.topic.getFullTopic(topic_id);
 
+    if (!topic) {
+      ctx.status = 422;
+      ctx.body = { message: '此话题不存在或已被删除。', success: false };
+      return;
+    }
+
     if (
       !ctx.user.is_admin &&
       !topic.author_id.equals(ctx.user._id)
     ) {
       ctx.status = 403;
-      ctx.message = '无权限';
-      return;
-    }
-
-    if (!topic) {
-      ctx.status = 422;
-      ctx.message = '此话题不存在或已被删除。';
+      ctx.body = { message: '无权限', success: false };
       return;
     }
 
@@ -292,7 +295,8 @@ class TopicController extends Controller {
     topic.deleted = true;
 
     await topic.save();
-    ctx.message = '话题已被删除。';
+
+    ctx.body = { message: '话题已被删除。', success: true };
   }
 
   /**
@@ -307,7 +311,7 @@ class TopicController extends Controller {
 
     if (!topic) {
       ctx.status = 404;
-      ctx.message = '此话题不存在或已被删除。';
+      ctx.body = { message: '此话题不存在或已被删除。' };
       return;
     }
     topic.top = !topic.top;
@@ -327,7 +331,7 @@ class TopicController extends Controller {
     const topic = await service.topic.getTopic(topic_id);
     if (!topic) {
       ctx.status = 404;
-      ctx.message = '此话题不存在或已被删除。';
+      ctx.body = { message: '此话题不存在或已被删除。' };
       return;
     }
     topic.good = !topic.good;
@@ -347,7 +351,7 @@ class TopicController extends Controller {
     const topic = await service.topic.getTopic(topic_id);
     if (!topic) {
       ctx.status = 404;
-      ctx.message = '此话题不存在或已被删除。';
+      ctx.body = { message: '此话题不存在或已被删除。' };
       return;
     }
     topic.lock = !topic.lock;
@@ -367,6 +371,7 @@ class TopicController extends Controller {
 
     if (!topic) {
       ctx.body = { status: 'failed' };
+      return;
     }
 
     const doc = await service.topicCollect.getTopicCollect(
@@ -398,20 +403,23 @@ class TopicController extends Controller {
 
     if (!topic) {
       ctx.body = { status: 'failed' };
+      return;
     }
 
-    const removeResult = service.topic_collect.remove(
+    const removeResult = await service.topicCollect.remove(
       ctx.user._id,
       topic._id
     );
+    
     if (removeResult.result.n === 0) {
       ctx.body = { status: 'failed' };
+      return;
     }
 
     const user = await service.user.getUserById(ctx.user._id);
 
     user.collect_topic_count -= 1;
-    ctx.user = user;
+    // ctx.user = user;
     await user.save();
 
     topic.collect_count -= 1;
