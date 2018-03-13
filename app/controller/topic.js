@@ -2,7 +2,7 @@
 
 const Controller = require('egg').Controller;
 const _ = require('lodash');
-const validator = require('validator');
+// const validator = require('validator');
 const path = require('path');
 const fs = require('fs');
 const awaitWriteStream = require('await-stream-ready').write;
@@ -27,7 +27,7 @@ class TopicController extends Controller {
 
     if (topic_id.length !== 24) {
       ctx.status = 404;
-      // '此话题不存在或已被删除。'
+      ctx.message = '此话题不存在或已被删除。';
       return;
     }
 
@@ -40,10 +40,9 @@ class TopicController extends Controller {
 
     topic.author = author;
     topic.replies = replies;
-
     // 点赞数排名第三的回答，它的点赞数就是阈值
-    topic.reply_up_threshold = (function() {
-      let allUpCount = replies.map(function(reply) {
+    topic.reply_up_threshold = (() => {
+      let allUpCount = replies.map(reply => {
         return (reply.ups && reply.ups.length) || 0;
       });
       allUpCount = _.sortBy(allUpCount, Number).reverse();
@@ -60,7 +59,7 @@ class TopicController extends Controller {
     const other_topics = await service.topic.getTopicsByQuery(query, options);
 
     // get no_reply_topics
-    let no_reply_topics = service.cache.get('no_reply_topics');
+    let no_reply_topics = await service.cache.get('no_reply_topics');
     if (!no_reply_topics) {
       const query = { reply_count: 0, tab: { $nin: [ 'job', 'dev' ] } };
       const options = { limit: 5, sort: '-create_at' };
@@ -103,9 +102,9 @@ class TopicController extends Controller {
   async put() {
     const { ctx, service } = this;
     const { tabs } = this.config;
-    const title = validator.trim(ctx.request.body.title);
-    const tab = validator.trim(ctx.request.body.tab);
-    const content = validator.trim(ctx.request.body.t_content);
+    const title = ctx.request.body.title.trim();
+    const tab = ctx.request.body.tab.trim();
+    const content = ctx.request.body.t_content.trim();
 
     // 得到所有的 tab, e.g. ['ask', 'share', ..]
     const allTabs = tabs.map(function(tPair) {
@@ -121,7 +120,7 @@ class TopicController extends Controller {
     } else if (!tab || allTabs.indexOf(tab) === -1) {
       editError = '必须选择一个版块。';
     } else if (content === '') {
-      editError = '内容不可为空';
+      editError = '内容不可为空。';
     }
     // END 验证
 
@@ -213,9 +212,9 @@ class TopicController extends Controller {
     if (
       topic.author_id.toString() === ctx.user._id.toString() || ctx.user.is_admin
     ) {
-      title = validator.trim(title);
-      tab = validator.trim(tab);
-      content = validator.trim(content);
+      title = title.trim();
+      tab = tab.trim();
+      content = content.trim();
 
       // 验证
       let editError;
@@ -225,6 +224,8 @@ class TopicController extends Controller {
         editError = '标题字数太多或太少。';
       } else if (!tab) {
         editError = '必须选择一个版块。';
+      } else if (content === '') {
+        editError = '内容不可为空。';
       }
       // END 验证
 
