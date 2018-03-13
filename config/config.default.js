@@ -131,5 +131,11 @@ module.exports = appInfo => {
     ignoreTLS: true,
   };
 
+  exports.alinode = {
+    enable: true,
+    appid: '',
+    secret: '',
+  };
+
   return config;
 };
