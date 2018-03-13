@@ -104,7 +104,7 @@ class ReplyService extends Service {
   getLastReplyByTopId(topicId) {
     const query = { topic_id: topicId, deleted: false };
     const opts = { sort: { create_at: -1 }, limit: 1 };
-    return this.ctx.model.Reply.find(query, '_id', opts).exec();
+    return this.ctx.model.Reply.findOne(query, '_id', opts).exec();
   }
 
   getRepliesByAuthorId(authorId, opt = null) {

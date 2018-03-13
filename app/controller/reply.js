@@ -39,19 +39,13 @@ class ReplyController extends Controller {
     const user_id = ctx.user._id;
     const topicAuthor = await service.user.getUserById(topic.author_id);
     const newContent = content.replace('@' + topicAuthor.loginname + ' ', '');
-    const [
-      reply, user,
-    ] = await Promise.all([
-      service.reply.newAndSave(content, topic_id, user_id, reply_id),
-      service.user.getUserById(user_id),
+    const reply = await service.reply.newAndSave(content, topic_id, user_id, reply_id);
+
+    await Promise.all([
+      service.user.incrementScoreAndReplyCount(user_id, 5, 1),
+      service.topic.updateLastReply(topic_id, reply._id),
     ]);
 
-    user.score += 5;
-    user.reply_count += 1;
-    await Promise.all([
-      service.topic.updateLastReply(topic_id, reply._id),
-      user.save(),
-    ]);
     service.at.sendMessageToMentionUsers(newContent, topic_id, user_id, reply._id);
     if (topic.author_id.toString() !== user_id.toString()) {
       await service.message.sendReplyMessage(topic.author_id, user_id, topic._id, reply._id);
