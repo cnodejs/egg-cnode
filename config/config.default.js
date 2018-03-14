@@ -141,5 +141,7 @@ module.exports = appInfo => {
     secret: process.env.EGG_ALINODE_SECRET || '',
   };
 
+  config.list_topic_count = 20;
+
   return config;
 };

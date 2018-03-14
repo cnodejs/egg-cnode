@@ -93,8 +93,9 @@ class UserController extends Controller {
 
     const collects = await service.topicCollect.getTopicCollectsByUserId(user._id, opt);
     const ids = collects.map(function(doc) {
-      return String(doc.topic_id);
+      return doc.topic_id.toString();
     });
+
     const query = { _id: { $in: ids } };
     let topics = await service.topic.getTopicsByQuery(query, {});
     topics = _.sortBy(topics, function(topic) {
@@ -154,9 +155,9 @@ class UserController extends Controller {
 
     const opt = { skip: (page - 1) * limit, limit, sort: '-create_at' };
     const replies = await service.reply.getRepliesByAuthorId(user._id, opt);
-    const topic_ids = [ ...new Set([ ...replies.map(function(reply) {
+    const topic_ids = [ ...new Set(replies.map(function(reply) {
       return reply.topic_id.toString();
-    }) ]) ];
+    })) ];
     // 获取所有有评论的主题
     const query = { _id: { $in: topic_ids } };
     let topics = await service.topic.getTopicsByQuery(query, {});
