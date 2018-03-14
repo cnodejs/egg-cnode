@@ -22,6 +22,16 @@ class CacheService extends Service {
     const duration = (Date.now() - t);
     logger.debug('Cache', 'set', key, (duration + 'ms').green);
   }
+
+  async incr(key, seconds) {
+    const { redis, logger } = this.app;
+    const t = Date.now();
+    const result = await redis.multi().incr(key).expire(key, seconds)
+      .exec();
+    const duration = (Date.now() - t);
+    logger.debug('Cache', 'set', key, (duration + 'ms').green);
+    return result[0][1];
+  }
 }
 
 module.exports = CacheService;
