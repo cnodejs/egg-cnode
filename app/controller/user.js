@@ -32,11 +32,11 @@ class UserController extends Controller {
     query = { _id: { $in: topic_ids } };
     let recent_replies = await service.topic.getTopicsByQuery(query, {});
 
-    recent_replies = _.sortBy(recent_replies, function(topic) {
+    recent_replies = _.sortBy(recent_replies, topic => {
       return topic_ids.indexOf(topic._id.toString());
     });
 
-    user.url = (function() {
+    user.url = (() => {
       if (user.url && user.url.indexOf('http') !== 0) {
         return 'http://' + user.url;
       }
@@ -92,14 +92,14 @@ class UserController extends Controller {
     const opt = { skip: (page - 1) * limit, limit };
 
     const collects = await service.topicCollect.getTopicCollectsByUserId(user._id, opt);
-    const ids = collects.map(function(doc) {
+    const ids = collects.map(doc => {
       return doc.topic_id.toString();
     });
 
     const query = { _id: { $in: ids } };
     let topics = await service.topic.getTopicsByQuery(query, {});
-    topics = _.sortBy(topics, function(topic) {
-      return ids.indexOf(String(topic._id));
+    topics = _.sortBy(topics, topic => {
+      return ids.indexOf(topic._id.toString());
     });
 
     await ctx.render('user/collect_topics', {
@@ -155,13 +155,13 @@ class UserController extends Controller {
 
     const opt = { skip: (page - 1) * limit, limit, sort: '-create_at' };
     const replies = await service.reply.getRepliesByAuthorId(user._id, opt);
-    const topic_ids = [ ...new Set(replies.map(function(reply) {
+    const topic_ids = [ ...new Set(replies.map(reply => {
       return reply.topic_id.toString();
     })) ];
     // 获取所有有评论的主题
     const query = { _id: { $in: topic_ids } };
     let topics = await service.topic.getTopicsByQuery(query, {});
-    topics = _.sortBy(topics, function(topic) {
+    topics = _.sortBy(topics, topic => {
       return topic_ids.indexOf(topic._id.toString());
     });
     const count = await service.reply.getCountByAuthorId(user._id);

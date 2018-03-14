@@ -80,7 +80,6 @@ module.exports = app => {
   });
 
   app.passport.deserializeUser(async (ctx, user) => {
-    console.log('deserialize', user);
     if (user) {
       const auth_token = ctx.cookies.get(ctx.app.config.auth_cookie_name, {
         signed: true,
