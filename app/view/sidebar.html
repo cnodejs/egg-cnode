@@ -6,7 +6,7 @@
       <span class='col_fade'>个人信息</span>
     </div>
     <div class='inner'>
-      <%-  include('./user/card.html', { user: typeof user === 'undefined' ? current_user : user }) %>
+      <%- include('./user/card.html', { user: typeof user === 'undefined' ? current_user : user }) %>
     </div>
     <% } else { %>
     <div class='inner'>

@@ -21,7 +21,7 @@
             <span class="big"><%= user.score %></span> 积分
             <% if (user.collect_topic_count) {%>
             <li>
-              <a class='dark' href="/user/<%= user.loginname %>/collections" target='_blank'>
+              <a class='dark' href="/user/<%= user.loginname %>/collections">
                 <span class='big collect-topic-count'><%= user.collect_topic_count %></span>个话题收藏
               </a>
             </li>

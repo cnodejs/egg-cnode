@@ -69,7 +69,7 @@
     <div class='container'>
       <a class='brand' href='/'>
         <% if (config.site_logo) {%>
-          <img src="<%- staticFile(config.site_logo) %>" />
+          <img src="<%- helper.staticFile(config.site_logo) %>" />
         <%} else {%>
           <%- config.name %>
         <%}%>
