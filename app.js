@@ -1,7 +1,5 @@
 'use strict';
 
-const tools = require('./app/common/tools');
-
 module.exports = app => {
   if (app.config.debug) {
     app.config.coreMiddleware.unshift('less');
@@ -23,7 +21,7 @@ module.exports = app => {
 
     const passhash = existUser.pass;
     // TODO: change to async compare
-    const equal = tools.bcompare(password, passhash);
+    const equal = ctx.helper.bcompare(password, passhash);
     // 密码不匹配
     if (!equal) {
       return null;

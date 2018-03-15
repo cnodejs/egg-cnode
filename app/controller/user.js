@@ -2,7 +2,6 @@
 
 const _ = require('lodash');
 const utility = require('utility');
-const tools = require('../common/tools');
 const validator = require('validator');
 const Controller = require('egg').Controller;
 
@@ -236,12 +235,12 @@ class UserController extends Controller {
       }
 
       const user = await service.user.getUserById(ctx.user._id);
-      const equal = tools.bcompare(oldPass, user.pass);
+      const equal = ctx.helper.bcompare(oldPass, user.pass);
       if (!equal) {
         return showMessage('当前密码不正确。', user);
       }
 
-      const newPassHash = tools.bhash(newPass);
+      const newPassHash = ctx.helper.bhash(newPass);
       user.pass = newPassHash;
       await user.save();
       return showMessage('密码已被修改。', user, true);

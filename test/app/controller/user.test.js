@@ -1,6 +1,5 @@
 'use strict';
 
-const tools = require('../../../app/common/tools');
 const { app, assert } = require('egg-mock/bootstrap');
 
 describe('test/app/controller/user.test.js', () => {
@@ -13,7 +12,7 @@ describe('test/app/controller/user.test.js', () => {
     ctx = app.mockContext();
     loginname = `user_loginname_${Date.now()}`;
     email = `${loginname}@test.com`;
-    user = await ctx.service.user.newAndSave('name', loginname, tools.bhash('pass'), email, 'avatar_url', 'active');
+    user = await ctx.service.user.newAndSave('name', loginname, ctx.helper.bhash('pass'), email, 'avatar_url', 'active');
     assert(user.loginname === loginname);
   });
 
@@ -111,7 +110,7 @@ describe('test/app/controller/user.test.js', () => {
       assert(res3.status === 200);
 
       const savedUser = await ctx.service.user.getUserById(user._id);
-      const equal = tools.bcompare('newpass', savedUser.pass);
+      const equal = ctx.helper.bcompare('newpass', savedUser.pass);
       assert(equal === true);
     });
   });
