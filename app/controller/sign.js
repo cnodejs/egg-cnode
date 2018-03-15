@@ -8,13 +8,13 @@ const Controller = require('egg').Controller;
 class SignController extends Controller {
   async showLogin() {
     const { ctx } = this;
-    await ctx.render('/sign/signin', {});
+    await ctx.render('/sign/signin', { pageTitle: '登录' });
   }
 
   // sign up
   async showSignup() {
     const { ctx } = this;
-    await ctx.render('/sign/signup', {});
+    await ctx.render('/sign/signup', { pageTitle: '注册' });
   }
 
   async signup() {

@@ -183,7 +183,7 @@ class UserController extends Controller {
       user.success = '保存成功。';
     }
 
-    return await ctx.render('user/setting', { user });
+    return await ctx.render('user/setting', { user, pageTitle: '设置' });
   }
 
   async setting() {
