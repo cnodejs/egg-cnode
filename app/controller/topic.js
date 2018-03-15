@@ -7,8 +7,6 @@ const fs = require('fs');
 const awaitWriteStream = require('await-stream-ready').write;
 const sendToWormhole = require('stream-wormhole');
 
-const qnUpload = require('../common/upload');
-
 class TopicController extends Controller {
   /**
    * Topic page
@@ -427,7 +425,7 @@ class TopicController extends Controller {
     // 如果有七牛云的配置,优先上传七牛云
     if (config.qn_access) {
       try {
-        const upload = qnUpload(config.qn_access);
+        const upload = this.ctx.helper.qnUpload(config.qn_access);
         const result = await upload(stream);
         ctx.body = {
           success: true,
