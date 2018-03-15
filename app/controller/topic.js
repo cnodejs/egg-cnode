@@ -2,7 +2,6 @@
 
 const Controller = require('egg').Controller;
 const _ = require('lodash');
-// const validator = require('validator');
 const path = require('path');
 const fs = require('fs');
 const awaitWriteStream = require('await-stream-ready').write;
@@ -102,60 +101,48 @@ class TopicController extends Controller {
   async put() {
     const { ctx, service } = this;
     const { tabs } = this.config;
-    const title = ctx.request.body.title.trim();
-    const tab = ctx.request.body.tab.trim();
-    const content = ctx.request.body.t_content.trim();
+    const { body } = ctx.request;
 
     // 得到所有的 tab, e.g. ['ask', 'share', ..]
-    const allTabs = tabs.map(function(tPair) {
-      return tPair[0];
-    });
+    const allTabs = tabs.map(tPair => tPair[0]);
 
-    // 验证
-    let editError;
-    if (title === '') {
-      editError = '标题不能是空的。';
-    } else if (title.length < 5 || title.length > 100) {
-      editError = '标题字数太多或太少。';
-    } else if (!tab || allTabs.indexOf(tab) === -1) {
-      editError = '必须选择一个版块。';
-    } else if (content === '') {
-      editError = '内容不可为空。';
-    }
-    // END 验证
-
-    if (editError) {
-      ctx.status = 422;
-      await ctx.render('topic/edit', {
-        edit_error: editError,
-        title,
-        content,
-        tabs,
-      });
-      return;
-    }
+    // 使用 egg_validate 验证
+    // TODO: 此处可以优化，将所有使用egg_validate的rules集中管理，避免即时新建对象
+    const RULE_CREATE = {
+      title: {
+        type: 'string',
+        max: 100,
+        min: 5,
+      },
+      content: {
+        type: 'string',
+      },
+      tab: {
+        type: 'enum',
+        values: allTabs,
+      },
+    };
+    ctx.validate(RULE_CREATE, ctx.request.body);
 
     // 储存新主题帖
     const topic = await service.topic.newAndSave(
-      title,
-      content,
-      tab,
+      body.title,
+      body.content,
+      body.tab,
       ctx.user._id
     );
 
     // 发帖用户增加积分,增加发表主题数量
     await service.user.incrementScoreAndReplyCount(topic.author_id, 5, 1);
 
-    ctx.redirect('/topic/' + topic._id);
-
     // 通知被@的用户
     await service.at.sendMessageToMentionUsers(
-      content,
+      body.content,
       topic._id,
       ctx.user._id
     );
 
-    await ctx.redirect('/topic/' + topic._id);
+    ctx.redirect('/topic/' + topic._id);
   }
 
   /**
@@ -198,9 +185,7 @@ class TopicController extends Controller {
     const { ctx, service, config } = this;
 
     const topic_id = ctx.params.tid;
-    let title = ctx.request.body.title;
-    let tab = ctx.request.body.tab;
-    let content = ctx.request.body.t_content;
+    let { title, tab, content } = ctx.request.body;
 
     const { topic } = await service.topic.getTopicById(topic_id);
     if (!topic) {

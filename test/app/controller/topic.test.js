@@ -92,49 +92,52 @@ describe('test/app/controller/topic.test.js', () => {
     await app.httpRequest().get(`/topic/${topicId}/edit`).expect(200);
   });
 
-  it('should POST /topic/create ok', async () => {
-    const body = {
-      title: '',
-      tab: '',
-      t_content: '',
-    };
+  it('should POST /topic/create forbidden', async () => {
+    app.mockCsrf();
+    await app.httpRequest().post('/topic/create').expect(403);
+  });
 
+  it('should POST /topic/create forbidden', async () => {
     mockUser();
+    app.mockCsrf();
+    await app.httpRequest().post('/topic/create')
+      .send({
+        invalid_field: 'not make sense',
+      })
+      .expect(422);
+  });
 
-    const r1 = await app
-      .httpRequest()
-      .post('/topic/create')
-      .send(body);
-    assert(r1.text.includes('标题不能是空的。'));
-
-    body.title = 'hi';
-    const r2 = await app
-      .httpRequest()
-      .post('/topic/create')
-      .send(body);
-    assert(r2.text.includes('标题字数太多或太少。'));
-
-    body.title = '这是一个大标题';
-    const r4 = await app
-      .httpRequest()
-      .post('/topic/create')
-      .send(body);
-    assert(r4.text.includes('必须选择一个版块。'));
-
-    body.tab = 'share';
-    const r3 = await app
-      .httpRequest()
-      .post('/topic/create')
-      .send(body);
-    assert(r3.text.includes('内容不可为空。'));
-
-    body.t_content = 'hi';
-
-    await app
-      .httpRequest()
-      .post('/topic/create')
-      .send(body)
+  it('should POST /topic/create ok', async () => {
+    mockUser();
+    app.mockCsrf();
+    await app.httpRequest().post('/topic/create')
+      .send({
+        tab: 'share',
+        title: 'topic测试标题',
+        content: 'topic test topic content',
+      })
       .expect(302);
+  });
+
+  it('should POST /topic/create per day limit works', async () => {
+    mockUser();
+    app.mockCsrf();
+    for (let i = 0; i < 9; i++) {
+      await app.httpRequest().post('/topic/create')
+        .send({
+          tab: 'share',
+          title: `topic测试标题${i + 1}`,
+          content: 'topic test topic content',
+        })
+        .expect(302);
+    }
+    await app.httpRequest().post('/topic/create')
+      .send({
+        tab: 'share',
+        title: 'topic测试标题11',
+        content: 'topic test topic content',
+      })
+      .expect(403);
   });
 
   it('should POST /topic/:tid/top ok', async () => {
@@ -168,7 +171,7 @@ describe('test/app/controller/topic.test.js', () => {
     const body = {
       title: '',
       tab: '',
-      t_content: '',
+      content: '',
     };
 
     fakeUser();
@@ -212,7 +215,7 @@ describe('test/app/controller/topic.test.js', () => {
       .send(body);
     assert(r3.text.includes('内容不可为空。'));
 
-    body.t_content = 'hi';
+    body.content = 'hi';
     await app
       .httpRequest()
       .post(`/topic/${topicId}/edit`)
