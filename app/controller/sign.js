@@ -73,7 +73,7 @@ class SignController extends Controller {
 
     await service.user.newAndSave(loginname, loginname, passhash, email, avatarUrl, false);
     // 发送激活邮件
-    // await mail.sendActiveMail(email, utility.md5(email + passhash + config.session_secret), loginname);
+    // await service.mail.sendActiveMail(email, utility.md5(email + passhash + config.session_secret), loginname);
     await ctx.render('sign/signup', {
       success: '欢迎加入 ' + config.name + '！我们已给您的注册邮箱发送了一封邮件，请点击里面的链接来激活您的帐号。',
     });
@@ -180,10 +180,10 @@ class SignController extends Controller {
 
   async updatePass() {
     const { ctx, service } = this;
-    const psw = validator.trim(ctx.body.psw) || '';
-    const repsw = validator.trim(ctx.body.repsw) || '';
-    const key = validator.trim(ctx.body.key) || '';
-    const name = validator.trim(ctx.body.name) || '';
+    const psw = validator.trim(ctx.request.body.psw) || '';
+    const repsw = validator.trim(ctx.request.body.repsw) || '';
+    const key = validator.trim(ctx.request.body.key) || '';
+    const name = validator.trim(ctx.request.body.name) || '';
 
     if (psw !== repsw) {
       await this.ctx.render('sign/reset', {
