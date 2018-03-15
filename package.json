@@ -56,7 +56,8 @@
     "autod": "autod"
   },
   "ci": {
-    "version": "8"
+    "version": "8",
+    "services": "redis-server, mongodb"
   },
   "repository": {
     "type": "git",
