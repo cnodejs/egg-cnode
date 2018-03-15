@@ -4,6 +4,7 @@ const MarkdownIt = require('markdown-it');
 const validator = require('validator');
 const jsxss = require('xss');
 const moment = require('moment');
+const bcrypt = require('bcryptjs');
 
 moment.locale('zh-cn'); // 使用中文
 
@@ -98,4 +99,16 @@ exports.ago = function(date) {
   date = moment(date);
 
   return date.fromNow();
+};
+
+exports.validateId = str => {
+  return /^[a-zA-Z0-9\-_]+$/i.test(str);
+};
+
+exports.bhash = str => {
+  return bcrypt.hashSync(str, 10);
+};
+
+exports.bcompare = (str, hash) => {
+  return bcrypt.compareSync(str, hash);
 };

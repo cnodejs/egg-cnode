@@ -13,7 +13,7 @@
     <div class="header"><%= user.loginname %> 参与的话题</div>
     <div class="inner padding">
     <% if (typeof topics !== 'undefined' && topics.length > 0) { %>
-      <%- include('../topic/list.html', { topics, pages, current_pages, base: `/user/${user.loginname}/replies` }) %>
+      <%- include('../topic/list.html', { topics, pages, current_page, base: `/user/${user.loginname}/replies` }) %>
     <% } else { %>
       <div class='inner'>
         <p>无话题</p>

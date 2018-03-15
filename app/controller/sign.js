@@ -5,18 +5,16 @@ const utility = require('utility');
 const uuid = require('uuid');
 const Controller = require('egg').Controller;
 
-const tools = require('../common/tools');
-
 class SignController extends Controller {
   async showLogin() {
     const { ctx } = this;
-    await ctx.render('/sign/signin', {});
+    await ctx.render('/sign/signin', { pageTitle: '登录' });
   }
 
   // sign up
   async showSignup() {
     const { ctx } = this;
-    await ctx.render('/sign/signup', {});
+    await ctx.render('/sign/signup', { pageTitle: '注册' });
   }
 
   async signup() {
@@ -34,7 +32,7 @@ class SignController extends Controller {
       msg = '信息不完整。';
     } else if (loginname.length < 5) {
       msg = '用户名至少需要5个字符。';
-    } else if (!tools.validateId(loginname)) {
+    } else if (!ctx.helper.validateId(loginname)) {
       msg = '用户名不合法。';
     } else if (!validator.isEmail(email)) {
       msg = '邮箱不合法。';
@@ -68,7 +66,7 @@ class SignController extends Controller {
       return;
     }
 
-    const passhash = tools.bhash(pass);
+    const passhash = ctx.helper.bhash(pass);
 
     // create gravatar
     const avatarUrl = service.user.makeGravatar(email);
@@ -203,7 +201,7 @@ class SignController extends Controller {
       });
       return;
     }
-    const passhash = tools.bhash(psw);
+    const passhash = ctx.helper.bhash(psw);
     user.pass = passhash;
     user.retrieve_key = null;
     user.retrieve_time = null;

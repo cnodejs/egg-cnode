@@ -9,7 +9,7 @@ class PageController extends Controller {
 
   // FAQ
   async faq() {
-    await this.ctx.render('static/faq');
+    await this.ctx.render('static/faq', { pageTitle: 'FAQ' });
   }
 
   async getstart() {
@@ -28,7 +28,7 @@ class PageController extends Controller {
   }
 
   async api() {
-    await this.ctx.render('static/api');
+    await this.ctx.render('static/api', { pageTitle: 'API' });
   }
 
 }
