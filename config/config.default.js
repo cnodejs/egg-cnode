@@ -145,5 +145,7 @@ module.exports = appInfo => {
     perDayPerUserLimitCount: 10,
   };
 
+  config.list_topic_count = 20;
+
   return config;
 };
