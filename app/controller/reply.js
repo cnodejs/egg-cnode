@@ -46,7 +46,7 @@ class ReplyController extends Controller {
       service.topic.updateLastReply(topic_id, reply._id),
     ]);
 
-    service.at.sendMessageToMentionUsers(newContent, topic_id, user_id, reply._id);
+    await service.at.sendMessageToMentionUsers(newContent, topic_id, user_id, reply._id);
     if (topic.author_id.toString() !== user_id.toString()) {
       await service.message.sendReplyMessage(topic.author_id, user_id, topic._id, reply._id);
     }

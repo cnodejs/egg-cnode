@@ -223,8 +223,6 @@ class UserController extends Controller {
       user.signature = signature;
       user.weibo = weibo;
       await user.save();
-
-      ctx.user = user.toObject({ virtual: true });
       return ctx.redirect('/setting?save=success');
     }
 

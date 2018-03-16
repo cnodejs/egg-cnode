@@ -8,7 +8,6 @@ describe('test/app/service/at.test.js', () => {
     loginname2,
     user1,
     user2,
-    replyId,
     ctx,
     atService;
   before(async function() {
@@ -35,30 +34,23 @@ describe('test/app/service/at.test.js', () => {
     assert(reply.content === 'hi');
     assert(reply.author_id === user1._id);
     assert(reply.topic_id === topicId);
-    replyId = reply._id;
   });
 
   it('fetchUsers should ok', async () => {
-    const result1 = await atService.fetchUsers();
-    assert(result1.length === 0);
-    const result2 = await ctx.service.at.fetchUsers('good job!!! @sinchang @cnode');
-    assert(result2[0] === 'sinchang');
-    assert(result2[1] === 'cnode');
+    let result = await atService.fetchUsers();
+    assert(result.length === 0);
+    result = await ctx.service.at.fetchUsers('good job!!! @sinchang @cnode');
+    assert(result[0] === 'sinchang');
+    assert(result[1] === 'cnode');
   });
 
   it('sendMessageToMentionUsers should ok', async () => {
-    const result1 = await atService.sendMessageToMentionUsers(`hi!!!@${loginname2}`, topicId, user1._id, 'at');
-    assert(result1[0].type === 'at');
-    assert(result1[0].topic_id === topicId);
-    assert(result1[0].author_id === user1._id);
-    assert.equal(result1[0].master_id.toString(), user2._id);
-    assert(result1[0].reply_id === null);
-    const result2 = await atService.sendMessageToMentionUsers(`hi!!!@${loginname2}`, topicId, user1._id, 'reply2', replyId);
-    assert(result2[0].type === 'reply2');
-    assert(result2[0].topic_id === topicId);
-    assert(result2[0].author_id === user1._id);
-    assert.equal(result2[0].master_id.toString(), user2._id);
-    assert(result2[0].reply_id === replyId);
+    const result = await atService.sendMessageToMentionUsers(`hi!!!@${loginname2}`, topicId, user1._id);
+    assert(result[0].type === 'at');
+    assert(result[0].topic_id === topicId);
+    assert(result[0].author_id === user1._id);
+    assert.equal(result[0].master_id.toString(), user2._id);
+    assert(result[0].reply_id === null);
   });
 
   it('linkUsers should ok', async () => {

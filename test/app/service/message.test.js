@@ -33,12 +33,19 @@ describe('test/app/service/message.test.js', () => {
   });
 
   it('sendAtMessage should ok', async () => {
-    const result = await messageService.sendAtMessage(user2._id, user1._id, topicId, 'at');
-    message = result;
+    message = await messageService.sendAtMessage(user2._id, user1._id, topicId);
     assert(message.type === 'at');
     assert(message.topic_id.toString() === topicId.toString());
     assert(message.author_id === user1._id);
     assert.equal(message.master_id.toString(), user2._id);
+  });
+
+  it('sendReplyMessage should ok', async () => {
+    const result = await messageService.sendReplyMessage(user2._id, user1._id, topicId);
+    assert(result.type === 'reply');
+    assert(result.topic_id.toString() === topicId.toString());
+    assert(result.author_id === user1._id);
+    assert.equal(result.master_id.toString(), user2._id);
   });
 
   it('getMessagesCount should ok', async () => {
@@ -47,15 +54,16 @@ describe('test/app/service/message.test.js', () => {
   });
 
   it('getMessageRelations should ok', async () => {
-    const result1 = await messageService.getMessageRelations(message);
-    assert(result1.topic_id === message.topic_id);
-    const mockMessage1 = await messageService.sendAtMessage(user2._id, '565c4473d0bc14ae279399fe', user1._id, 'at');
-    const result2 = await messageService.getMessageRelations(mockMessage1);
-    assert(result2.is_invalid === true);
-    assert(result1.topic_id === message.topic_id);
-    const mockMessage2 = await messageService.sendAtMessage(user2._id, topicId, user1._id, 'at1');
-    const result3 = await messageService.getMessageRelations(mockMessage2);
-    assert(result3.is_invalid === true);
+    let result = await messageService.getMessageRelations(message);
+    assert(result.topic.topic._id.toString() === message.topic_id.toString());
+
+    const mockMessage1 = await messageService.sendAtMessage(user2._id, '565c4473d0bc14ae279399fe', user1._id);
+    result = await messageService.getMessageRelations(mockMessage1);
+    assert(result.is_invalid === true);
+
+    message.type = 'at1';
+    result = await messageService.getMessageRelations(message);
+    assert(result.is_invalid === true);
   });
 
   it('getMessageById should ok', async () => {
@@ -74,18 +82,18 @@ describe('test/app/service/message.test.js', () => {
   });
 
   it('updateMessagesToRead should ok', async () => {
-    const result1 = await messageService.updateMessagesToRead(user2._id, []);
-    assert(result1 === undefined);
+    let result = await messageService.updateMessagesToRead(user2._id, []);
+    assert(result === undefined);
 
-    const result2 = await messageService.updateMessagesToRead(user2._id, [ message ]);
-    assert(result2.ok === 1);
+    result = await messageService.updateMessagesToRead(user2._id, [ message ]);
+    assert(result.ok === 1);
   });
 
   it('updateOneMessageToRead should ok', async () => {
-    const message = await messageService.sendAtMessage(user2._id, topicId, user1._id, 'at');
-    const result1 = await messageService.updateOneMessageToRead();
-    assert(result1 === undefined);
-    const result2 = await messageService.updateOneMessageToRead(message._id);
-    assert(result2.ok === 1);
+    const message = await messageService.sendAtMessage(user2._id, topicId, user1._id);
+    let result = await messageService.updateOneMessageToRead();
+    assert(result === undefined);
+    result = await messageService.updateOneMessageToRead(message._id);
+    assert(result.ok === 1);
   });
 });

@@ -6,7 +6,7 @@
 module.exports = app => {
   const { router, controller, config, middleware } = app;
 
-  const { site, sign, user, topic, rss, search, page, reply } = controller;
+  const { site, sign, user, topic, rss, search, page, reply, message } = controller;
 
   const userRequired = middleware.userRequired();
   const adminRequired = middleware.adminRequired();
@@ -63,7 +63,7 @@ module.exports = app => {
   router.post('/user/:name/delete_all', adminRequired, user.deleteAll); // 删除某用户所有发言
 
   // // message controler
-  // router.get('/my/messages', userRequired, message.index); // 用户个人的所有消息页
+  router.get('/my/messages', userRequired, message.index); // 用户个人的所有消息页
 
   // topic
 

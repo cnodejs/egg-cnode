@@ -2,7 +2,7 @@
 
 const { app, assert } = require('egg-mock/bootstrap');
 
-describe('reply service', () => {
+describe('test/app/service/reply.test.js', () => {
   let topic,
     user,
     reply;
