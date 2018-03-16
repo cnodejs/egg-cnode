@@ -234,8 +234,7 @@ class TopicController extends Controller {
       await service.at.sendMessageToMentionUsers(
         content,
         topic._id,
-        ctx.user._id,
-        'at'
+        ctx.user._id
       );
 
       ctx.redirect('/topic/' + topic._id);
