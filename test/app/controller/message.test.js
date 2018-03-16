@@ -41,9 +41,11 @@ describe('test/app/controller/message.test.js', () => {
     const message = await ctx.service.message.sendAtMessage(user2._id, user1._id, topicId);
     let result = await app.httpRequest().get('/my/messages');
     assert(result.status === 200);
+    assert(result.text.includes('first post'));
 
     ctx.service.message.updateOneMessageToRead(message._id);
     result = await app.httpRequest().get('/my/messages');
     assert(result.status === 200);
+    assert(result.text.includes('first post'));
   });
 });
