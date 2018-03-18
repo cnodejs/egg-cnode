@@ -25,9 +25,7 @@ module.exports = app => {
     router.post('/signup', sign.signup); // 提交注册信息
   } else {
     // 进行github验证
-    router.get('/signup', async function() {
-      this.ctx.redirect('/auth/github');
-    });
+    router.redirect('/singup', '/auth/github');
   }
 
   const localStrategy = app.passport.authenticate('local', {
