@@ -9,7 +9,7 @@ module.exports = (options, app) => {
 
   if (app.config.mini_assets) {
     try {
-      assets = require('./assets.json');
+      assets = require('../assets.json');
     } catch (e) {
       logger.error(
         'You must execute `make build` before start app when mini_assets is true.'

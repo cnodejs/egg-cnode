@@ -11,3 +11,7 @@ run/
 *.sw*
 *.un~
 dump.rdb
+*.hashed.*
+*.min.*
+*.debug.*
+app/assets.json
