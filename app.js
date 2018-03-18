@@ -39,19 +39,16 @@ module.exports = app => {
 
   const githubHandler = async (ctx, { profile }) => {
     const email = profile.emails && profile.emails[0] && profile.emails[0].value;
-    const existUser = await ctx.service.user.getUsersByQuery({
-      githubId: profile.id,
-    });
+    let existUser = await ctx.service.user.getUserByGithubId(profile.id);
 
     // 用户不存在则创建
-    // TODO
     if (!existUser) {
-      return null;
+      existUser = new ctx.model.User();
+      existUser.active = true;
     }
 
     // 用户存在，更新字段
-    // existUser.loginname = profile.username;
-    existUser.githubId = profile.id;
+    existUser.loginname = profile.username;
     existUser.email = email || existUser.email;
     existUser.avatar = profile._json.avatar_url;
     existUser.githubUsername = profile.username;
@@ -76,6 +73,7 @@ module.exports = app => {
       };
       ctx.cookies.set(app.config.auth_cookie_name, auth_token, opts); // cookie 有效期30天
     }
+
     return existUser;
   });
 

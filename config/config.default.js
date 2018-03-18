@@ -147,5 +147,8 @@ module.exports = appInfo => {
 
   config.list_topic_count = 20;
 
+  // 每个 IP 每天可创建用户数
+  config.create_user_per_ip = 1000;
+
   return config;
 };

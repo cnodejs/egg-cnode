@@ -6,11 +6,13 @@
 module.exports = app => {
   const { router, controller, config, middleware } = app;
 
-  const { site, sign, user, topic, rss, search, page, reply, message } = controller;
+  const { site, sign, user, topic, rss,
+    search, page, reply, message } = controller;
 
   const userRequired = middleware.userRequired();
   const adminRequired = middleware.adminRequired();
-  const topicPerDayLimit = middleware.topicPerDayLimit(config.topic);
+  const createTopicLimit = middleware.createTopicLimit(config.topic);
+  const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
 
   // home page
   router.get('/', site.index);
@@ -24,7 +26,7 @@ module.exports = app => {
     // 跳转到注册页面
     router.get('/signup', sign.showSignup);
     // 提交注册信息
-    router.post('/signup', sign.signup);
+    router.post('/signup', createUserLimit, sign.signup);
   } else {
     // 进行github验证
     router.redirect('/singup', '/auth/github');
@@ -79,7 +81,7 @@ module.exports = app => {
   router.post('/topic/:tid/delete', userRequired, topic.delete);
 
   // // 保存新建的文章
-  router.post('/topic/create', userRequired, topicPerDayLimit, topic.put);
+  router.post('/topic/create', userRequired, createTopicLimit, topic.put);
 
   router.post('/topic/:tid/edit', userRequired, topic.update);
   router.post('/topic/collect', userRequired, topic.collect); // 关注某话题

@@ -18,7 +18,7 @@
         或
         <a href='/signup'>注册</a>
         , 也可以
-        <a href="/auth/github">
+        <a href="/passport/github">
           <span class="span-info">
             通过 GitHub 登录
           </span>
@@ -51,7 +51,7 @@
       <% if (no_reply_topics.length > 0) { %>
       <ul class="unstyled">
         <% no_reply_topics.forEach(topic => { %>
-          <%- include('./topic/small.html', { topic }) %>          
+          <%- include('./topic/small.html', { topic }) %>
         <% }) %>
       </ul>
       <% } else { %>
