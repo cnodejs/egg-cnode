@@ -50,7 +50,9 @@
     <div class='inner'>
       <% if (no_reply_topics.length > 0) { %>
       <ul class="unstyled">
-        <%- include('./topic/small.html', { topic: no_reply_topics }) %>
+        <% no_reply_topics.forEach(topic => { %>
+          <%- include('./topic/small.html', { topic }) %>          
+        <% }) %>
       </ul>
       <% } else { %>
       <p>无</p>
@@ -69,7 +71,7 @@
     <div class='inner'>
       <% if (tops.length > 0) { %>
       <ol>
-        <% tops.forEach((user) => { %>
+        <% tops.forEach(user => { %>
         <%- include('user/top.html', { user }) %>
         <% }) %>
       </ol>
