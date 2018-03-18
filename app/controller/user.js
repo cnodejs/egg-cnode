@@ -188,10 +188,10 @@ class UserController extends Controller {
   }
 
   async setting() {
-    const { ctx, ctx: { request: req }, service } = this;
+    const { ctx, service } = this;
     // 显示出错或成功信息
     async function showMessage(msg, data, isSuccess) {
-      data = data || req.body;
+      data = data || ctx.request.body;
       const user = {
         loginname: data.loginname,
         email: data.email,
@@ -201,16 +201,19 @@ class UserController extends Controller {
         weibo: data.weibo,
         accessToken: data.accessToken,
       };
+
       if (isSuccess) {
         user.success = msg;
       } else {
         user.error = msg;
       }
+
       return await ctx.render('user/setting', { user });
     }
 
     // post
-    const { body, body: { action } } = req;
+    const { body } = ctx.request;
+    const action = body.action;
     if (action === 'change_setting') {
       const url = validator.trim(body.url);
       const location = validator.trim(body.location);
@@ -227,8 +230,8 @@ class UserController extends Controller {
     }
 
     if (action === 'change_password') {
-      const oldPass = validator.trim(req.body.old_pass);
-      const newPass = validator.trim(req.body.new_pass);
+      const oldPass = validator.trim(body.old_pass);
+      const newPass = validator.trim(body.new_pass);
       if (!oldPass || !newPass) {
         return showMessage('旧密码或新密码不得为空');
       }
@@ -247,10 +250,13 @@ class UserController extends Controller {
   }
 
   async toggleStar() {
-    const { ctx, ctx: { request: req }, service } = this;
-    const { body } = req;
-    const user_id = body.user_id;
+    const { ctx, service } = this;
+    const user_id = ctx.request.body.user_id;
     const user = await service.user.getUserById(user_id);
+    if (!user) {
+      ctx.body = { status: 'failed', message: '用户不存在' };
+      return;
+    }
 
     user.is_star = !user.is_star;
     await user.save();
@@ -259,8 +265,8 @@ class UserController extends Controller {
   }
 
   async block() {
-    const { ctx, ctx: { request: req }, service } = this;
-    const { body: { action } } = req;
+    const { ctx, service } = this;
+    const action = ctx.request.body.action;
     const loginname = ctx.params.name;
     const user = await service.user.getUserByLoginName(loginname);
 

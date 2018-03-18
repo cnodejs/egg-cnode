@@ -21,13 +21,13 @@ module.exports = app => {
 
   // sign controller
   if (config.allow_sign_up) {
-    router.get('/signup', sign.showSignup); // 跳转到注册页面
-    router.post('/signup', sign.signup); // 提交注册信息
+    // 跳转到注册页面
+    router.get('/signup', sign.showSignup);
+    // 提交注册信息
+    router.post('/signup', sign.signup);
   } else {
     // 进行github验证
-    router.get('/signup', async function() {
-      this.ctx.redirect('/auth/github');
-    });
+    router.redirect('/singup', '/auth/github');
   }
 
   const localStrategy = app.passport.authenticate('local', {
