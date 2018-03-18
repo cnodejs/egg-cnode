@@ -146,7 +146,7 @@ describe('test/app/controller/user.test.js', () => {
       assert(/<strong>([\S\s]+)<\/strong>/g.exec(text)[1] === '需要管理员权限。');
     }
 
-    async function handleAdminPost(url, body, cb) {
+    async function handleAdminPost(url, body) {
       // const adminName = Object.keys(app.config.admins)[0];
       // let admin = await ctx.service.user.getUserByLoginName(adminName);
       // if (!admin) {
@@ -162,8 +162,7 @@ describe('test/app/controller/user.test.js', () => {
         .send(body);
       assert(res.status === 200);
       assert(res.body.status === 'success');
-      const updatedUser = await ctx.service.user.getUserById(user._id);
-      cb(updatedUser);
+      return await ctx.service.user.getUserById(user._id);
     }
 
     it('should POST /passport/local set cookies', async () => {
@@ -217,15 +216,13 @@ describe('test/app/controller/user.test.js', () => {
 
 
     it('should POST /user/set_star ok', async () => {
-      await handleAdminPost('/user/set_star', { user_id: user._id }, user => {
-        assert(user.is_star === true);
-      });
+      const result = await handleAdminPost('/user/set_star', { user_id: user._id });
+      assert(result.is_star === true);
     });
 
     it('should POST /user/cancel_star ok', async () => {
-      await handleAdminPost('/user/cancel_star', { user_id: user._id }, user => {
-        assert(user.is_star === false);
-      });
+      const result = await handleAdminPost('/user/cancel_star', { user_id: user._id });
+      assert(result.is_star === false);
     });
 
     it('should POST /user/:name/block no_admin reject', async () => {
@@ -233,15 +230,17 @@ describe('test/app/controller/user.test.js', () => {
     });
 
     it('should POST /user/:name/block set block ok', async () => {
-      await handleAdminPost(`/user/${user.loginname}/block`, { action: 'set_block' }, user => {
-        assert(user.is_block === true);
+      const result = await handleAdminPost(`/user/${user.loginname}/block`, {
+        action: 'set_block',
       });
+      assert(result.is_block === true);
     });
 
     it('should POST /user/:name/block cancel block ok', async () => {
-      await handleAdminPost(`/user/${user.loginname}/block`, { action: 'cancel_block' }, user => {
-        assert(user.is_block === false);
+      const result = await handleAdminPost(`/user/${user.loginname}/block`, {
+        action: 'cancel_block',
       });
+      assert(result.is_block === false);
     });
 
     it('should POST /user/:name/delete_all no_admin reject', async () => {
@@ -249,10 +248,9 @@ describe('test/app/controller/user.test.js', () => {
     });
 
     it('should POST /user/:name/delete_all ok', async () => {
-      await handleAdminPost(`/user/${user.loginname}/delete_all`, {}, user => {
-        assert(user);
-        // TODO: Check topics and replies by service method.
-      });
+      const result = await handleAdminPost(`/user/${user.loginname}/delete_all`, {});
+      assert(result);
+      // TODO: Check topics and replies by service method.
     });
   });
 
