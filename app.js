@@ -44,6 +44,7 @@ module.exports = app => {
     // 用户不存在则创建
     if (!existUser) {
       existUser = new ctx.model.User();
+      existUser.githubId = profile.id;
       existUser.active = true;
     }
 
@@ -53,7 +54,26 @@ module.exports = app => {
     existUser.avatar = profile._json.avatar_url;
     existUser.githubUsername = profile.username;
     existUser.githubAccessToken = profile.accessToken;
-    await existUser.save();
+
+    try {
+      await existUser.save();
+    } catch (ex) {
+      if (ex.message.indexOf('duplicate key error') !== -1) {
+        let err;
+        if (ex.message.indexOf('email') !== -1) {
+          err = new Error('您 GitHub 账号的 Email 与之前在 CNodejs 注册的用户名重复了');
+          err.code = 'duplicate_email';
+          throw err;
+        }
+
+        if (ex.message.indexOf('loginname') !== -1) {
+          err = new Error('您 GitHub 账号的用户名与之前在 CNodejs 注册的用户名重复了');
+          err.code = 'duplicate_loginname';
+          throw err;
+        }
+      }
+      throw ex;
+    }
 
     return existUser;
   };
