@@ -6,10 +6,7 @@ module.exports = limitCount => {
 
   return async function createUserLimit(ctx, next) {
     const { service } = ctx;
-    const realIP = ctx.headers['x-real-ip'];
-    if (!realIP) {
-      throw new Error('should provice `x-real-ip` header');
-    }
+    const realIP = ctx.ip;
 
     const YYYYMMDD = moment().format('YYYYMMDD');
     const key = `user_count_${realIP}_${YYYYMMDD}`;
