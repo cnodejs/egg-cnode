@@ -19,7 +19,7 @@
   <% if (topic.reply && topic.reply.author) {%>
   <a class='last_time pull-right' href="/topic/<%= topic._id %><%- '#' + topic.reply._id %>">
     <img class="user_small_avatar" src="<%= helper.proxy(topic.reply.author.avatar_url) %>">
-    <span class="last_active_time"><%= helper.ago(topic.reply) %></span>
+    <span class="last_active_time"><%= helper.ago(topic.last_reply_at) %></span>
   </a>
   <% } %>
   <% if (!topic.reply) {%>
