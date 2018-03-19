@@ -1,11 +1,12 @@
 version: '3'
 services: 
   cnode:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      # args:
-      #   - env=value
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    #   args:
+    #     - env=value
+    image: cnode/egg-cnode:latest
     environment:
       - NODE_ENV=production
       - EGG_SERVER_ENV=prod
