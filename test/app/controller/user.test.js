@@ -174,21 +174,25 @@ describe('test/app/controller/user.test.js', () => {
       assert(/=([^$]+)\$/g.exec(authUser)[1] === user._id.toString());
       assert(login.headers.location === '/');
 
-      const login1 = await app.httpRequest().post('/passport/local').send({ name: user.loginname, pass: 'pass' });
+      const login1 = await app.httpRequest().post('/passport/local')
+        .send({ name: user.loginname, pass: 'pass' });
       assert(login1.status === 302);
       assert(login1.headers.location === '/signin');
 
-      const login2 = await app.httpRequest().post('/passport/local').send({ name: user.email, pass: 'newpass' });
+      const login2 = await app.httpRequest().post('/passport/local')
+        .send({ name: user.email, pass: 'newpass' });
       assert(login2.status === 302);
       assert(login2.headers.location === '/');
 
-      const login3 = await app.httpRequest().post('/passport/local').send({ name: 'noExistedUser', pass: 'pass' });
+      const login3 = await app.httpRequest().post('/passport/local')
+        .send({ name: 'noExistedUser', pass: 'pass' });
       assert(login3.status === 302);
       assert(login3.headers.location === '/signin');
 
       user.active = false;
       await user.save();
-      const login4 = await app.httpRequest().post('/passport/local').send({ name: user.loginname, pass: 'newpass' });
+      const login4 = await app.httpRequest().post('/passport/local')
+        .send({ name: user.loginname, pass: 'newpass' });
       assert(login4.status === 302);
       assert(login4.headers.location === '/signin');
     });

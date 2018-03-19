@@ -231,4 +231,14 @@ describe('test/app/controller/sign.test.js', () => {
     assert(res.statusCode === 422);
     assert(res.text.includes('用户名或邮箱已被使用。'));
   });
+
+  it('should GET /passport/github', async () => {
+    const res = await app.httpRequest()
+      .get('/passport/github');
+
+    assert(res.statusCode === 302);
+    const patt = /https:\/\/github\.com\/login\/oauth\/authorize\?response_type=code\&redirect_uri=http%3A%2F%2F127\.0\.0\.1%3A(\d+)%2Fpassport%2Fgithub%2Fcallback&client_id=test/;
+    assert(patt.test(res.headers.location));
+  });
+
 });

@@ -1,9 +1,10 @@
 'use strict';
+
 const moment = require('moment');
 
 module.exports = ({ perDayPerUserLimitCount = 10 }) => {
 
-  return async function(ctx, next) {
+  return async function createTopicLimit(ctx, next) {
     const { user, service } = ctx;
     const YYYYMMDD = moment().format('YYYYMMDD');
     const key = `topics_count_${user._id}_${YYYYMMDD}`;
