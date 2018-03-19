@@ -21,7 +21,7 @@ module.exports = appInfo => {
   config.session_secret = 'node_club_secret'; // 务必修改
 
   // add your config here
-  config.middleware = [ 'locals', 'authUser', 'errorPage' ];
+  config.middleware = [ 'locals', 'authUser', 'blockUser', 'errorPage' ];
 
   config.authUser = {
     enable: true,
@@ -146,6 +146,9 @@ module.exports = appInfo => {
   };
 
   config.list_topic_count = 20;
+
+  // 每个 IP 每天可创建用户数
+  config.create_user_per_ip = 1000;
 
   return config;
 };

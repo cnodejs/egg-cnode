@@ -45,6 +45,14 @@ describe('test/app/service/user.test.js', () => {
     assert(user.loginname === loginname);
   });
 
+  it('getUserByGithubId should ok', async function() {
+    // 创建 ctx
+    const ctx = app.mockContext();
+
+    const user = await ctx.service.user.getUserByGithubId('githubid');
+    assert(user === null);
+  });
+
   it('getUserById should ok', async function() {
     // 创建 ctx
     const ctx = app.mockContext();

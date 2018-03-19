@@ -6,11 +6,13 @@
 module.exports = app => {
   const { router, controller, config, middleware } = app;
 
-  const { site, sign, user, topic, rss, search, page, reply, message } = controller;
+  const { site, sign, user, topic, rss,
+    search, page, reply, message } = controller;
 
   const userRequired = middleware.userRequired();
   const adminRequired = middleware.adminRequired();
-  const topicPerDayLimit = middleware.topicPerDayLimit(config.topic);
+  const createTopicLimit = middleware.createTopicLimit(config.topic);
+  const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
 
   // home page
   router.get('/', site.index);
@@ -21,13 +23,13 @@ module.exports = app => {
 
   // sign controller
   if (config.allow_sign_up) {
-    router.get('/signup', sign.showSignup); // 跳转到注册页面
-    router.post('/signup', sign.signup); // 提交注册信息
+    // 跳转到注册页面
+    router.get('/signup', sign.showSignup);
+    // 提交注册信息
+    router.post('/signup', createUserLimit, sign.signup);
   } else {
     // 进行github验证
-    router.get('/signup', async function() {
-      this.ctx.redirect('/auth/github');
-    });
+    router.redirect('/singup', '/auth/github');
   }
 
   const localStrategy = app.passport.authenticate('local', {
@@ -62,12 +64,12 @@ module.exports = app => {
   router.post('/user/:name/block', adminRequired, user.block); // 禁言某用户
   router.post('/user/:name/delete_all', adminRequired, user.deleteAll); // 删除某用户所有发言
 
-  // // message controler
+  // message controler
   router.get('/my/messages', userRequired, message.index); // 用户个人的所有消息页
 
   // topic
 
-  // // 新建文章界面
+  // 新建文章界面
   router.get('/topic/create', userRequired, topic.create);
 
   router.get('/topic/:tid', topic.index); // 显示某个话题
@@ -78,14 +80,14 @@ module.exports = app => {
 
   router.post('/topic/:tid/delete', userRequired, topic.delete);
 
-  // // 保存新建的文章
-  router.post('/topic/create', userRequired, topicPerDayLimit, topic.put);
+  // 保存新建的文章
+  router.post('/topic/create', userRequired, createTopicLimit, topic.put);
 
   router.post('/topic/:tid/edit', userRequired, topic.update);
   router.post('/topic/collect', userRequired, topic.collect); // 关注某话题
   router.post('/topic/de_collect', userRequired, topic.de_collect); // 取消关注某话题
 
-  // // reply controller
+  // reply controller
   router.post('/:topic_id/reply', userRequired,
     // limit.peruserperday('create_reply', config.create_reply_per_day, { showJson: false }),
     reply.add); // 提交一级回复
