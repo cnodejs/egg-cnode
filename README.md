@@ -49,81 +49,11 @@ $ npm run dev
 $ open http://localhost:7001/
 ```
 
-#### Develop with docker
-Setup redis / mongodb, requirements:
-
-- docker
-- docker-compose
-
-```bash
-# start
-docker-compose -f docker-compose.dev.yml up
-
-# stop 
-docker-compose -f docker-compose.dev.yml down
-
-# remove volume/cache
-docker-compose -f docker-compose.dev.yml down -v
-```
-
 ### Deploy
 
 ```bash
 $ npm start
 $ npm stop
-```
-
-#### Deploy with docker
-Setup redis / mongodb / egg-cnode, requirements:
-
-- docker
-- docker-compose
-
-**Modify Github Id/Secret**
-
-```yml
-version: '3'
-services: 
-  cnode:
-    environment:
-      - EGG_PASSPORT_GITHUB_CLIENT_ID=test
-      - EGG_PASSPORT_GITHUB_CLIENT_SECRET=test
-```
-
-**Modify Alinode AppId/Secret**
-
-```yml
-version: '3'
-services: 
-  cnode:
-    environment:
-      - EGG_ALINODE_APPID=appid
-      - EGG_ALINODE_SECRET=secret
-```
-
-> to disable alinode, modify config/plugin.prod.js
-
-**Change Port**
-
-```yml
-version: '3'
-services: 
-  cnode:
-    ports:
-      - ${PORT}:7001
-```
-
-**Run / Stop**
-
-```bash
-# start
-docker-compose up -d
-
-# stop 
-docker-compose down
-
-# remove volume/cache
-docker-compose down -v
 ```
 
 ### npm scripts
@@ -132,5 +62,8 @@ docker-compose down -v
 - Use `npm test` to run unit test.
 - Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
 
+### Tutorials
+
+- [Develop / Deploy with Docker](tutorials/Docker.md)
 
 [egg]: https://eggjs.org
