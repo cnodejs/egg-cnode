@@ -51,7 +51,6 @@ $ export EGG_PASSPORT_GITHUB_CLIENT_ID=${id}
 $ export EGG_PASSPORT_GITHUB_CLIENT_SECRET=${secret}
 
 $ npm i
-$ npm run assets
 $ npm run dev
 $ open http://localhost:7001/
 ```
