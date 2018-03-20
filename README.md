@@ -58,6 +58,9 @@ $ open http://localhost:7001/
 ### Deploy
 
 ```bash
+# enable mini assets
+$ export EGG_MINI_ASSETS=true
+
 $ npm i --production
 $ npm run assets
 $ npm start
