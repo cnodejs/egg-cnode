@@ -32,7 +32,9 @@ module.exports = appInfo => {
   config.allow_sign_up = true;
 
   // cdn host，如 http://cnodejs.qiniudn.com
-  config.site_static_host = ''; // 静态文件存储域名
+  config.site_static_host = process.env.EGG_SITE_STATIC_HOST || ''; // 静态文件存储域名
+
+  config.mini_assets = process.env.EGG_MINI_ASSETS || false;
 
   // 版块
   config.tabs = [[ 'share', '分享' ], [ 'ask', '问答' ], [ 'job', '招聘' ]];
