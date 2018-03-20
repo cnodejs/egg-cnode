@@ -9,7 +9,7 @@ class ReplyController extends Controller {
   async add() {
     const { ctx, service } = this;
     const content = ctx.request.body.r_content;
-    const reply_id = ctx.params.reply_id;
+    const reply_id = ctx.request.body.reply_id;
 
     if (content.trim() === '') {
       ctx.status = 422;
