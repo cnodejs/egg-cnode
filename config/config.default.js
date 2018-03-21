@@ -95,6 +95,10 @@ module.exports = appInfo => {
     ADMIN_USER: true,
   };
 
+  config.siteFile = {
+    '/favicon.ico': '/public/images/cnode_icon_32.png',
+  };
+
   // database
   config.redis = {
     client: {
