@@ -44,12 +44,6 @@ TBD
 ### Development
 
 ```bash
-$ export EGG_REDIS_PASSWORD=${password}
-$ export EGG_MONGODB_URL=${mongodb_url}
-# example: mongodb://egg_cnode:egg_cnode@127.0.0.1:27017/egg_cnode
-$ export EGG_PASSPORT_GITHUB_CLIENT_ID=${id}
-$ export EGG_PASSPORT_GITHUB_CLIENT_SECRET=${secret}
-
 $ npm i
 $ npm run dev
 $ open http://localhost:7001/
@@ -57,10 +51,19 @@ $ open http://localhost:7001/
 
 ### Deploy
 
-```bash
-# enable mini assets
-$ export EGG_MINI_ASSETS=true
+```js 
+// {app_root}/config/config.prod.js
 
+exports.mini_assets = true;
+
+exports.alinode = {
+  // 从 `Node.js 性能平台` 获取对应的接入参数
+  appid: process.env.EGG_ALINODE_APPID || '',
+  secret: process.env.EGG_ALINODE_SECRET || '',
+};
+```
+
+```bash
 $ npm i --production
 $ npm run assets
 $ npm start
