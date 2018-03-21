@@ -5,8 +5,7 @@ const validator = require('validator');
 const jsxss = require('xss');
 const moment = require('moment');
 const bcrypt = require('bcryptjs');
-const util = require('util');
-const qn = require('qn');
+const qiniu = require('qiniu');
 
 moment.locale('zh-cn'); // 使用中文
 
@@ -115,15 +114,28 @@ exports.bcompare = (str, hash) => {
   return bcrypt.compareSync(str, hash);
 };
 
-let qnClientUpload;
-
 exports.qnUpload = options => {
-  // 7牛 client
-  if (qnClientUpload) return qnClientUpload;
-  let qnClient;
-  if (options.qn_access && options.qn_access.secretKey !== 'your secret key') {
-    qnClient = qn.create(options.qn_access);
-  }
-  qnClientUpload = util.promisify(qnClient.upload);
-  return qnClientUpload;
+  const { accessKey, secretKey, bucket } = options;
+
+  const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+  const putPolicy = new qiniu.rs.PutPolicy({ scope: bucket });
+  const uploadToken = putPolicy.uploadToken(mac);
+
+  const config = new qiniu.conf.Config();
+
+  const formUploader = new qiniu.form_up.FormUploader(config);
+  const putExtra = new qiniu.form_up.PutExtra();
+
+  return (readableStream, key) => {
+    return new Promise(function(resolve, reject) {
+      formUploader.putStream(uploadToken, key, readableStream, putExtra, function(respErr, respBody, respInfo) {
+        if (respErr) {
+          reject(respErr);
+        }
+        if (respInfo.statusCode === 200) {
+          resolve(respBody);
+        }
+      });
+    });
+  };
 };

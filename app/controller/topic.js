@@ -417,24 +417,28 @@ class TopicController extends Controller {
   async upload() {
     const { ctx, config } = this;
     const stream = await ctx.getFileStream();
-    const filename = encodeURIComponent(stream.fields.name) +
-      path.extname(stream.filename).toLowerCase();
+
+    const filename = encodeURIComponent(stream.fields.name);
     const target = path.join(config.upload.path, filename);
 
     // 如果有七牛云的配置,优先上传七牛云
     if (config.qn_access) {
       try {
-        const upload = this.ctx.helper.qnUpload(config.qn_access);
-        const result = await upload(stream);
+        const upload = ctx.helper.qnUpload(config.qn_access);
+        const result = await upload(stream, filename);
         ctx.body = {
           success: true,
-          url: result.url,
+          url: config.qn_access.uploadURL + '/' + result.key,
         };
       } catch (err) {
         await sendToWormhole(stream);
         throw err;
       }
     } else {
+      if (!fs.existsSync(config.upload.path)) {
+        fs.mkdirSync(config.upload.path);
+      }
+
       const writeStream = fs.createWriteStream(target);
       try {
         await awaitWriteStream(stream.pipe(writeStream));
