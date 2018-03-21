@@ -10,6 +10,8 @@ module.exports = appInfo => {
 
   config.site_logo = '/public/images/cnodejs_light.svg';
 
+  config.site_icon = '/public/images/cnode_icon_32.png';
+
   // debug 为 true 时，用于本地调试
   config.debug = true;
 
@@ -93,6 +95,10 @@ module.exports = appInfo => {
   config.auth_cookie_name = 'node_club';
   config.admins = {
     ADMIN_USER: true,
+  };
+
+  config.siteFile = {
+    '/favicon.ico': '/public/images/cnode_icon_32.png',
   };
 
   // database
