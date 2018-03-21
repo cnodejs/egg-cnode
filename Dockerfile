@@ -12,6 +12,8 @@ RUN npm i --production
 
 COPY . /usr/src/app
 
+RUN npm run assets
+
 EXPOSE 7001
 
 CMD npm run docker

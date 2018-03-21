@@ -72,11 +72,19 @@ docker-compose -f docker-compose.dev.yml down -v
 
 **Develop**:
 
-```
+```bash
+export EGG_REDIS_PASSWORD=egg_cnode
+export EGG_MONGODB_URL=mongodb://egg_cnode:egg_cnode@127.0.0.1:27017/egg_cnode
+export EGG_PASSPORT_GITHUB_CLIENT_ID=${id}
+export EGG_PASSPORT_GITHUB_CLIENT_SECRET=${secret}
+
+npm i
 npm run dev
 ```
 
 ## Deploy
+
+Modify docker-compose.yml
 
 **Run / Stop**
 
