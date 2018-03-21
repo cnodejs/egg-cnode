@@ -291,11 +291,20 @@ describe('test/app/controller/topic.test.js', () => {
 
   it('should POST /upload ok', async () => {
     const file = path.resolve(__dirname, '../../../app/public/images/logo.png');
-
-    await app.httpRequest().post('/upload').attach('logo', file)
-      .expect(403);
     mockUser();
-    await app.httpRequest().post('/upload').attach('logo', file)
+    await app
+      .httpRequest()
+      .post('/upload')
+      .attach('logo', file)
       .expect(200);
+  });
+
+  it('should POST /upload forbidden', async () => {
+    const file = path.resolve(__dirname, '../../../app/public/images/logo.png');
+    await app
+      .httpRequest()
+      .post('/upload')
+      .attach('logo', file)
+      .expect(403);
   });
 });

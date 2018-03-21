@@ -416,16 +416,15 @@ class TopicController extends Controller {
    * 上传
    */
   async upload() {
-    const { ctx, config } = this;
-    const stream = await ctx.getFileStream();
+    const { ctx, config, service } = this;
     const uid = uuidv1();
+    const stream = await ctx.getFileStream();
     const filename = uid + path.extname(stream.filename).toLowerCase();
 
     // 如果有七牛云的配置,优先上传七牛云
-    if (config.qn_access.accessKey) {
+    if (config.qn_access && config.qn_access.secretKey !== 'your secret key') {
       try {
-        const upload = ctx.helper.qnUpload(config.qn_access);
-        const result = await upload(stream, filename);
+        const result = await service.topic.qnUpload(stream, filename);
         ctx.body = {
           success: true,
           url: config.qn_access.uploadURL + '/' + result.key,
@@ -436,7 +435,6 @@ class TopicController extends Controller {
       }
     } else {
       const target = path.join(config.upload.path, filename);
-
       const writeStream = fs.createWriteStream(target);
       try {
         await awaitWriteStream(stream.pipe(writeStream));
