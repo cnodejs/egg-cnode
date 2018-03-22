@@ -39,7 +39,7 @@ module.exports = appInfo => {
   config.mini_assets = process.env.EGG_MINI_ASSETS || false;
 
   // 版块
-  config.tabs = [[ 'share', '分享' ], [ 'ask', '问答' ], [ 'job', '招聘' ]];
+  config.tabs = [[ 'share', '分享' ], [ 'ask', '问答' ], [ 'job', '招聘' ], [ 'dev', '客户端测试' ]];
 
   // RSS配置
   config.rss = {
