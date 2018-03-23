@@ -220,8 +220,8 @@ describe('test/app/controller/user.test.js', () => {
 
 
     it('should POST /user/set_star ok', async () => {
-      const result = await handleAdminPost('/user/set_star', { user_id: user._id });
-      assert(result.is_star === true);
+      const res = await handleAdminPost('/user/set_star', { user_id: user._id });
+      assert(res.is_star === true);
     });
 
     it('should POST /user/cancel_star ok', async () => {

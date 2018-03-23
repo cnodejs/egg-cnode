@@ -84,6 +84,14 @@ class UserService extends Service {
   }
 
   /*
+   * 获取关键词能搜索到的用户数量
+   * @param {String} query 搜索关键词
+   */
+  getCountByQuery(query) {
+    return this.ctx.model.User.count(query).exec();
+  }
+
+  /*
    * 根据查询条件，获取一个用户
    * @param {String} name 用户名
    * @param {String} key 激活码
