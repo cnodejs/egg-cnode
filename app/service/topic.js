@@ -181,10 +181,11 @@ class TopicService extends Service {
     return topic.save();
   }
 
-  /**
+  /*
    * 七牛上传
-   * @param readableStream 流
-   * @param key 文件名key
+   * @param {Stream} readableStream 流
+   * @param {String} key 文件名key
+   * @param {Function} callback 回调函数
    */
   qnUpload(readableStream, key) {
     const { accessKey, secretKey, bucket } = this.config.qn_access;
