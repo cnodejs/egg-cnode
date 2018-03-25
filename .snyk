@@ -1,0 +1,31 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.10.2
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:hoek:20180212':
+    - loader-builder > less > request > hawk > hoek:
+        reason: None given
+        expires: '2018-04-24T12:22:34.546Z'
+    - loader-builder > less > request > hawk > boom > hoek:
+        reason: i dont know how to fix this.
+        expires: '2018-04-24T12:22:34.546Z'
+    - loader-builder > less > request > hawk > sntp > hoek:
+        reason: None given
+        expires: '2018-04-24T12:22:34.546Z'
+    - loader-builder > less > request > hawk > cryptiles > boom > hoek:
+        reason: None given
+        expires: '2018-04-24T12:22:34.546Z'
+    - loader-koa > less > request > hawk > boom > hoek:
+        reason: None given
+        expires: '2018-04-24T12:22:34.547Z'
+    - loader-koa > less > request > hawk > sntp > hoek:
+        reason: None given
+        expires: '2018-04-24T12:22:34.547Z'
+    - loader-koa > less > request > hawk > cryptiles > boom > hoek:
+        reason: None given
+        expires: '2018-04-24T12:22:34.547Z'
+  'npm:mime:20170907':
+    - qiniu > mime:
+        reason: None given
+        expires: '2018-04-24T12:22:34.547Z'
+patch: {}

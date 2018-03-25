@@ -427,7 +427,7 @@ class TopicController extends Controller {
         const result = await service.topic.qnUpload(stream, filename);
         ctx.body = {
           success: true,
-          url: config.qn_access.uploadURL + '/' + result.key,
+          url: config.qn_access.origin + '/' + result.key,
         };
       } catch (err) {
         await sendToWormhole(stream);
