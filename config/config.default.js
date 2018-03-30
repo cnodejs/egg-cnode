@@ -158,5 +158,7 @@ module.exports = appInfo => {
   // 每个 IP 每天可创建用户数
   config.create_user_per_ip = 1000;
 
+  config.search = 'google'; // 'google', 'baidu', 'local'
+
   return config;
 };

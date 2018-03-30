@@ -252,16 +252,12 @@ class UserController extends Controller {
   async toggleStar() {
     const { ctx, service } = this;
     const user_id = ctx.request.body.user_id;
-    const user = await service.user.getUserById(user_id);
-    if (!user) {
-      ctx.body = { status: 'failed', message: '用户不存在' };
-      return;
-    }
 
+    const user = await service.user.getUserById(user_id);
     user.is_star = !user.is_star;
     await user.save();
-
     ctx.body = { status: 'success' };
+    return;
   }
 
   async block() {
