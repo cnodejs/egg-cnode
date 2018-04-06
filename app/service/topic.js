@@ -202,6 +202,7 @@ class TopicService extends Service {
       formUploader.putStream(uploadToken, key, readableStream, putExtra, function(respErr, respBody, respInfo) {
         if (respErr) {
           reject(respErr);
+          return;
         }
         if (respInfo.statusCode === 200) {
           resolve(respBody);
