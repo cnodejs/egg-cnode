@@ -95,7 +95,7 @@ module.exports = app => {
   router.post('/reply/:reply_id/edit', userRequired, reply.update); // 修改某评论
   router.post('/reply/:reply_id/delete', userRequired, reply.delete); // 删除某评论
   router.post('/reply/:reply_id/up', userRequired, reply.up); // 为评论点赞
-  // router.post('/upload', auth.userRequired, topic.upload); // 上传图片
+  router.post('/upload', userRequired, topic.upload); // 上传图片
   // static page
   router.get('/about', page.about);
   router.get('/faq', page.faq);

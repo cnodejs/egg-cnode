@@ -4,6 +4,7 @@ const Controller = require('egg').Controller;
 const _ = require('lodash');
 const path = require('path');
 const fs = require('fs');
+const uuidv1 = require('uuid/v1');
 const awaitWriteStream = require('await-stream-ready').write;
 const sendToWormhole = require('stream-wormhole');
 
@@ -415,26 +416,25 @@ class TopicController extends Controller {
    * 上传
    */
   async upload() {
-    const { ctx, config } = this;
+    const { ctx, config, service } = this;
+    const uid = uuidv1();
     const stream = await ctx.getFileStream();
-    const filename = encodeURIComponent(stream.fields.name) +
-      path.extname(stream.filename).toLowerCase();
-    const target = path.join(config.upload.path, filename);
+    const filename = uid + path.extname(stream.filename).toLowerCase();
 
     // 如果有七牛云的配置,优先上传七牛云
-    if (config.qn_access) {
+    if (config.qn_access && config.qn_access.secretKey !== 'your secret key') {
       try {
-        const upload = this.ctx.helper.qnUpload(config.qn_access);
-        const result = await upload(stream);
+        const result = await service.topic.qnUpload(stream, filename);
         ctx.body = {
           success: true,
-          url: result.url,
+          url: config.qn_access.origin + '/' + result.key,
         };
       } catch (err) {
         await sendToWormhole(stream);
         throw err;
       }
     } else {
+      const target = path.join(config.upload.path, filename);
       const writeStream = fs.createWriteStream(target);
       try {
         await awaitWriteStream(stream.pipe(writeStream));

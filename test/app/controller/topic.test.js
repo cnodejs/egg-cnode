@@ -1,6 +1,7 @@
 'use strict';
 
 const { app, assert } = require('egg-mock/bootstrap');
+const path = require('path');
 
 function randomInt() {
   return (Math.random() * 10000).toFixed(0);
@@ -286,5 +287,24 @@ describe('test/app/controller/topic.test.js', () => {
     mockUser();
     await app.httpRequest().post(`/topic/${topicId}/delete`).expect(200);
     await app.httpRequest().post(`/topic/${objectId}/delete`).expect(422);
+  });
+
+  it('should POST /upload ok', async () => {
+    const file = path.resolve(__dirname, '../../../app/public/images/logo.png');
+    mockUser();
+    await app
+      .httpRequest()
+      .post('/upload')
+      .attach('logo', file)
+      .expect(200);
+  });
+
+  it('should POST /upload forbidden', async () => {
+    const file = path.resolve(__dirname, '../../../app/public/images/logo.png');
+    await app
+      .httpRequest()
+      .post('/upload')
+      .attach('logo', file)
+      .expect(403);
   });
 });
