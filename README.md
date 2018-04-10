@@ -1,10 +1,12 @@
 # cnode
 
+[![powered by Egg.js][egg-image]][egg]
 [![build status][travis-image]][travis-url]
 [![Test coverage][codecov-image]][codecov-url]
 [![David deps][david-image]][david-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 
+[egg-image]: https://img.shields.io/badge/Powered%20By-Egg.js-ff69b4.svg?style=flat-square
 [travis-image]: https://img.shields.io/travis/cnodejs/egg-cnode.svg?style=flat-square
 [travis-url]: https://travis-ci.org/cnodejs/egg-cnode
 [codecov-image]: https://img.shields.io/codecov/c/github/cnodejs/egg-cnode.svg?style=flat-square
