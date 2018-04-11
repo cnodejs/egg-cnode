@@ -29,7 +29,7 @@ module.exports = app => {
     router.post('/signup', createUserLimit, sign.signup);
   } else {
     // 进行github验证
-    router.redirect('/singup', '/auth/github');
+    router.redirect('/signup', '/passport/github');
   }
 
   const localStrategy = app.passport.authenticate('local', {
@@ -43,7 +43,9 @@ module.exports = app => {
   router.get('/active_account', sign.activeAccount); // 帐号激活
 
   // github oauth
-  app.passport.mount('github');
+  const github = app.passport.authenticate('github');
+  app.get('/passport/github', github);
+  app.get('/passport/github/callback', github);
 
   router.get('/search_pass', sign.showSearchPass); // 找回密码页面
   router.post('/search_pass', sign.updateSearchPass); // 更新密码
@@ -108,3 +110,4 @@ module.exports = app => {
 
   router.get('/search', search.index);
 };
+

@@ -52,7 +52,7 @@ class ReplyService extends Service {
    */
   async getRepliesByTopicId(id) {
     const query = { topic_id: id, deleted: false };
-    const replies = await this.ctx.model.Reply.find(query, '', {
+    let replies = await this.ctx.model.Reply.find(query, '', {
       sort: 'create_at',
     }).exec();
 
@@ -60,13 +60,15 @@ class ReplyService extends Service {
       return [];
     }
 
+    replies = replies.filter(function (item) {
+      return !item.content_is_html
+    })
+
     return Promise.all(
       replies.map(async item => {
         const author = await this.service.user.getUserById(item.author_id);
         item.author = author || { _id: '' };
-        if (item.content_is_html) {
-          return;
-        }
+
         item.content = await this.service.at.linkUsers(item.content);
         return item;
       })
