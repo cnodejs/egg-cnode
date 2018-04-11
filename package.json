@@ -9,6 +9,7 @@
     "data2xml": "^1.2.5",
     "egg": "^2.2.1",
     "egg-alinode": "^2.0.1",
+    "egg-cors": "^2.0.0",
     "egg-mongoose": "^2.1.1",
     "egg-passport": "^2.0.1",
     "egg-passport-github": "^1.0.0",

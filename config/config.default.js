@@ -23,7 +23,18 @@ module.exports = appInfo => {
   config.session_secret = 'node_club_secret'; // 务必修改
 
   // add your config here
-  config.middleware = [ 'locals', 'authUser', 'blockUser', 'errorPage' ];
+  config.middleware = [
+    'locals',
+    'authUser',
+    'blockUser',
+    'errorPage',
+    'cors',
+  ];
+
+  exports.cors = {
+    enable: true,
+    match: '/api/v1/',
+  };
 
   config.authUser = {
     enable: true,
