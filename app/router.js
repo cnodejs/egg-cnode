@@ -29,7 +29,7 @@ module.exports = app => {
     router.post('/signup', createUserLimit, sign.signup);
   } else {
     // 进行github验证
-    router.redirect('/singup', '/auth/github');
+    router.redirect('/signup', '/passport/github');
   }
 
   const localStrategy = app.passport.authenticate('local', {
@@ -108,3 +108,4 @@ module.exports = app => {
 
   router.get('/search', search.index);
 };
+

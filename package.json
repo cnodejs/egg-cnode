@@ -46,6 +46,7 @@
   "scripts": {
     "start": "egg-scripts start --daemon --title=egg-server-cnode",
     "stop": "egg-scripts stop --title=egg-server-cnode",
+    "restart": "npm run stop && npm run start",
     "docker": "egg-scripts start --title=egg-server-cnode",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
