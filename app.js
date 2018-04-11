@@ -1,4 +1,5 @@
 'use strict';
+var uuid = require('node-uuid');
 
 module.exports = app => {
   if (app.config.debug) {
@@ -46,6 +47,7 @@ module.exports = app => {
       existUser = new ctx.model.User();
       existUser.githubId = profile.id;
       existUser.active = true;
+      existUser.accessToken = uuid.v4();
     }
 
     // 用户存在，更新字段
@@ -61,7 +63,7 @@ module.exports = app => {
       if (ex.message.indexOf('duplicate key error') !== -1) {
         let err;
         if (ex.message.indexOf('email') !== -1) {
-          err = new Error('您 GitHub 账号的 Email 与之前在 CNodejs 注册的用户名重复了');
+          err = new Error('您 GitHub 账号的 Email 与之前在 CNodejs 注册的 Email 重复了');
           err.code = 'duplicate_email';
           throw err;
         }
@@ -123,3 +125,4 @@ module.exports = app => {
     return user;
   });
 };
+
