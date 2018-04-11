@@ -43,9 +43,7 @@ module.exports = app => {
   router.get('/active_account', sign.activeAccount); // 帐号激活
 
   // github oauth
-  const github = app.passport.authenticate('github');
-  app.get('/passport/github', github);
-  app.get('/passport/github/callback', github);
+  app.passport.mount('github');
 
   router.get('/search_pass', sign.showSearchPass); // 找回密码页面
   router.post('/search_pass', sign.updateSearchPass); // 更新密码

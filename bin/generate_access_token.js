@@ -1,12 +1,16 @@
+'use strict';
+
 // 一次性脚本
 // 为所有老用户生成 accessToken
 
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 const mongoose = require('mongoose');
 const config = require('../config/config.prod.js')({});
-const UserModel = require('../app/model/user')({mongoose: mongoose});
+const UserModel = require('../app/model/user')({
+  mongoose,
+});
 
-mongoose.connect(config.mongoose.url, function (err) {
+mongoose.connect(config.mongoose.url, function(err) {
   if (err) {
     console.error('connect to %s error: ', config.mongoose, err.message);
     process.exit(1);
@@ -14,14 +18,16 @@ mongoose.connect(config.mongoose.url, function (err) {
 });
 
 async function main() {
-  const users = await UserModel.find({accessToken: {$exists: false}});
+  const users = await UserModel.find({
+    accessToken: {
+      $exists: false,
+    },
+  });
   // console.log(users);
   for (const user of users) {
     user.accessToken = uuid.v4();
-    await user.save()
+    await user.save();
   }
 }
 
-main()
-
-
+main();

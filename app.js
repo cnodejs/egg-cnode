@@ -1,5 +1,6 @@
 'use strict';
-var uuid = require('node-uuid');
+
+const uuid = require('uuid');
 
 module.exports = app => {
   if (app.config.debug) {

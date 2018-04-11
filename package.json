@@ -22,7 +22,6 @@
     "loader-koa": "^2.0.1",
     "lodash": "^4.17.5",
     "markdown-it": "^8.4.1",
-    "node-uuid": "^1.4.8",
     "nodemailer": "^4.6.2",
     "nodemailer-smtp-transport": "^2.7.4",
     "qiniu": "^7.1.3",
