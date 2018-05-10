@@ -4,7 +4,8 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller, middleware } = app;
+  const apiV1Router = app.router.namespace('/api/v1');
+  const { controller, middleware } = app;
 
   const { user } = controller.api;
 
@@ -13,6 +14,6 @@ module.exports = app => {
   // const createTopicLimit = middleware.createTopicLimit(config.topic);
   // const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
 
-  router.get('/api/v1/user/:loginname', user.show);
-  router.post('/api/v1/accesstoken', tokenRequired, user.verify);
+  apiV1Router.get('/user/:loginname', user.show);
+  apiV1Router.post('/accesstoken', tokenRequired, user.verify);
 };
