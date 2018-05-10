@@ -10,9 +10,12 @@ module.exports = app => {
   const { user, message } = controller.api;
 
   const tokenRequired = middleware.tokenRequired();
+  // const adminRequired = middleware.adminRequired();
   // const createTopicLimit = middleware.createTopicLimit(config.topic);
   // const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
 
+  apiV1Router.get('/user/:loginname', user.show);
+  apiV1Router.post('/accesstoken', tokenRequired, user.verify);
   // 用户
   apiV1Router.get('/user/:loginname', user.show);
   apiV1Router.post('/accesstoken', tokenRequired, user.verify);
