@@ -15,8 +15,6 @@ module.exports = app => {
   // const createTopicLimit = middleware.createTopicLimit(config.topic);
   // const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
 
-  apiV1Router.get('/user/:loginname', user.show);
-  apiV1Router.post('/accesstoken', tokenRequired, user.verify);
   // 用户
   apiV1Router.get('/user/:loginname', user.show);
   apiV1Router.post('/accesstoken', tokenRequired, user.verify);
@@ -27,6 +25,7 @@ module.exports = app => {
   apiV1Router.post('/message/mark_all', tokenRequired, message.markAll);
   apiV1Router.post('/message/mark_one/:msg_id', tokenRequired, message.markOne);
 
+  // 主题
   apiV1Router.get('/topics', pagination, topic.index);
   apiV1Router.get('/topic/:id', topic.show);
   apiV1Router.post('/topics', tokenRequired, topic.create);
