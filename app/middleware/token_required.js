@@ -37,6 +37,6 @@ module.exports = () => {
 
     ctx.request.user = user;
 
-    await next(user);
+    await next();
   };
 };
