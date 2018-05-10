@@ -39,9 +39,13 @@ class UserController extends Controller {
 
   async verify() {
     const { ctx } = this;
-    const returnUser = _.pick(ctx.request.user, [ 'loginname', 'avatar_url', '_id' ]);
-    returnUser.success = true;
-    ctx.body = returnUser;
+    const user = ctx.request.user;
+    ctx.body = {
+      success: true,
+      loginname: user.loginname,
+      id: user._id,
+      avatar_url: user.avatar_url,
+    };
   }
 }
 
