@@ -160,5 +160,11 @@ module.exports = appInfo => {
 
   config.search = 'google'; // 'google', 'baidu', 'local'
 
+  config.security = {
+    csrf: {
+      ignore: '/api/*/*',
+    },
+  };
+
   return config;
 };
