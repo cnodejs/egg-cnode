@@ -3,7 +3,7 @@
 const Controller = require('egg').Controller;
 const _ = require('lodash');
 
-class TopicController extends Controller {
+class UserController extends Controller {
   async show() {
     const { ctx } = this;
     const loginname = ctx.params.loginname;
@@ -45,4 +45,4 @@ class TopicController extends Controller {
   }
 }
 
-module.exports = TopicController;
+module.exports = UserController;
