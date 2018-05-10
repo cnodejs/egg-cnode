@@ -24,14 +24,14 @@ describe('test/app/controller/reply.test.js', () => {
     );
 
     const topic_title = 'test';
-    const topic_content = '<div class=\"markdown-text\"><p>unit test</p>\n</div>';
+    const topic_content = 'unit test';
     const tab = 'share';
     lockTopic = await ctx.service.topic.newAndSave(topic_title, topic_content, tab, user._id);
     topic = await ctx.service.topic.newAndSave(topic_title, topic_content, tab, user._id);
     lockTopic.lock = true;
     lockTopic = await lockTopic.save();
 
-    const reply_content = '<div class=\"markdown-text\"><p>unit test reply</p>\n</div>';
+    const reply_content = 'unit test reply';
     reply = await ctx.service.reply.newAndSave(reply_content, topic._id, user._id);
   });
 

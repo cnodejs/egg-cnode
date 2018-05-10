@@ -19,7 +19,7 @@ describe('test/app/service/reply.test.js', () => {
     user = result;
 
     const topic_title = 'test';
-    const topic_content = '<div class=\"markdown-text\"><p>unit test</p>\n</div>';
+    const topic_content = 'unit test';
     const tab = 'share';
     topic = await ctx.service.topic.newAndSave(topic_title, topic_content, tab, user._id);
 
@@ -27,7 +27,7 @@ describe('test/app/service/reply.test.js', () => {
     assert(topic.content === topic_content);
     assert(topic.tab === tab);
 
-    const reply_content = '<div class=\"markdown-text\"><p>unit test reply</p>\n</div>';
+    const reply_content = 'unit test reply';
     reply = await ctx.service.reply.newAndSave(reply_content, topic._id, user._id);
 
     assert(reply.content === reply_content);
@@ -84,7 +84,7 @@ describe('test/app/service/reply.test.js', () => {
 
     assert(test_topic.title === topic_title);
 
-    const reply_content = '<div class=\"markdown-text\"><p>unit test reply</p>\n</div>';
+    const reply_content = 'unit test reply';
     const test_reply1 = await ctx.service.reply.newAndSave(reply_content, test_topic._id, user._id);
     const test_reply2 = await ctx.service.reply.newAndSave(reply_content, test_topic._id, user._id, reply._id);
     assert(test_reply1.content === reply_content);
