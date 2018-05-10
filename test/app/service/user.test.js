@@ -4,6 +4,7 @@ const { app, assert } = require('egg-mock/bootstrap');
 
 describe('test/app/service/user.test.js', () => {
   let loginname,
+    token,
     email;
   before(async function() {
     // 创建 ctx
@@ -12,6 +13,7 @@ describe('test/app/service/user.test.js', () => {
     email = `${loginname}@test.com`;
     const result = await ctx.service.user.newAndSave('name',
       loginname, 'pass', email, 'avatar_url', 'active');
+    token = result.accessToken;
     assert(result.loginname === loginname);
   });
 
@@ -33,6 +35,12 @@ describe('test/app/service/user.test.js', () => {
     users = await ctx.service.user.getUsersByNames([ loginname ]);
     assert(users.length === 1);
     const user = users[0];
+    assert(user.loginname === loginname);
+  });
+
+  it('getUsersByToken should ok', async function() {
+    const ctx = app.mockContext();
+    const user = await ctx.service.user.getUserByToken(token);
     assert(user.loginname === loginname);
   });
 
