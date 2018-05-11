@@ -166,5 +166,8 @@ module.exports = appInfo => {
     },
   };
 
+  config.default_page = 1;
+  config.default_limit = 20;
+
   return config;
 };
