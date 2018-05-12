@@ -99,6 +99,7 @@ class TopicController extends Controller {
         success: false,
         error_msg: '此话题不存在或已被删除',
       };
+      return;
     }
 
     // 增加 visit_count
