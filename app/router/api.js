@@ -4,21 +4,29 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller, middleware } = app;
+  const apiV1Router = app.router.namespace('/api/v1');
+  const { controller, middleware } = app;
 
-  const { user, message } = controller.api;
+  const { user, message, topic } = controller.api;
 
   const tokenRequired = middleware.tokenRequired();
+  const pagination = middleware.pagination();
   // const createTopicLimit = middleware.createTopicLimit(config.topic);
   // const createUserLimit = middleware.createUserLimit(config.create_user_per_ip);
 
   // 用户
-  router.get('/api/v1/user/:loginname', user.show);
-  router.post('/api/v1/accesstoken', tokenRequired, user.verify);
+  apiV1Router.get('/user/:loginname', user.show);
+  apiV1Router.post('/accesstoken', tokenRequired, user.verify);
 
   // 消息通知
-  router.get('/api/v1/message/count', tokenRequired, message.count);
-  router.get('/api/v1/messages', tokenRequired, message.list);
-  router.post('/api/v1/message/mark_all', tokenRequired, message.markAll);
-  router.post('/api/v1/message/mark_one/:msg_id', tokenRequired, message.markOne);
+  apiV1Router.get('/message/count', tokenRequired, message.count);
+  apiV1Router.get('/messages', tokenRequired, message.list);
+  apiV1Router.post('/message/mark_all', tokenRequired, message.markAll);
+  apiV1Router.post('/message/mark_one/:msg_id', tokenRequired, message.markOne);
+
+  // 主题
+  apiV1Router.get('/topics', pagination, topic.index);
+  apiV1Router.get('/topic/:id', topic.show);
+  apiV1Router.post('/topics', tokenRequired, topic.create);
+  apiV1Router.post('/topics/update', tokenRequired, topic.update);
 };
