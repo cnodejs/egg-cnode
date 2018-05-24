@@ -58,14 +58,14 @@ describe('test/app/controller/api/collect.test.js', () => {
 
   it('post /topic_collect/de_collect should ok', async () => {
     await app.httpRequest()
-      .post('/api/v1/topic_collect/collect')
+      .post('/api/v1/topic_collect/de_collect')
       .send({
         accesstoken: user.accessToken,
         topic_id: '123',
       })
       .expect(422);
     await app.httpRequest()
-      .post('/api/v1/topic_collect/collect')
+      .post('/api/v1/topic_collect/de_collect')
       .send({
         accesstoken: user.accessToken,
         topic_id: '5aaa4432f472129d5e4d6773',
