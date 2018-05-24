@@ -63,10 +63,10 @@ class CollectController extends Controller {
     const topic = await service.topic.getTopic(topic_id);
 
     if (!topic) {
-      ctx.status = 400;
+      ctx.status = 404;
       ctx.body = {
         success: false,
-        error_msg: '不是有效的话题id',
+        error_msg: '话题不存在',
       };
       return;
     }
@@ -105,10 +105,10 @@ class CollectController extends Controller {
     const topic = await service.topic.getTopic(topic_id);
 
     if (!topic) {
-      ctx.status = 400;
+      ctx.status = 404;
       ctx.body = {
         success: false,
-        error_msg: '不是有效的话题id',
+        error_msg: '话题不存在',
       };
       return;
     }

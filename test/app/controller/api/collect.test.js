@@ -33,7 +33,7 @@ describe('test/app/controller/api/collect.test.js', () => {
         accesstoken: user.accessToken,
         topic_id: '5aaa4432f472129d5e4d6773',
       })
-      .expect(400);
+      .expect(404);
     await app.httpRequest()
       .post('/api/v1/topic_collect/collect')
       .send({
@@ -70,7 +70,7 @@ describe('test/app/controller/api/collect.test.js', () => {
         accesstoken: user.accessToken,
         topic_id: '5aaa4432f472129d5e4d6773',
       })
-      .expect(400);
+      .expect(404);
     await app.httpRequest()
       .post('/api/v1/topic_collect/de_collect')
       .send({
