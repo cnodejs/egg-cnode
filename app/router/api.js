@@ -7,7 +7,7 @@ module.exports = app => {
   const apiV1Router = app.router.namespace('/api/v1');
   const { controller, middleware } = app;
 
-  const { user, message, topic, reply } = controller.api;
+  const { user, message, topic, reply, collect } = controller.api;
 
   const tokenRequired = middleware.tokenRequired();
   const pagination = middleware.pagination();
@@ -29,6 +29,11 @@ module.exports = app => {
   apiV1Router.get('/topic/:id', topic.show);
   apiV1Router.post('/topics', tokenRequired, topic.create);
   apiV1Router.post('/topics/update', tokenRequired, topic.update);
+
+  // 主题收藏
+  apiV1Router.post('/topic_collect/collect', tokenRequired, collect.collect);
+  apiV1Router.post('/topic_collect/de_collect', tokenRequired, collect.de_collect);
+  apiV1Router.get('/topic_collect/:name', collect.index);
 
   // 评论
   apiV1Router.post('/topic/:topic_id/replies', tokenRequired, reply.create);
