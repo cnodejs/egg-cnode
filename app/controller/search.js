@@ -5,7 +5,9 @@ const Controller = require('egg').Controller;
 class SearchController extends Controller {
   async index() {
     let q = this.ctx.query.q;
-    q = encodeURIComponent(q);
+    if (this.config.search !== 'local') {
+      q = encodeURIComponent(q);
+    }
     if (q.length === 0) {
       return this.ctx.redirect('/');
     }
