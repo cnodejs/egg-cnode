@@ -37,13 +37,18 @@ class MessageController extends Controller {
     const userId = ctx.request.user._id;
     const msgService = ctx.service.message;
     const mdrender = ctx.request.query.mdrender !== 'false';
-    const messages = await Promise.all([
+
+    // Use ES6 `deconstructor` to analyse the read/unread messages
+    const [ readMessages, unreadMessages ] = await Promise.all([
       msgService.getReadMessagesByUserId(userId),
       msgService.getUnreadMessagesByUserId(userId),
     ]);
 
-    let hasReadMessages = await Promise.all(messages[0].map(async message => await msgService.getMessageRelations(message)));
-    let hasUnReadMessages = await Promise.all(messages[1].map(async message => await msgService.getMessageRelations(message)));
+    // Use `Promise.all` to wrap all the sub promises together into a whole Promise<any[]>
+    const readMessagesPromises = Promise.all(readMessages.map(message => msgService.getMessageRelations(message)));
+    const unreadMessagesPromises = Promise.all(unreadMessages.map(message => msgService.getMessageRelations(message)));
+
+    let [ hasReadMessages, hasUnReadMessages ] = await Promise.all([ readMessagesPromises, unreadMessagesPromises ]);
 
     const formatMessage = message => {
       return {
