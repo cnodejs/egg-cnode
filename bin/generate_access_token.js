@@ -10,7 +10,7 @@ const UserModel = require('../app/model/user')({
   mongoose,
 });
 
-mongoose.connect(config.mongoose.url, function(err) {
+mongoose.connect(config.mongoose.url, config.mongoose.options, function(err) {
   if (err) {
     console.error('connect to %s error: ', config.mongoose, err.message);
     process.exit(1);
