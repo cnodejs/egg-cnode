@@ -118,7 +118,7 @@ module.exports = appInfo => {
     url: process.env.EGG_MONGODB_URL || 'mongodb://127.0.0.1:27017/egg_cnode',
     options: {
       server: { poolSize: 20 },
-      reconnectTries: Number.MAX_VALUE,
+      reconnectTries: 10,
       reconnectInterval: 500,
     },
   };
