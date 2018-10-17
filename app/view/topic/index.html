@@ -210,6 +210,14 @@
           $el.closest('form').submit();
         }
       });
+      $el.closest('form').on('submit', function (event) {
+        const value = editor.codemirror.getValue();
+        if (!value) {
+          event.preventDefault();
+          $el.closest('form').find('.submit_btn').button('reset');
+          alert('回复内容不能为空!');
+        }
+      });
       // at.js 配置
       var codeMirrorGoLineUp = CodeMirror.commands.goLineUp;
       var codeMirrorGoLineDown = CodeMirror.commands.goLineDown;
