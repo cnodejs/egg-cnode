@@ -23,7 +23,7 @@
     "loader-koa": "^2.0.1",
     "lodash": "^4.17.5",
     "markdown-it": "^8.4.1",
-    "nodemailer": "^4.6.2",
+    "nodemailer": "^6.4.16",
     "nodemailer-smtp-transport": "^2.7.4",
     "qiniu": "^7.1.3",
     "stream-wormhole": "^1.0.3",
