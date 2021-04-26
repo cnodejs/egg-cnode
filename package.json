@@ -28,7 +28,7 @@
     "qiniu": "^7.1.3",
     "stream-wormhole": "^1.0.3",
     "uuid": "^3.2.1",
-    "validator": "^9.4.1",
+    "validator": "^13.6.0",
     "xmlbuilder": "^9.0.7"
   },
   "devDependencies": {
