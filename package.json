@@ -22,7 +22,7 @@
     "loader-builder": "^2.6.0",
     "loader-koa": "^2.0.1",
     "lodash": "^4.17.5",
-    "markdown-it": "^8.4.1",
+    "markdown-it": "^12.3.2",
     "nodemailer": "^4.6.2",
     "nodemailer-smtp-transport": "^2.7.4",
     "qiniu": "^7.1.3",
