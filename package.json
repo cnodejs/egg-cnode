@@ -29,7 +29,8 @@
     "stream-wormhole": "^1.0.3",
     "uuid": "^3.2.1",
     "validator": "^9.4.1",
-    "xmlbuilder": "^9.0.7"
+    "xmlbuilder": "^9.0.7",
+    "snyk": "^1.83.0"
   },
   "devDependencies": {
     "autod": "^3.0.1",
@@ -57,7 +58,9 @@
     "lint": "eslint .",
     "ci": "npm run lint && npm run cov",
     "autod": "autod",
-    "assets": "loader app/view app/"
+    "assets": "loader app/view app/",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "ci": {
     "version": "8",
@@ -68,5 +71,6 @@
     "url": ""
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "snyk": true
 }
