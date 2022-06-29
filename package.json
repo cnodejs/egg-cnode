@@ -17,7 +17,7 @@
     "egg-router-plus": "^1.2.0",
     "egg-scripts": "^2.5.0",
     "egg-validate": "^1.0.0",
-    "egg-view-ejs": "^2.0.0",
+    "egg-view-ejs": "^3.0.0",
     "loader": "^2.1.1",
     "loader-builder": "^2.6.0",
     "loader-koa": "^2.0.1",
